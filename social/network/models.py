@@ -15,6 +15,13 @@ class Post(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
 
+def user_directory_path(instance, filename):
+    return 'images/%s/%s_%s' % (instance.user.id, uuid.uuid4, filename)
+class Image(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    content = models.ImageField(upload_to=user_directory_path)
+    timestamp = models.DateTimeField(auto_now=True)
+
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
