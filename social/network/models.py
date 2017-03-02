@@ -5,20 +5,21 @@ import uuid
 
 # Create your models here.
 class Author(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    friends = models.ManyToManyField("self", related_name="friends", blank=True)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    friends = models.ManyToManyField("self", related_name="friends", blank=True)-
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     content = models.TextField()
+	timestamp = models.DateTimeField(auto_now=True)
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    comment = models.TextField()
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
 
 class Follow(models.Model):
