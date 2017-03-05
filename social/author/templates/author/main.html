@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 {% load static %}
 <html>
 	<head>
@@ -11,7 +11,7 @@
 	<div class="main">
 		<div class="left-bar">
 			<div class="lbp">
-				{{request.user.username}}
+				Author name here
 			</div>
 			<div class="vspacer"></div>
 			<div class="lbm">
@@ -31,12 +31,13 @@
 			</div>
 		</div>
 		<div class="main-body">
-            <form action="/post/" method="POST">
-                <textarea class="mlt" placeholder="What do you want to talk about today?"></textarea>
-                <div class="fcb">
-                    <input class="submit" type="submit">
-                </div>
-            </form>
+			<form>
+				<textarea class="mlt" placeholder="What do you want to talk about today?"></textarea>
+			<div class="fcb">
+				<input class="submit" type="submit">
+				</div>
+			</div>
+			</form>
 		</div>
 	</div>
 	</body>
