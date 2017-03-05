@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+{% load static %}
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>CMPUT404 Temp. Log-in</title>
+    <link rel="stylesheet" href="{% static "index.css" %}" />
+</head>
+<body>
+    <div id="login_bar">
+        <div id="logo">
+             <p>Welcome!</p>
+        </div>
+        <div id="login_container">
+            <form id="login_form" action="/login/" method="POST">
+                {% csrf_token %}
+                <table cellspacing="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label for="user">Email</label>
+                            </td>
+                            <td>
+                                <label for="password">Password</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="email" class="login_input" name="user" id="user" required/>
+                            </td>
+                            <td>
+                                <input type="password" class="login_input" name="password" id="password" required/>
+                            </td>
+                            <td>
+                                <input type="submit" class="submit_button" id="login_submit" value="Log in" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div id="register_bar">
+        <div id="register">
+            <p>Not registered? Sign up today!</p>
+        </div>
+        <div id="register_container">
+            <form id="registration" action="/register/" method="POST" >
+                {% csrf_token %}
+                <table cellspacing="0" role="presentation">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label for="username">Username</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" class="registration_input" maxlength="32" name="username" id="username" required/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="email">Email</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="email" class="registration_input" name="email" id="email" required/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password">Password</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="password" class="registration_input" name="password" id="password" required/>
+                            </td>
+                        <tr>
+                            <td>
+                                <input type="submit" class="submit_button" id="reg_submit" value="Register"/>
+                            </td>
+                        </tr>   
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div style="margin-left: 1%">
+            <p>This is a DJANGO project for CMPUT404 @ the University of Alberta</p>
+        </div>
+    </div>
+</body>
+</html>

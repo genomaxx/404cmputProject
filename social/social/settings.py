@@ -7,6 +7,11 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
+
+***********************************************************************************
+NOTE: I have added instructions on how to add new apps, templates, and static files
+to their respective sections. Just scroll down and read the notes.
+***********************************************************************************
 """
 
 import os
@@ -26,8 +31,9 @@ SECRET_KEY = "-x5-561xs+0j!)3=_&^nja9%888*=g9pa6o*sw3$gd7#fcecen"
 DEBUG = True
 
 # Application definition
-
+# Note: Add the name of your app (same as the folder name) to this list.
 INSTALLED_APPS = [
+    'author',
 	'network',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,11 +62,13 @@ MIDDLEWARE_CLASSES = [
 ROOT_URLCONF = 'social.urls'
 
 # Path to templates
-
+# Note: Add all your templates to the list in the entry labeled 'DIRS'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(PROJECT_ROOT, '../network/templates/usr'),
+        'DIRS': [
+            os.path.join(PROJECT_ROOT, '../network/templates/usr'),
+            os.path.join(PROJECT_ROOT, '../social/templates'),
 		],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -135,6 +143,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
+# Note: add the file path to your new static folders here.
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 	os.path.join(PROJECT_ROOT, '../network/static'),
