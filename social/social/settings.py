@@ -34,6 +34,7 @@ DEBUG = True
 # Note: Add the name of your app (same as the folder name) to this list.
 INSTALLED_APPS = [
     'author',
+    'post',
 	'network',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,6 +70,7 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(PROJECT_ROOT, '../network/templates/usr'),
             os.path.join(PROJECT_ROOT, '../social/templates'),
+            os.path.join(PROJECT_ROOT, '../author/templates'),
 		],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -147,6 +149,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 	os.path.join(PROJECT_ROOT, '../network/static'),
+    os.path.join(PROJECT_ROOT, '../author/static'),
 ]
 
 # Simplified static file serving.
