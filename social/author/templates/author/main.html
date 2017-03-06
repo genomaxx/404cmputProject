@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 {% load static %}
 <html>
 	<head>
@@ -11,7 +11,7 @@
 	<div class="main">
 		<div class="left-bar">
 			<div class="lbp">
-				Author name here
+				{{request.user.username}}
 			</div>
 			<div class="vspacer"></div>
 			<div class="lbm">
@@ -31,12 +31,27 @@
 			</div>
 		</div>
 		<div class="main-body">
-			<form>
-				<textarea class="mlt" placeholder="What do you want to talk about today?"></textarea>
-			<div class="fcb">
-				<input class="submit" type="submit">
-				</div>
-			</div>
+			<form action="/a/author_post/" method="POST">
+                {% csrf_token %}
+                <table cellspacing="0" role-="presentation">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <textarea class="mlt" name="post_content" placeholder="What do you want to talk about today?"></textarea>
+                            </td>
+				        </tr>
+                        <tr>
+                            <td>
+                                <input class="submit" type="submit" />
+                            </td>
+                        </tr> 
+		            </tbody>
+                </table>
+                {% for post in posts %}
+                    <div>
+                        {{post.content}}
+                    </div>
+                {% endfor %}
 			</form>
 		</div>
 	</div>
