@@ -6,5 +6,4 @@ class AuthorAdmin(admin.ModelAdmin):
     fields = ('id', 'user', 'friend')
 
 # Register your models here.
-models = [Author, AuthorAdmin]
 admin.site.register(Author, AuthorAdmin)
