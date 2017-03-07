@@ -35,7 +35,8 @@ DEBUG = True
 INSTALLED_APPS = [
     'author',
     'post',
-	'network',
+    'network',
+    'comment',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

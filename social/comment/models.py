@@ -1,6 +1,7 @@
 from django.db import models
 from author.models import Author
-from post.models import post
+from post.models import Post
+from django.utils import timezone
 import uuid
 
 # Create your models here.
