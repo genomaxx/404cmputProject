@@ -1,6 +1,7 @@
 from django.db import models
 from author.models import Author
 from post.models import post
+import uuid
 
 # Create your models here.
 class Comment(models.Model):
