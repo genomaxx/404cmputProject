@@ -4,7 +4,7 @@ from django.conf import settings
 # Create your models here.
 
 class Author(models.Model):
-    user = models.OneToOneField(User, primary_key=True, max_length=32, on_delete=models.CASCADE) # This references the built-in django User object
+    id = models.OneToOneField(User, primary_key=True, max_length=32, on_delete=models.CASCADE) # This references the built-in django User object
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
     
     def __str__(self):

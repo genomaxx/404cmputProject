@@ -13,13 +13,13 @@ import sys
 def index(request):
     # This page displays the author's stream/post feed.
     # https://docs.djangoproject.com/en/1.10/topics/db/queries/
-    authorContext = Author.objects.get(user=request.user)
+    authorContext = Author.objects.get(id=request.user)
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
         posts = Post.objects.filter(
             Q(privacyLevel=0) | 
-            (Q(privacyLevel=4) & Q(author=authorContext.user.id))
+            (Q(privacyLevel=4) & Q(author=authorContext.id.id))
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
@@ -46,7 +46,7 @@ def author_post(request):
         # Get the logged in user and the associated author object.
         #userContext = User.objects.get(username=request.user.username)
         post_body = request.POST['post_content']
-        authorContext = Author.objects.get(user=request.user)
+        authorContext = Author.objects.get(id=request.user)
 
         # Create and save a new post.
         newPost = Post(author=authorContext, 
