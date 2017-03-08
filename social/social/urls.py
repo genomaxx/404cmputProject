@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^login/', views.login, name='login'),
     url(r'^admin/', admin.site.urls),
     url(r'^a/', include('author.urls', namespace='author'), name='author'),
+    url(r'^logout/', views.logout, name='logout'),
     #url(r'^author_post/', include('author.urls', namespace='author'), name='post'),
 	#url(r'^network/', include('network.urls', namespace='network'), name='network'),
 ]

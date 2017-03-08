@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as django_login
+from django.shortcuts import render, redirect, render_to_response
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from . import forms
 from author.models import Author
 import sys
@@ -66,3 +67,8 @@ def login(request):
         return redirect('/a/')
     
     return HttpResponse('<h1>Wrong password :(</h1>')
+
+@login_required()
+def logout(request):
+    django_logout(request)
+    return HttpResponseRedirect('/')
