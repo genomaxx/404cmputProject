@@ -92,5 +92,3 @@ ENV/
 
 # Database files
 *.db
-
-migrations/

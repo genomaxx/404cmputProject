@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Author',
             fields=[
-                ('user', models.OneToOneField(max_length=32, on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
+                ('id', models.OneToOneField(max_length=32, on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('friend', models.ManyToManyField(blank=True, related_name='_author_friend_+', to='author.Author')),
             ],
         ),
