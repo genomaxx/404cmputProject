@@ -23,7 +23,7 @@ def register(request):
     regForm = forms.RegistrationForm(request.POST)
     
     # Check if the form is valid
-    if (regForm.is_valid() == False):
+    if (not regForm.is_valid()):
         return HttpResponse('<h1>Form not valid</h1>')
 
     # Create and save the User and Author model.
