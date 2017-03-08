@@ -35,7 +35,6 @@ DEBUG = True
 INSTALLED_APPS = [
     'author',
     'post',
-    'network',
     'comment',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,7 +68,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(PROJECT_ROOT, '../network/templates/usr'),
             os.path.join(PROJECT_ROOT, '../social/templates'),
             os.path.join(PROJECT_ROOT, '../author/templates'),
 		],
@@ -163,7 +161,7 @@ STATIC_URL = '/static/'
 # Note: add the file path to your new static folders here.
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
-	os.path.join(PROJECT_ROOT, '../network/static'),
+    # os.path.join(PROJECT_ROOT, '../network/static'),
     os.path.join(PROJECT_ROOT, '../author/static'),
 ]
 
