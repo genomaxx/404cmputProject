@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+{% load static %}
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>CMPUT404 Project</title>
+    <link rel="stylesheet" href="{% static "author_index.css" %}" />
+</head>
+<body>
+    <div id="dividing_bar">
+        <div id="logo">
+            The word of the day is: "Moist"
+        </div>
+        <div id="logout_button">
+            <form id="logout_form" action="/logout/" method="GET">
+                <input type="submit" class="button" value="Log out" />
+            </form>
+        </div>
+    </div>
+    <div id="main_container">
+        <div id="left_container">
+            <div id="user_profile">
+                {{request.user.username}}
+            </div>
+            <div class="nav_panel">
+                Navigate
+                <div class="nav_item">
+                    My Friends
+                </div>
+                <div class="nav_item">
+                    Following
+                </div>
+            </div>
+            <div class="nav_panel">
+                Functions
+                <div class="nav_item">
+                    View Author List
+                </div>
+                <div class="nav_item">
+                    Make Comment
+                </div>
+            </div>
+        </div>
+        <div id="center_container">
+            <div id="post_container">
+                <form name="post_form" action="/a/author_post/" method="POST">
+                    {% csrf_token %}
+                    <div id="text_container">
+                        <textarea name="post_content" id="post_area" placeholder="What do you want to talk about today?"></textarea>
+                    </div>
+                    <div id="nav_post">
+                        <div id="post_buttons">
+                            <div id="privacy_selector">
+                                <select name="privacy_level">
+                                    <option value=1>Public</option>
+                                    <option value=4>Me Only</option>
+                                </select>
+                            </div>
+                            <div id="post_button">
+                                <input type="submit" class="button" value="Post" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="feed_container">
+                {% for post in posts %}
+                <div>
+                    {{post.content}}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
