@@ -23,7 +23,7 @@ def index(request):
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
-   
+    
     try:
        if (len(posts) > 0):
            context = {'posts': posts}
@@ -57,3 +57,26 @@ def author_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/a/')
+
+@login_required(login_url='/profile/')
+def profile(request):
+    # This page displays the author's profile.
+    # https://docs.djangoproject.com/en/1.10/topics/db/queries/
+    authorContext = Author.objects.get(user=request.user)
+
+    # TODO: Add to the query to expand the feed.
+    try:
+        posts = Post.objects.filter(
+            Q(author__id=authorContext.id)
+            ).order_by('-publishDate')
+    except:
+        return HttpResponse(sys.exc_info[0])
+    
+    try:
+       if (len(posts) > 0):
+           context = {'posts': posts}
+           return render(request, 'author/profile.html', context)
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return render(request, 'author/profile.html')
