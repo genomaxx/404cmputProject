@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^a/', include('author.urls', namespace='author'), name='author'),
     url(r'^logout/', views.logout, name='logout'),
-    url(r'^post/(?P<id>[0-9+])/', include('post.urls', namespace='post'), name='post'),
+    url(r'^post/', include('post.urls', namespace='post')),
     #url(r'^author_post/', include('author.urls', namespace='author'), name='post'),
 	#url(r'^network/', include('network.urls', namespace='network'), name='network'),
 ]
