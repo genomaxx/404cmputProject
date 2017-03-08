@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as django_login
+from django.shortcuts import render, redirect, render_to_response
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from . import forms
 from author.models import Author
 import sys
@@ -22,7 +23,7 @@ def register(request):
     regForm = forms.RegistrationForm(request.POST)
     
     # Check if the form is valid
-    if (regForm.is_valid() == False):
+    if (not regForm.is_valid()):
         return HttpResponse('<h1>Form not valid</h1>')
 
     # Create and save the User and Author model.
@@ -38,7 +39,7 @@ def register(request):
         newUser = User.objects.get(email=userEmail)
 
         # Create and save the Author model
-        author = Author(user=newUser)
+        author = Author(id=newUser)
         author.save()
     except:
         return HttpResponse(sys.exc_info[0]) #TODO: Will need to change this to a nicer UI later
@@ -66,3 +67,8 @@ def login(request):
         return redirect('/a/')
     
     return HttpResponse('<h1>Wrong password :(</h1>')
+
+@login_required()
+def logout(request):
+    django_logout(request)
+    return HttpResponseRedirect('/')
