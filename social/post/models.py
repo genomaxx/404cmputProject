@@ -13,7 +13,6 @@ class Post(models.Model):
         (4, 'Private'),
     ]
 
-    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     content = models.TextField()
     privacyLevel = models.IntegerField(choices=VISIBILITY, default=0)
