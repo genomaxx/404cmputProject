@@ -3,7 +3,7 @@ from comment.models import *
 
 # Register your models here.
 class CommentAdmin(admin.ModelAdmin):
-    fields = ('id', 'author', 'content', 'publishDate')
+    fields = ('author', 'content', 'publishDate')
 
 # Register your models here.
 admin.site.register(Comment, CommentAdmin)
