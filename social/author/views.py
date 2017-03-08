@@ -42,7 +42,7 @@ def author_post(request):
 
     if (request.POST['post_content'] == None):
         return
-    
+
     try:
         # Get the logged in user and the associated author object.
         #userContext = User.objects.get(username=request.user.username)
