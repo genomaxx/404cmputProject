@@ -35,7 +35,7 @@ DEBUG = True
 INSTALLED_APPS = [
     'author',
     'post',
-	'network',
+    'comment',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +68,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(PROJECT_ROOT, '../network/templates/usr'),
             os.path.join(PROJECT_ROOT, '../social/templates'),
             os.path.join(PROJECT_ROOT, '../author/templates'),
 		],
@@ -89,10 +88,23 @@ WSGI_APPLICATION = 'social.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DATABASES = {} # Do not override databases default.  App will not work locally because the db information is from the environment
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'] = (db_from_env)
+DATABASES = {}
+env = os.environ.copy()
+db_url = env.get('DATABASE_URL', False)
+
+if db_url != False:
+    import dj_database_url
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'] = (db_from_env)
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'local.db',
+        }
+    }
+
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -148,7 +160,7 @@ STATIC_URL = '/static/'
 # Note: add the file path to your new static folders here.
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
-	os.path.join(PROJECT_ROOT, '../network/static'),
+    # os.path.join(PROJECT_ROOT, '../network/static'),
     os.path.join(PROJECT_ROOT, '../author/static'),
 ]
 

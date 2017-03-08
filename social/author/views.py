@@ -13,8 +13,7 @@ import sys
 def index(request):
     # This page displays the author's stream/post feed.
     # https://docs.djangoproject.com/en/1.10/topics/db/queries/
-    authorContext = Author.objects.get(user=request.user)
-    feed = []
+    authorContext = Author.objects.get(id=request.user)
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
@@ -28,29 +27,31 @@ def index(request):
     try:
        if (len(posts) > 0):
            context = {'posts': posts}
-           return render(request, 'author/main.html', context)
+           return render(request, 'author/index.html', context)
     except:
         return HttpResponse(sys.exc_info[0])
 
-    return render(request, 'author/main.html')
+    return render(request, 'author/index.html')
 
 @login_required(login_url='/author_post/')
 def author_post(request):
     # Only process the author's post if it is a POST request
     if (request.method != 'POST'):
-        return HttpReponseRedirect('/')
+        return HttpReponseRedirect('/a/')
 
     if (request.POST['post_content'] == None):
         return
-    
+
     try:
         # Get the logged in user and the associated author object.
         #userContext = User.objects.get(username=request.user.username)
         post_body = request.POST['post_content']
-        authorContext = Author.objects.get(user=request.user)
+        authorContext = Author.objects.get(id=request.user)
 
         # Create and save a new post.
-        newPost = Post(author=authorContext, content=request.POST['post_content'])
+        newPost = Post(author=authorContext, 
+                       content=request.POST['post_content'], 
+                       privacyLevel=request.POST['privacy_level'])
         newPost.save()
     except:
         return HttpResponse(sys.exc_info[0])
