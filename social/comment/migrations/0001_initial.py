@@ -13,17 +13,18 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('author', '0001_initial'),
+        ('post', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Post',
+            name='Comment',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', models.TextField()),
-                ('privacyLevel', models.IntegerField(choices=[(0, 'Public'), (1, 'Friends'), (2, 'Friends of friends'), (3, 'Private message'), (4, 'Private')], default=0)),
                 ('publishDate', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date published')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='author.Author')),
+                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='post.Post')),
             ],
         ),
     ]
