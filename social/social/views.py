@@ -38,7 +38,7 @@ def register(request):
         newUser = User.objects.get(email=userEmail)
 
         # Create and save the Author model
-        author = Author(user=newUser)
+        author = Author(id=newUser)
         author.save()
     except:
         return HttpResponse(sys.exc_info[0]) #TODO: Will need to change this to a nicer UI later
