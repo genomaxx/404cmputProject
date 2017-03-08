@@ -19,7 +19,7 @@ def index(request):
     try:
         posts = Post.objects.filter(
             Q(privacyLevel=0) | 
-            (Q(privacyLevel=4) & Q(author=authorContext.id.id))
+            (Q(privacyLevel=4) & Q(author__id=authorContext.id))
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
