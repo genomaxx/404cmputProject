@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 {% load static %}
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -65,8 +65,8 @@
             </div>
             <div id="feed_container">
                 {% for post in posts %}
-                <div>
-                    {{post.content}}
+                <div class="post_link">
+                    <a href="{% url 'post:post' post.id %}" >{{ post.content }}</a>
                 </div>
                 {% endfor %}
             </div>
