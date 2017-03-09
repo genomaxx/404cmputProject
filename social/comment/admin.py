@@ -5,6 +5,5 @@ from comment.models import *
 class CommentAdmin(admin.ModelAdmin):
     fields = ('post', 'author', 'content', 'publishDate')
 
-
 # Register your models here.
 admin.site.register(Comment, CommentAdmin)
