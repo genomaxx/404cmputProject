@@ -7,14 +7,27 @@
     <link rel="stylesheet" href="{% static 'view.css' %}" />
   </head>
   <body>
+
     <div class="post_body">
       {{ content|safe }}
     </div id="post_body">
 
     <div class="comment_container">
       {% for comment in comment_list %}
-	<div class="comment">{{ comment.content }}</div>
+      <div class="comment">{{ comment.content }}</div>
       {% endfor %}
     </div>
+
+    <div class="comment_form">
+      <form action="{% url 'post:comment' pk=post.id %}" method="post">
+	{% csrf_token %}
+	{{ form }}
+	<input type="submit" value="Post Comment" />
+      </form>
+    </div>
+
   </body>
+</html>
+
+</body>
 </html>
