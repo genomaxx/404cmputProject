@@ -1,11 +1,9 @@
 from django.test import TestCase, Client
-from django.core import exceptions
 from author.models import Author
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 # Create your tests here.
-class AuthorTestCast(TestCase):
+class AuthorTestCase(TestCase):
     def setUp(self):
         User.objects.create(username="Bill", email="bill@nye.com", password="test")
         User.objects.create(username="Abram", email="abram@hindle.com", password="test")
@@ -26,7 +24,7 @@ class AuthorTestCast(TestCase):
             author1.save()
             author1.delete()
         except Exception as e:
-            self.assertFalse(False, "Author did not save")
+            self.assertFalse(True, "Author did not save")
 
         # Trying to create an author linked to the same user throws exception
         with self.assertRaises(Exception) as ex:
@@ -73,7 +71,7 @@ class AuthorTestCast(TestCase):
             author1.save()
             author2.save()
         except Exception as e:
-            self.assertFalse(False, "Author did not save")
+            self.assertFalse(True, "Author did not save")
 
         author1.delete()
         author2.delete()
