@@ -162,6 +162,7 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
     # os.path.join(PROJECT_ROOT, '../network/static'),
     os.path.join(PROJECT_ROOT, '../author/static'),
+    os.path.join(PROJECT_ROOT, '../post/static'),
 ]
 
 # Simplified static file serving.
