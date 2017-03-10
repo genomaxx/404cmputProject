@@ -6,7 +6,7 @@ from django.conf import settings
 class Author(models.Model):
     id = models.OneToOneField(User, primary_key=True, max_length=32, on_delete=models.CASCADE) # This references the built-in django User object
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
-    
+
     def __str__(self):
         return str(self.id)
 
