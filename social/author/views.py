@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from author.models import Author
 from post.models import Post
 from django.db.models import Q
 import sys
 # Create your views here.
+
 
 @login_required(login_url='/a/')
 def index(request):
@@ -25,27 +24,32 @@ def index(request):
         return HttpResponse(sys.exc_info[0])
 
     try:
-       if (len(posts) > 0):
-           context = {'posts': posts}
-           return render(request, 'author/index.html', context)
+        if (len(posts) > 0):
+            context = {'posts': posts}
+            return render(request, 'author/index.html', context)
     except:
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/index.html')
 
+
 @login_required(login_url='/author_post/')
 def author_post(request):
     # Only process the author's post if it is a POST request
     if (request.method != 'POST'):
-        return HttpReponseRedirect('/a/')
+        return HttpResponseRedirect('/a/')
 
-    if (request.POST['post_content'] == None):
+    if (request.POST['post_content'] is None):
         return
 
     try:
         # Get the logged in user and the associated author object.
         # userContext = User.objects.get(username=request.user.username)
+<<<<<<< HEAD
         post_body = request.POST['post_content']
+=======
+        # post_body = request.POST['post_content']
+>>>>>>> origin/master
         authorContext = Author.objects.get(id=request.user)
 
         # Create and save a new post.
@@ -59,6 +63,7 @@ def author_post(request):
     return HttpResponseRedirect('/a/')
 
 
+<<<<<<< HEAD
 # Implementation based upon the code found here
 # http://stackoverflow.com/questions/19754103/django-how-to-delete-an-object-using-a-view
 @login_required(login_url='/author_delete_post/')
@@ -78,6 +83,8 @@ def author_delete_post(request, postpk):
     return HttpResponseRedirect('/a/')
 
 
+=======
+>>>>>>> origin/master
 @login_required(login_url='/profile/')
 def profile(request):
     # This page displays the author's profile.
@@ -91,11 +98,14 @@ def profile(request):
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
     try:
-       if (len(posts) > 0):
-           context = {'posts': posts}
-           return render(request, 'author/profile.html', context)
+        if (len(posts) > 0):
+            context = {'posts': posts}
+            return render(request, 'author/profile.html', context)
     except:
         return HttpResponse(sys.exc_info[0])
 
