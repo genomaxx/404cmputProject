@@ -12,6 +12,8 @@ class Author(models.Model):
 
     id = models.OneToOneField(User, primary_key=True, max_length=32, on_delete=models.CASCADE) # This references the built-in django User object
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
+    firstname = models.TextField(blank=True)
+    lastname = models.TextField(blank=True)
     phone = models.TextField(blank=True)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)

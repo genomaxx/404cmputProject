@@ -21,7 +21,19 @@
         <div id="left_container">
             <div id="user_profile">
                 {{request.user.username}}<br/>
-				{{request.user.fullname}}
+                Name: 
+				{{author.firstname}}
+                {{author.lastname}}<br/>
+                Date Of Birth: 
+                {{author.dob}}<br/>
+                Phone Number: 
+                {{author.phone}}<br/>
+                Email:
+                {{request.user.email}}</br>
+                Gender: 
+                {{author.get_gender_display}}<br/>
+                Github Profile:
+                {{author.gitURL}}<br/>
             </div>
             <div class="nav_panel">
                 Navigate
@@ -35,7 +47,7 @@
             <div class="nav_panel">
                 Functions
 				<div class="nav_item">
-                    Edit Profile
+                    <a href="/a/edit/">Edit Profile</a>
                 </div>
                 <div class="nav_item">
                     View Author List
@@ -46,6 +58,9 @@
             </div>
         </div>
         <div id="center_container">
+            <div>
+                Your Posts
+            </div>
             <div id="feed_container">
                 {% for post in posts %}
                 <div class="post_link">
