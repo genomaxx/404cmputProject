@@ -1,42 +1,60 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 {% load static %}
-<html>
-	<head>
-		<title>CMPUT404 Social Distribution Project</title>
-		<meta charset="UTF-8">
-		<link href="{% static "mainpgstyle.css" %}" rel="stylesheet">
-	</head>
-	
-	<body>
-	<div class="main">
-		<div class="left-bar">
-			<div class="lbp">
-				{{request.user.username}}
-			</div>
-			<div class="vspacer"></div>
-			<div class="lbm">
-				Home/make a post
-			</div>
-			<div class="lbm">
-				See my followers
-			</div>
-			<div class="lbm">
-				See my friends
-			</div>
-			<div class="lbm">
-				Find/follow other users
-			</div>
-			<div class="lbm">
-				View my feed
-			</div>
-		</div>
-		<div class="main-body">
-            {% for post in posts %}
-                <div>
-                    {{post.content}}
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>CMPUT404 Project</title>
+    <link rel="stylesheet" href="{% static "author_index.css" %}" />
+</head>
+<body>
+    <div id="dividing_bar">
+        <div id="logo">
+            The word of the day is: "Moist"
+        </div>
+        <div id="logout_button">
+            <form id="logout_form" action="/logout/" method="GET">
+                <input type="submit" class="button" value="Log out" />
+            </form>
+        </div>
+    </div>
+    <div id="main_container">
+        <div id="left_container">
+            <div id="user_profile">
+                {{request.user.username}}<br/>
+				{{request.user.fullname}}
+            </div>
+            <div class="nav_panel">
+                Navigate
+                <div class="nav_item">
+                    My Friends
                 </div>
-            {% endfor %}
-		</div>
-	</div>
-	</body>
+                <div class="nav_item">
+                    Following
+                </div>
+            </div>
+            <div class="nav_panel">
+                Functions
+				<div class="nav_item">
+                    Edit Profile
+                </div>
+                <div class="nav_item">
+                    View Author List
+                </div>
+                <div class="nav_item">
+                    Make Comment
+                </div>
+            </div>
+        </div>
+        <div id="center_container">
+            <div id="feed_container">
+                {% for post in posts %}
+                <div class="post_link">
+                    <a href="{% url 'post:post' post.id %}" >{{ post.content }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
 </html>
+

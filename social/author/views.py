@@ -61,8 +61,8 @@ def author_post(request):
 @login_required(login_url='/profile/')
 def profile(request):
     # This page displays the author's profile.
-    # https://docs.djangoproject.com/en/1.10/topics/db/queries/
-    authorContext = Author.objects.get(user=request.user)
+    # https://docs.dj# This page displays the author's profile.angoproject.com/en/1.10/topics/db/queries/
+    authorContext = Author.objects.get(id=request.user)
 
     # TODO: Add to the query to expand the feed.
     try:
@@ -80,3 +80,40 @@ def profile(request):
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/profile.html')
+
+@login_required(login_url='/edit/')
+def edit(request):
+    return render(request, 'author/edit.html')
+
+
+@login_required(login_url='/edit_post/')
+def edit_post(request):
+    # Only process the author's post if it is a POST request
+    if (request.method != 'POST'):
+        return HttpReponseRedirect('/edit/')
+
+    try:
+
+        firstname = request.POST['firstname']
+        lastname = request.POST['lastname']
+        phone = request.POST['phone']
+        dob = request.POST['dob']
+        gender = request.POST['gender']
+        gitURL = request.POST['gitURL']
+        authorContext = Author.objects.get(id=request.user)
+
+        # save author.
+        authorContext.id.firstname = firstname
+        authorContext.id.lastname = lastname
+        authorContext.phone = phone
+        authorContext.dob = dob
+        authorContext.gender = gender
+        authorContext.gitURL = gitURL
+
+        authorContext.save()
+
+
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return HttpResponseRedirect('/a/profile/')

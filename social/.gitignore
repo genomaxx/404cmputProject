@@ -84,6 +84,8 @@ ENV/
 
 *~
 
+tags
+
 # Spyder project settings
 .spyderproject
 
