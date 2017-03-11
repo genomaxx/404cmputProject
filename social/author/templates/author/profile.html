@@ -1,42 +1,89 @@
-<!DOCTYPE HTML>
+{% extends "base_cp.html" %}
 {% load static %}
-<html>
-	<head>
-		<title>CMPUT404 Social Distribution Project</title>
-		<meta charset="UTF-8">
-		<link href="{% static "mainpgstyle.css" %}" rel="stylesheet">
-	</head>
-	
-	<body>
-	<div class="main">
-		<div class="left-bar">
-			<div class="lbp">
-				{{request.user.username}}
-			</div>
-			<div class="vspacer"></div>
-			<div class="lbm">
-				Home/make a post
-			</div>
-			<div class="lbm">
-				See my followers
-			</div>
-			<div class="lbm">
-				See my friends
-			</div>
-			<div class="lbm">
-				Find/follow other users
-			</div>
-			<div class="lbm">
-				View my feed
-			</div>
-		</div>
-		<div class="main-body">
+{% block title %}Profile in{% endblock %}
+
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Home
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box box-primary">
+            <div class="box-header">
+              <h3 class="box-title"> {{request.user.username}}</h3>
+            </div>
+            <div class="box-body">
+                <p>Name: 
+				{{author.firstname}}
+                {{author.lastname}}</p>
+                <p>Date Of Birth: 
+                {{author.dob}}</p>
+                <p>Phone Number: 
+                {{author.phone}}</p>
+                <p>Email:
+                {{request.user.email}}</p>
+                <p>Gender: 
+                {{author.get_gender_display}}</p>
+                <p>Github Profile:
+                {{author.gitURL}}</p>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+      <!-- row -->
+      <div class="row">
+        <div class="col-md-12">
+          <!-- The time line -->
+          <ul class="timeline">
+            <!-- timeline time label -->
+            <li class="time-label">
+                  <span class="bg-red">
+                    Posts
+                  </span>
+            </li>
+            <!-- /.timeline-label -->
             {% for post in posts %}
-                <div>
-                    {{post.content}}
+            <li>
+              <i class="fa fa-sticky-note bg-blue"></i>
+
+              <div class="timeline-item">
+                <h3 class="timeline-header">Title</h3>
+
+                <div class="timeline-body">
+                    {{ post.content }}
                 </div>
+                <div class="timeline-footer">
+                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+                </div>
+              </div>
+            </li>
             {% endfor %}
-		</div>
-	</div>
-	</body>
-</html>
+            <!-- timeline item -->
+            <!-- END timeline item -->
+            <li>
+              <i class="fa fa-clock-o bg-gray"></i>
+            </li>
+          </ul>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+
