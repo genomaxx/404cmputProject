@@ -3,6 +3,14 @@ from author.models import Author
 from django.utils import timezone
 # Create your models here.
 
+<<<<<<< 92170cfb2835209fa5d061867f8017bc816a9952
+=======
+
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/<user id>/<random id>_<filename>
+    return '{0}/{1}_{2}'.format(instance.author.id, str(uuid.uuid4())[:8], filename)
+
+>>>>>>> images work
 class Post(models.Model):
     VISIBILITY = [
         (0, 'Public'),

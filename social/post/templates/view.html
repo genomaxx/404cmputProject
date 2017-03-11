@@ -17,10 +17,13 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title"> Post Title</h3>
+              <h3 class="box-title">{{ post.author }} posted...</h3>
             </div>
             <div class="box-body">
-               {{ content|safe }}
+               {% if post.image %}
+               <img src="{{ post.image.url }}" class="margin img-responsive">
+               {% endif %}
+               <p>{{ content|safe }}</p>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
@@ -55,7 +58,12 @@
               <i class="fa fa-comments bg-blue"></i>
 
               <div class="timeline-item">
+<<<<<<< 92170cfb2835209fa5d061867f8017bc816a9952
                 <h4 class="timeline-header">{{ comment.author}}</h4>
+=======
+                <h3 class="timeline-header">{{ comment.author }} says...</h3>
+
+>>>>>>> images work
                 <div class="timeline-body">
                     {{ comment.content }}
                 </div>

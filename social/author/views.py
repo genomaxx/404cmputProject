@@ -48,10 +48,15 @@ def author_post(request):
         # post_body = request.POST['post_content']
         authorContext = Author.objects.get(id=request.user)
 
-        # Create and save a new post.
-        newPost = Post(author=authorContext,
-                       content=request.POST['post_content'],
-                       privacyLevel=request.POST['privacy_level'])
+        if ('image' in request.FILES.keys()):
+            # Create and save a new post.
+            newPost = Post(author=authorContext,
+                           content=request.POST['post_content'],
+                           privacyLevel=request.POST['privacy_level'], image = request.FILES['image'])
+        else:
+            newPost = Post(author=authorContext,
+               content=request.POST['post_content'],
+               privacyLevel=request.POST['privacy_level'])
         newPost.save()
     except:
         return HttpResponse(sys.exc_info[0])
