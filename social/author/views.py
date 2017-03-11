@@ -5,6 +5,8 @@ from author.models import Author
 from post.models import Post
 from django.db.models import Q
 import sys
+
+
 # Create your views here.
 
 
@@ -19,7 +21,7 @@ def index(request):
         posts = Post.objects.filter(
             Q(privacyLevel=0) |
             (Q(privacyLevel=4) & Q(author__id=authorContext.id))
-            ).order_by('-publishDate')
+        ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
 
@@ -45,11 +47,8 @@ def author_post(request):
     try:
         # Get the logged in user and the associated author object.
         # userContext = User.objects.get(username=request.user.username)
-<<<<<<< HEAD
-        post_body = request.POST['post_content']
-=======
         # post_body = request.POST['post_content']
->>>>>>> origin/master
+
         authorContext = Author.objects.get(id=request.user)
 
         # Create and save a new post.
@@ -63,7 +62,6 @@ def author_post(request):
     return HttpResponseRedirect('/a/')
 
 
-<<<<<<< HEAD
 # Implementation based upon the code found here
 # http://stackoverflow.com/questions/19754103/django-how-to-delete-an-object-using-a-view
 @login_required(login_url='/author_delete_post/')
@@ -83,8 +81,6 @@ def author_delete_post(request, postpk):
     return HttpResponseRedirect('/a/')
 
 
-=======
->>>>>>> origin/master
 @login_required(login_url='/profile/')
 def profile(request):
     # This page displays the author's profile.
@@ -95,13 +91,10 @@ def profile(request):
     try:
         posts = Post.objects.filter(
             Q(author__id=authorContext.id)
-            ).order_by('-publishDate')
+        ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
     try:
         if (len(posts) > 0):
             context = {'posts': posts}
