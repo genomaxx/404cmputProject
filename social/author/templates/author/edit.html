@@ -19,7 +19,7 @@
             <div class="box-header">
               <h3 class="box-title"> Edit {{request.user.username}}</h3>
             </div>
-            <div class="box-body"><
+            <div class="box-body">
                 <form action="/author/edit_post/" method="POST">
                 {% csrf_token %}
                   <div class="form-group">
