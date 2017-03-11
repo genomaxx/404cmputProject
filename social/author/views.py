@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from author.models import Author
+from author.models import Author, Follow
 from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -66,7 +66,10 @@ def profile(request, id):
     author = Author.objects.get(id=user)
     context = {'author': author}
     visitor = Author.objects.get(id=request.user)
-    context["friend_status"] = get_friend_status(visitor, author)
+    context["friend_status"] = get_friend_status(author, visitor)
+    context["follows"] = False
+    if visitor.isFollowing(author):
+        context["follows"] = True
 
     try:
         posts = Post.objects.filter(
@@ -118,3 +121,22 @@ def edit_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
+
+
+def follow(request, id):
+    profile = User.objects.get(id=id)
+    follower = Author.objects.get(id=request.user)
+    followee = Author.objects.get(id=profile)
+
+    Follow(follower=follower, followee=followee).save()
+    return HttpResponseRedirect("/author/" + id)
+
+
+def unfollow(request, id):
+    profile = User.objects.get(id=id)
+    follower = Author.objects.get(id=request.user)
+    followee = Author.objects.get(id=profile)
+
+    relation = Follow.objects.get(follower=follower, followee=followee)
+    relation.delete()
+    return HttpResponseRedirect("/author/" + id)

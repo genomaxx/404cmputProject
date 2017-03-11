@@ -8,6 +8,11 @@
     <section class="content-header">
       <h1>
         Profile
+	{% if follows %}
+	<a href="{% url 'author:unfollow' id=author.id.id %}" class="btn btn-primary">Unfollow</a>
+	{% else %}
+	<a href="{% url 'author:follow' id=author.id.id %}" class="btn btn-primary">Follow</a>
+	{% endif %}
       </h1>
     </section>
 
