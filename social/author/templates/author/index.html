@@ -50,45 +50,62 @@
         <!-- /.col -->
     </div>
     <!-- /.row -->
+      <!-- row -->
+      <div class="row">
+        <div class="col-md-12">
+          <!-- The time line -->
+          <ul class="timeline">
+            <!-- timeline time label -->
+            <li class="time-label">
+                  <span class="bg-red">
+                    Feed
+                  </span>
+            </li>
+            <!-- /.timeline-label -->
+            {% for post in posts %}
+            {% if post.image %}
+            <li>
+              <i class="fa fa-camera bg-purple"></i>
 
-    <!-- row -->
-    <div class="row">
-      <div class="col-md-12">
-	<!-- The time line -->
-	<ul class="timeline">
-	  <!-- timeline time label -->
-	  <li class="time-label">
-	    <span class="bg-red">
-	      Feed
-	    </span>
-	  </li>
-	  <!-- /.timeline-label -->
-	  {% for post in posts %}
-	  <li>
-	    <i class="fa fa-sticky-note bg-blue"></i>
+              <div class="timeline-item">
+                <h3 class="timeline-header">{{ post.author }} posted an image...</h3>
 
-	    <div class="timeline-item">
-	      <h3 class="timeline-header">
-		<a href="{% url 'author:profile' post.author.id.id %}">Title by {{ post.author }}</a>
-	      </h3>
+                <div class="timeline-body">
+                  <img src="{{ post.image.url }}" class="margin img-responsive">
+                </div>
+                <div class="timeline-footer">
+                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>
+                </div>
+              </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+            {% endif %}
+            {% if not post.image %}
+            <li>
+              <i class="fa fa-sticky-note bg-blue"></i>
 
-	      <div class="timeline-body">
-		{{ post.content }}
-	      </div>
-	      <div class="timeline-footer">
-		<a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
-	      </div>
-	    </div>
-	  </li>
-	  {% endfor %}
-	  <!-- timeline item -->
-	  <!-- END timeline item -->
-	  <li>
-	    <i class="fa fa-clock-o bg-gray"></i>
-	  </li>
-	</ul>
-      </div>
-      <!-- /.col -->
+              <div class="timeline-item">
+                <h3 class="timeline-header">{{ post.author }} posted...</h3>
+
+                <div class="timeline-body">
+                    {{ post.content }}
+                </div>
+                <div class="timeline-footer">
+                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+                </div>
+              </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+            <!-- timeline item -->
+            <!-- END timeline item -->
+            <li>
+              <i class="fa fa-clock-o bg-gray"></i>
+            </li>
+          </ul>
+        </div>
+        <!-- /.col -->
     </div>
     <!-- /.row -->
 
