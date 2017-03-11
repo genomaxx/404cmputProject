@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from author.views import author_image
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -28,4 +29,5 @@ urlpatterns = [
     url(r'^logout/', views.logout, name='logout'),
     url(r'^post/', include('post.urls', namespace='post')),
     url(r'^service/', include('api.urls', namespace='api')),
+    url(r'^images/(?P<pk>[0-9]+)/(?P<pk1>[._/0-9a-zA-Z]+)$', author_image, name='image'),
 ]
