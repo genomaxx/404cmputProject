@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from author.models import Author
 from post.models import Post
@@ -67,13 +67,21 @@ def author_post(request):
 @login_required(login_url='/author_delete_post/')
 def author_delete_post(request, postpk):
     # Only process the request if it is in fact a request to delete the post
+
     if (request.method != 'POST'):
         return HttpResponseRedirect('/author/')
 
     try:
-        # Get the post object that the author is trying to delete.
-        # Then delete it.
-        the_post = Post.objects.get(pk=postpk)
+        # Get the post object that the user is trying to delete.
+        the_post = Post.objects.get(id=postpk)
+        user = request.user
+        postauthor = the_post.author
+        
+        # Verify that the user was the author of that post
+        if user.id != postauthor.id.id:
+            return HttpResponseForbidden()
+
+        # Delete the post
         the_post.delete()
     except:
         HttpResponse(sys.exc_info[0])
