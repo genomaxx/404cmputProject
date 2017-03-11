@@ -9,6 +9,7 @@ from . import forms
 import sys
 import base64
 import uuid
+import re
 # Create your views here.
 
 
@@ -53,11 +54,12 @@ def author_post(request):
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
             # encode image into base64 here and make nice image url too
+            imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
             newPost = Post(author=authorContext,
                            content=request.POST['post_content'],
-                           privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image']),\
-                           image_url = '{0}/{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], request.FILES['image'].name),\
-                           image_type = request.FILES['image'].content_type, image_name = request.FILES['image'].name)
+                           privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image'].read()),\
+                           image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
+                           image_type = request.FILES['image'].content_type)
         else:
             newPost = Post(author=authorContext,
                content=request.POST['post_content'],
@@ -72,8 +74,8 @@ def author_post(request):
 @login_required()
 def author_image(request,pk,pk1):
     post = get_object_or_404(Post, id=pk, image_url= pk1)
-    response = HttpResponse(content=base64.b64decode(post.image), mimetype=post.image_type)
-    response['Content-Disposition'] = "filename="+post.image_name
+    response = HttpResponse(content=base64.b64decode(post.image), content_type=post.image_type)
+    response['Content-Disposition'] = "filename="+post.image_url
     return response
 
 

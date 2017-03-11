@@ -70,7 +70,7 @@
                 <h3 class="timeline-header">{{ post.author }} posted an image...</h3>
 
                 <div class="timeline-body">
-                  <img src="{{ post.image.url }}" class="margin img-responsive">
+                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                 </div>
                 <div class="timeline-footer">
                   <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>

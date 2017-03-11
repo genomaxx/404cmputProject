@@ -3,15 +3,6 @@ from author.models import Author
 from django.utils import timezone
 # Create your models here.
 
-<<<<<<< 5c0d59b6329dce15751cf53e829c72a4297cd46b
-=======
-
-def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/<user id>/<random id>_<filename>
-    return '{0}/{1}_{2}'.format(instance.author.id, str(uuid.uuid4())[:8], filename)
-
-
->>>>>>> images work
 class Post(models.Model):
     VISIBILITY = [
         (0, 'Public'),
@@ -27,7 +18,6 @@ class Post(models.Model):
     image_url = models.TextField(blank=True)
     image = models.TextField(blank=True)
     image_type = models.TextField(blank=True)
-    image_name = models.TextField(blank=True)
 
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
