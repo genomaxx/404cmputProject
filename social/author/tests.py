@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from author.models import Author, Follow
 from django.contrib.auth.models import User
-from .utils.follow import is_friend, is_follower
+
 
 # Create your tests here.
 class AuthorTestCase(TestCase):
@@ -28,8 +28,8 @@ class AuthorTestCase(TestCase):
             self.assertFalse(True, "Author did not save")
 
         # Trying to create an author linked to the same user throws exception
-        with self.assertRaises(Exception) as ex:
-            ex = Author.object.create(id=user)
+        with self.assertRaises(Exception):
+            Author.object.create(id=user)
 
     # Testing for persistance. If user has correct credentials they should be able to login
     # authentication and should be able to log out
@@ -45,7 +45,7 @@ class AuthorTestCase(TestCase):
         user = self.loginSetUp()
         c = Client()
         response = c.login(username=user.username, password=user.password)
-        response = c.get('/a/')
+        response = c.get('/author/')
         self.assertEqual(response.status_code, 302, "User is not persistant across views")
         user.delete()
 
@@ -76,6 +76,7 @@ class AuthorTestCase(TestCase):
 
         author1.delete()
         author2.delete()
+
 
 # Create your tests here.
 class FollowTestCase(TestCase):
