@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from author.models import Author, Follow
 from post.models import Post
@@ -8,6 +8,8 @@ from django.db.models import Q
 from . import forms
 from .utils import get_friend_status
 import sys
+
+
 # Create your views here.
 
 
@@ -47,6 +49,7 @@ def author_post(request):
         # Get the logged in user and the associated author object.
         # userContext = User.objects.get(username=request.user.username)
         # post_body = request.POST['post_content']
+
         authorContext = Author.objects.get(id=request.user)
 
         # Create and save a new post.
@@ -60,6 +63,34 @@ def author_post(request):
     return HttpResponseRedirect('/author/')
 
 
+# Implementation based upon the code found here
+# http://stackoverflow.com/questions/19754103/django-how-to-delete-an-object-using-a-view
+@login_required(login_url='/author_delete_post/')
+def author_delete_post(request, postpk):
+    # Only process the request if it is in fact a request to delete the post
+
+    if (request.method != 'POST'):
+        return HttpResponseRedirect('/author/')
+
+    try:
+        # Get the post object that the user is trying to delete.
+        the_post = Post.objects.get(id=postpk)
+        user = request.user
+        postauthor = the_post.author
+        
+        # Verify that the user was the author of that post
+        if user.id != postauthor.id.id:
+            return HttpResponseForbidden()
+
+        # Delete the post
+        the_post.delete()
+    except:
+        HttpResponse(sys.exc_info[0])
+
+    return HttpResponseRedirect('/author/')
+
+
+@login_required(login_url='/profile/')
 def profile(request, id):
     # This page displays the author's profile.
     user = User.objects.get(id=id)
