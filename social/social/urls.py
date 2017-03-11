@@ -27,14 +27,5 @@ urlpatterns = [
     url(r'^author/', include('author.urls', namespace='author')),
     url(r'^logout/', views.logout, name='logout'),
     url(r'^post/', include('post.urls', namespace='post')),
-<<<<<<< 5c0d59b6329dce15751cf53e829c72a4297cd46b
-<<<<<<< 92170cfb2835209fa5d061867f8017bc816a9952
-=======
-<<<<<<< 3670d553b6a3c666853883b4b336f3d4b78f7f23
->>>>>>> images work
     url(r'^service/', include('api.urls', namespace='api')),
 ]
-=======
-    #url(r'^author_post/', include('author.urls', namespace='author'), name='post'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
->>>>>>> images work
