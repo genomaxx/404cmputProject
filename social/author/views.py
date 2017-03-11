@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from author.models import Author
 from post.models import Post
 from django.db.models import Q
+from . import forms
 import sys
 # Create your views here.
 
@@ -62,21 +63,57 @@ def author_post(request):
 @login_required(login_url='/profile/')
 def profile(request):
     # This page displays the author's profile.
-    # https://docs.djangoproject.com/en/1.10/topics/db/queries/
-    authorContext = Author.objects.get(user=request.user)
-
+    # https://docs.dj# This page displays the author's profile.angoproject.com/en/1.10/topics/db/queries/
+    author = Author.objects.get(id=request.user)
+    context = {'author': author}
     # TODO: Add to the query to expand the feed.
     try:
         posts = Post.objects.filter(
-            Q(author__id=authorContext.id)
+            Q(author__id=author.id)
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
+
     try:
-        if (len(posts) > 0):
-            context = {'posts': posts}
-            return render(request, 'author/profile.html', context)
+       if (len(posts) > 0):
+           context['posts'] = posts
     except:
         return HttpResponse(sys.exc_info[0])
 
-    return render(request, 'author/profile.html')
+    return render(request, 'author/profile.html', context)
+
+@login_required(login_url='/edit/')
+def edit(request):
+    return render(request, 'author/edit.html')
+
+
+@login_required(login_url='/edit_post/')
+def edit_post(request):
+    # Only process the author's post if it is a POST request
+
+    if (request.method != 'POST'):
+        return HttpReponseRedirect('/edit/')
+
+    editForm = forms.EditForm(request.POST)
+
+
+    if (not editForm.is_valid()):
+        return HttpResponse('<h1>Form not valid</h1>')
+ 
+    authorContext = Author.objects.get(id=request.user)
+
+
+    try:
+        authorContext.firstname = request.POST['firstname']
+        authorContext.lastname = request.POST['lastname']
+        authorContext.phone = request.POST['phone']
+        authorContext.dob = request.POST['dob']
+        authorContext.gender = request.POST['gender']
+        authorContext.gitURL = request.POST['gitURL']
+
+        authorContext.save()
+
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return HttpResponseRedirect('/a/profile/')
