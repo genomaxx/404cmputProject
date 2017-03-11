@@ -8,7 +8,8 @@ class Author(models.Model):
 
     genderChoices = (
         ('M', 'male'),
-        ('F', 'female')
+        ('F', 'female'),
+        ('N', 'unknown')
     )
 
     # This references the built-in django User object

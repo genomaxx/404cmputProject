@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+<body class="hold-transition skin-green sidebar-mini">
+<div class="wrapper">
+{% include "includes/navigation.html" %}
+  <!-- =============================================== -->
+{% block content %}{% endblock %}
+{% include "includes/footer.html" %}
+</div>
+<!-- ./wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'js/fastclick.min.js' %}"></script>
+<script src="{% static 'js/app.min.js' %}"></script>
+{% block cp_javascript %}{% endblock %}
+{% endblock %}
