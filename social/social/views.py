@@ -64,7 +64,7 @@ def login(request):
     author = authenticate(username=logInUser.username, password=password)
     if author is not None:
         django_login(request, author)
-        return redirect('/a/')
+        return redirect('/author/')
     
     return HttpResponse('<h1>Wrong password :(</h1>')
 

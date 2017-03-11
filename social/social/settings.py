@@ -33,9 +33,11 @@ DEBUG = True
 # Application definition
 # Note: Add the name of your app (same as the folder name) to this list.
 INSTALLED_APPS = [
+    'api',
     'author',
     'post',
     'comment',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -157,14 +159,22 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-# Note: add the file path to your new static folders here.
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
-    # os.path.join(PROJECT_ROOT, '../network/static'),
-    os.path.join(PROJECT_ROOT, '../author/static'),
-    os.path.join(PROJECT_ROOT, '../post/static'),
 ]
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# This model requires authentication before entry is allowed
+AUTH_PROFILE_MODULE = 'authors.Author'
+
+# Django REST settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated'),
+    }

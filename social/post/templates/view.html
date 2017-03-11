@@ -1,33 +1,80 @@
-<!DOCTYPE html>
+{% extends "base_cp.html" %}
 {% load static %}
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>Post View</title>
-    <link rel="stylesheet" href="{% static 'view.css' %}" />
-  </head>
-  <body>
+{% block title %}Post in{% endblock %}
 
-    <div class="post_body">
-      {{ content|safe }}
-    </div id="post_body">
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        View Post
+      </h1>
+    </section>
 
-    <div class="comment_container">
-      {% for comment in comment_list %}
-      <div class="comment">{{ comment.content }}</div>
-      {% endfor %}
-    </div>
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title"> Post Title</h3>
+            </div>
+            <div class="box-body">
+               {{ content|safe }}
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <form action="{% url 'post:comment' pk=post.id %}" method="post">
+	                {% csrf_token %}
+	                {{ form }}
+	                <input type="submit" value="Post Comment" />
+                </form>
+            </div>
+            <!-- /.box-footer-->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
 
-    <div class="comment_form">
-      <form action="{% url 'post:comment' pk=post.id %}" method="post">
-	{% csrf_token %}
-	{{ form }}
-	<input type="submit" value="Post Comment" />
-      </form>
-    </div>
+      <!-- row -->
+      <div class="row">
+        <div class="col-md-12">
+          <!-- The time line -->
+          <ul class="timeline">
+            <!-- timeline time label -->
+            <li class="time-label">
+                  <span class="bg-red">
+                    Comments
+                  </span>
+            </li>
+            <!-- /.timeline-label -->
+            {% for comment in comment_list %}
+            <li>
+              <i class="fa fa-comments bg-blue"></i>
 
-  </body>
-</html>
+              <div class="timeline-item">
+                <h4 class="timeline-header">{{ comment.author}}</h4>
+                <div class="timeline-body">
+                    {{ comment.content }}
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+            <!-- timeline item -->
+            <!-- END timeline item -->
+            <li>
+              <i class="fa fa-clock-o bg-gray"></i>
+            </li>
+          </ul>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
 
-</body>
-</html>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
