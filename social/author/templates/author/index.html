@@ -1,76 +1,96 @@
-<!DOCTYPE html>
+{% extends "base_cp.html" %}
 {% load static %}
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>CMPUT404 Project</title>
-    <link rel="stylesheet" href="{% static "author_index.css" %}" />
-</head>
-<body>
-    <div id="dividing_bar">
-        <div id="logo">
-            The word of the day is: "Moist"
-        </div>
-        <div id="logout_button">
-            <form id="logout_form" action="/logout/" method="GET">
-                <input type="submit" class="button" value="Log out" />
-            </form>
-        </div>
+{% block title %}Home of{% endblock %}
+{% block content %}
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      Home
+    </h1>
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+	<div class="box box-primary">
+	  <div class="box-header">
+	    <h3 class="box-title"> Add a Post</h3>
+	  </div>
+	  <div class="box-body">
+	    <form action="/author/author_post/" method="POST">
+
+	      {% csrf_token %}
+	      <div class="form-group">
+		<label>Post Text</label>
+		<textarea class="form-control" rows="3" name="post_content" placeholder="What do you want to talk about today?"></textarea>
+	      </div>
+	      <div class="form-group">
+		<label>Post Privacy</label>
+		<select class="form-control" name="privacy_level">
+		  <option value=0>Public</option>
+		  <option value=1>Friends</option>
+		  <option value=2>Friends of Friends</option>
+		  <option value=4>Me Only</option>
+		</select>
+	      </div>
+	      <div class="form-group">
+		<button type="submit" class="btn btn-block btn-primary">Post</button>
+	      </div>
+	    </form>
+	  </div>
+	  <!-- /.box-body -->
+	</div>
+	<!-- /.box -->
+      </div>
+      <!-- /.col -->
     </div>
-    <div id="main_container">
-        <div id="left_container">
-            <div id="user_profile">
-                {{request.user.username}}
-            </div>
-            <div class="nav_panel">
-                Navigate
-                <div class="nav_item">
-                    My Friends
-                </div>
-                <div class="nav_item">
-                    Following
-                </div>
-            </div>
-            <div class="nav_panel">
-                Functions
-                <div class="nav_item">
-                    View Author List
-                </div>
-                <div class="nav_item">
-                    Make Comment
-                </div>
-            </div>
-        </div>
-        <div id="center_container">
-            <div id="post_container">
-                <form name="post_form" action="/a/author_post/" method="POST">
-                    {% csrf_token %}
-                    <div id="text_container">
-                        <textarea name="post_content" id="post_area" placeholder="What do you want to talk about today?"></textarea>
-                    </div>
-                    <div id="nav_post">
-                        <div id="post_buttons">
-                            <div id="privacy_selector">
-                                <select name="privacy_level">
-                                    <option value=0>Public</option>
-                                    <option value=4>Me Only</option>
-                                </select>
-                            </div>
-                            <div id="post_button">
-                                <input type="submit" class="button" value="Post" />
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div id="feed_container">
-                {% for post in posts %}
-                <div class="post_link">
-                    <a href="{% url 'post:post' post.id %}" >{{ post.content }}</a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+    <!-- /.row -->
+
+    <!-- row -->
+    <div class="row">
+      <div class="col-md-12">
+	<!-- The time line -->
+	<ul class="timeline">
+	  <!-- timeline time label -->
+	  <li class="time-label">
+	    <span class="bg-red">
+	      Feed
+	    </span>
+	  </li>
+	  <!-- /.timeline-label -->
+	  {% for post in posts %}
+	  <li>
+	    <i class="fa fa-sticky-note bg-blue"></i>
+
+	    <div class="timeline-item">
+	      <h3 class="timeline-header">
+		<a href="{% url 'author:profile' post.author.id.id %}">Title by {{ post.author }}</a>
+	      </h3>
+
+	      <div class="timeline-body">
+		{{ post.content }}
+	      </div>
+	      <div class="timeline-footer">
+		<a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+	      </div>
+	    </div>
+	  </li>
+	  {% endfor %}
+	  <!-- timeline item -->
+	  <!-- END timeline item -->
+	  <li>
+	    <i class="fa fa-clock-o bg-gray"></i>
+	  </li>
+	</ul>
+      </div>
+      <!-- /.col -->
     </div>
-</body>
-</html>
+    <!-- /.row -->
+
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+{% endblock %}
