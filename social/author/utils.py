@@ -35,12 +35,12 @@ def can_view(viewer, post):
 
 def get_friend_status(author, visitor):
     if author == visitor:
-        return "This is your profile"
+        return "this is your profile"
     elif author.isFriend(visitor):
-        return "You're friends"
+        return "you two are friends"
     elif author.isFollowing(visitor):
-        return "They follow you"
+        return "they follow you"
     elif visitor.isFollowing(author):
-        return "You follow them"
+        return "you follow them"
     else:
-        return "You're not friends"
+        return "you two aren't friends"
