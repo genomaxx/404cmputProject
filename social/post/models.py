@@ -4,9 +4,10 @@ from django.utils import timezone
 import uuid
 # Create your models here.
 
+
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/<user id>/<post id>_<filename>
-    return '{0}/{1}_{2}'.format(instance.author.id, instance.id, filename)
+    # file will be uploaded to MEDIA_ROOT/<user id>/<random id>_<filename>
+    return '{0}/{1}_{2}'.format(instance.author.id, str(uuid.uuid4())[:8], filename)
 
 class Post(models.Model):
     VISIBILITY = [
