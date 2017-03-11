@@ -73,10 +73,6 @@
 	      <div class="timeline-body">
 		{{ post.content }}
 	      </div>
-        <form action="/a/author_delete_post/{{post.id}}" method="POST">
-          {% csrf_token %}
-          <input type="submit" value="Delete">
-        </form>
 	      <div class="timeline-footer">
 		<a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
 	      </div>

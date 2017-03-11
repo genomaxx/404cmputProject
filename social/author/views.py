@@ -68,7 +68,7 @@ def author_post(request):
 def author_delete_post(request, postpk):
     # Only process the request if it is in fact a request to delete the post
     if (request.method != 'POST'):
-        return HttpResponseRedirect('/a/')
+        return HttpResponseRedirect('/author/')
 
     try:
         # Get the post object that the author is trying to delete.
@@ -78,7 +78,7 @@ def author_delete_post(request, postpk):
     except:
         HttpResponse(sys.exc_info[0])
 
-    return HttpResponseRedirect('/a/')
+    return HttpResponseRedirect('/author/')
 
 
 @login_required(login_url='/profile/')
