@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
+
+from .utils import can_view
 # Create your models here.
 
 
@@ -46,6 +48,18 @@ class Author(models.Model):
             Q(followee=author) & Q(follower=self)
         ).count() == 2
 
+    def isFriendOfFriend(self, author):
+        return author in get_friends_of_friends(self)
+
+    def canView(self, post):
+        return can_view(self, post)
+
+    def followers(self):
+        return get_followers(self)
+
+    def get_friends(self):
+        return get_friends(self)
+
 
 class Follow(models.Model):
 
@@ -63,3 +77,18 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ["follower", "followee"]
+
+
+def get_friends_of_friends(author):
+    fof = []
+    for f in get_friends(author):
+        fof += get_friends(f)
+    return fof
+
+
+def get_friends(author):
+    return [a.follower for a in author.followers() if author.isFriend(a.follower)]
+
+
+def get_followers(author):
+    return Follow.objects.filter(followee=author)
