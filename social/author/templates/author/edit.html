@@ -1,33 +1,33 @@
 <html>
 <body>
 
-<form action="/a/edit_post/" method="POST">
+<form action="/author/edit_post/" method="POST">
 {% csrf_token %}
   First name:<br>
-  <input type="text" name="firstname">
+  <input type="text" name="firstname" value={{author.firstname}}>
   <br>
 
   Last name:<br>
-  <input type="text" name="lastname">
+  <input type="text" name="lastname" value={{author.lastname}}>
   <br>
 
-  Date of Birth:<br>
-  <input type="date" name="dob">
+  Date of Birth YYYY-mm-dd:<br>
+  <input type="date" name="dob" value={{author.dob}}>
   <br>
   
   Gender:<br>
  
-  <input type="radio" name="gender" value="M"> Male
-  <input type="radio" name="gender" value="F"> Female<br>
+  <input type="radio" name="gender" value="M" {% if author.gender == "M" %}checked{% endif %}> Male
+  <input type="radio" name="gender" value="F" {% if author.gender == "F" %}checked{% endif %}> Female<br>
 
   <br>
 
-  Phone Number:<br>
-  <input type="tel" pattern='[\(]\d{3}[\)]\d{3}[\-]\d{4}' name='phone'> 
+  Phone Number (xxx)xxx-xxxx:<br>
+  <input type="tel" pattern='[\(]\d{3}[\)]\d{3}[\-]\d{4}' name='phone' value={{author.firstname}}> 
   <br>
 
   Github URL:<br>
-  <input type="text" name="gitURL">
+  <input type="text" name="gitURL" value={{author.gitURL}}>
   <br>
 
   <br>

@@ -25,7 +25,7 @@
             <div class="nav_panel">
                 Navigate
                 <div class="nav_item">
-                    <a href="/a/profile/">My Profile</a>
+                    <a href="{% url 'author:profile' author.id.id %}">My Profile</a>
                 </div>
                 <div class="nav_item">
                     My Friends
@@ -37,7 +37,7 @@
             <div class="nav_panel">
                 Functions
                 <div class="nav_item">
-                    <a href="/a/edit/">Edit Profile</a>
+                    <a href="/author/edit/">Edit Profile</a>
                 </div>
                 <div class="nav_item">
                     View Author List
@@ -49,7 +49,7 @@
         </div>
         <div id="center_container">
             <div id="post_container">
-                <form name="post_form" action="/a/author_post/" method="POST">
+                <form name="post_form" action="/author/author_post/" method="POST">
                     {% csrf_token %}
                     <div id="text_container">
                         <textarea name="post_content" id="post_area" placeholder="What do you want to talk about today?"></textarea>
