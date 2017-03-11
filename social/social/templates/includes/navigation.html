@@ -1,0 +1,69 @@
+{% load startswith %}
+{% url 'application:subjects' as subjects %}
+{% url 'application:attributes' as attributes %}
+{% url 'application:experiments' as experimentslink %}
+{% url 'application:upload' as upload %}
+{% url 'application:index' as dashboard %}
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="{% url 'application:index' %}" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>E</b>DB</span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>Experiments</b>DB</span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- Control Sidebar Toggle Button -->
+          <li>
+            <a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <div class="user-panel">
+      </div>
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li class="header">MAIN NAVIGATION</li>
+	    <li{% if request.path == '/application/' %} class="active"{% endif %}>
+          <a href="{{ dashboard }}">
+            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+          </a>
+        </li>
+        <li{% if request.path|startswith:'/application/upload/' %} class="active"{% endif %}>
+          <a href="{{ upload }}">
+            <i class="fa fa-upload"></i> <span>Upload Data</span>
+          </a>
+        </li>
+        <li{% if request.path|startswith:'/application/experiments/' %} class="active"{% endif %}>
+          <a href="{{ experimentslink }}">
+            <i class="fa fa-flask"></i> <span>Experiments</span>
+          </a>
+        </li>
+        <li{% if request.path|startswith:'/application/subjects/' %} class="active"{% endif %}>
+          <a href="{{ subjects }}">
+              <i class="fa fa-users"></i> <span>Subjects</span>
+          </a>
+        </li>
+        <li{% if request.path|startswith:'/application/modify-attributes/' %} class="active"{% endif %}>
+          <a href="{{ attributes }}">
+              <i class="fa fa-columns"></i> <span>Modify Attributes</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>
