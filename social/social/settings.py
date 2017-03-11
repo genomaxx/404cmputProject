@@ -157,14 +157,10 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-# Note: add the file path to your new static folders here.
 STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
-    # os.path.join(PROJECT_ROOT, '../network/static'),
-    os.path.join(PROJECT_ROOT, '../author/static'),
-    os.path.join(PROJECT_ROOT, '../post/static'),
 ]
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

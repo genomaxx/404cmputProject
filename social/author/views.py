@@ -85,9 +85,9 @@ def profile(request, id):
 
 @login_required(login_url='/edit/')
 def edit(request):
-    author = Author.objects.get(id=request.user)
-    context = {'author': author}
-    return render(request, 'author/edit.html', context)
+    authorContext = Author.objects.get(id=request.user)
+    return render(request, 'author/edit.html', {'author':authorContext})
+
 
 
 @login_required(login_url='/edit_post/')
@@ -107,12 +107,12 @@ def edit_post(request):
 
 
     try:
-        authorContext.firstname = request.POST['firstname']
-        authorContext.lastname = request.POST['lastname']
-        authorContext.phone = request.POST['phone']
-        authorContext.dob = request.POST['dob']
-        authorContext.gender = request.POST['gender']
-        authorContext.gitURL = request.POST['gitURL']
+        authorContext.firstname = editForm.cleaned_data['firstname']
+        authorContext.lastname = editForm.cleaned_data['lastname']
+        authorContext.phone = editForm.cleaned_data['phone']
+        authorContext.dob = editForm.cleaned_data['dob']
+        authorContext.gender = editForm.cleaned_data['gender']
+        authorContext.gitURL = editForm.cleaned_data['gitURL']
 
         authorContext.save()
 

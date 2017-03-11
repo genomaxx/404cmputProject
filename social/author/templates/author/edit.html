@@ -1,37 +1,87 @@
-<html>
-<body>
+{% extends "base_cp.html" %}
+{% load static %}
+{% block title %}Edit Profile in{% endblock %}
 
-<form action="/author/edit_post/" method="POST">
-{% csrf_token %}
-  First name:<br>
-  <input type="text" name="firstname" value={{author.firstname}}>
-  <br>
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Edit Profile
+      </h1>
+    </section>
 
-  Last name:<br>
-  <input type="text" name="lastname" value={{author.lastname}}>
-  <br>
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box box-primary">
+            <div class="box-header">
+              <h3 class="box-title"> Edit {{request.user.username}}</h3>
+            </div>
+            <div class="box-body"><
+                <form action="/author/edit_post/" method="POST">
+                {% csrf_token %}
+                  <div class="form-group">
+                  <label>First name</label>
+                  <input class="form-control" type="text" name="firstname" value="{{author.firstname}}">
+                  </div>
 
-  Date of Birth YYYY-mm-dd:<br>
-  <input type="date" name="dob" value={{author.dob}}>
-  <br>
-  
-  Gender:<br>
- 
-  <input type="radio" name="gender" value="M" {% if author.gender == "M" %}checked{% endif %}> Male
-  <input type="radio" name="gender" value="F" {% if author.gender == "F" %}checked{% endif %}> Female<br>
+                  <div class="form-group">
+                  <label>Last name</label>
+                  <input class="form-control" type="text" name="lastname" value="{{author.lastname}}">
+                  </div>
 
-  <br>
+                  <div class="form-group">
+                  <label>Date of Birth</label>
+                  <input class="form-control" type="date" name="dob" value="{{author.dob}}">
+                  </div>
+                  
+                  <div class="form-group">
+                  <label>Gender</label>
+                  <div class="radio">
+                    <label>
+                        <input type="radio" name="gender" value="M" {% if author.gender == 'M' %}checked{% endif %}> Male
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                        <input type="radio" name="gender" value="F" {% if author.gender == 'F' %}checked{% endif %}> Female
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                        <input type="radio" name="gender" value="N" {% if author.gender == 'N' %}checked{% endif %}> Prefer Not To Say
+                    </label>
+                  </div>
+                  </div>
 
-  Phone Number (xxx)xxx-xxxx:<br>
-  <input type="tel" pattern='[\(]\d{3}[\)]\d{3}[\-]\d{4}' name='phone' value={{author.firstname}}> 
-  <br>
+                 <div class="form-group">
+                  <label>Phone Number</label>
+                  <input class="form-control" type="tel" pattern='[\(]\d{3}[\)]\d{3}[\-]\d{4}' name='phone' value="{{author.phone}}"> 
+                  </div>
 
-  Github URL:<br>
-  <input type="text" name="gitURL" value={{author.gitURL}}>
-  <br>
+                  <div class="form-group">
+                  <label>Github URL</label>
+                  <input class="form-control" type="url" name="gitURL" value="{{author.gitURL}}">
+                  </div>
 
-  <br>
-  <input type="submit" value="Submit">
-</form> 
-</body>
-</html>
+                  <div class="form-group">
+                        <button type="submit" class="btn btn-block btn-primary">Submit</button>
+                  </div>
+                </form> 
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+      <!-- row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
