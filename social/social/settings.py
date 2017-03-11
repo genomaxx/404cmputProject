@@ -163,6 +163,12 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 ]
 
+# Media Files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images/')
+MEDIA_URL = '/images/'
+
+
+
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
