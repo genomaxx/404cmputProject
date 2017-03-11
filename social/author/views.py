@@ -73,8 +73,8 @@ def profile(request):
             ).order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
+
     try:
-<<<<<<< HEAD
        if (len(posts) > 0):
            context['posts'] = posts
     except:
@@ -113,12 +113,6 @@ def edit_post(request):
 
         authorContext.save()
 
-
-=======
-        if (len(posts) > 0):
-            context = {'posts': posts}
-            return render(request, 'author/profile.html', context)
->>>>>>> origin/master
     except:
         return HttpResponse(sys.exc_info[0])
 
