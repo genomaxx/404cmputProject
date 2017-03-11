@@ -33,6 +33,7 @@ DEBUG = True
 # Application definition
 # Note: Add the name of your app (same as the folder name) to this list.
 INSTALLED_APPS = [
+    'api',
     'author',
     'post',
     'comment',
