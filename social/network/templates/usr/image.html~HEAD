@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+{% load static %}
+<html>
+	<head>
+		<title>CMPUT404 Social Distribution Project</title>
+		<meta charset="UTF-8">
+		<link href="{% static "mainpgstyle.css" %}" rel="stylesheet">
+	</head>
+	
+	<body>
+	<div class="main">
+		<div class="left-bar">
+			<div class="lbp">
+				Author name here
+			</div>
+			<div class="vspacer"></div>
+			<div class="lbm">
+				Home/make a post
+			</div>
+			<div class="lbm">
+				See my followers
+			</div>
+			<div class="lbm">
+				See my friends
+			</div>
+			<div class="lbm">
+				Find/follow other users
+			</div>
+			<div class="lbm">
+				View my feed
+			</div>
+		</div>
+		<div class="main-body">
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="image" name="image">
+                <button type="submit">Upload</button>
+              </form>
+
+              {% if uploaded_file_url %}
+                <p>File uploaded at: <a href="{{ uploaded_image_url }}">{{ uploaded_image_url }}</a></p>
+              {% endif %}
+		</div>
+	</div>
+	</body>
+</html>
