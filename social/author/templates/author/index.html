@@ -1,7 +1,6 @@
 {% extends "base_cp.html" %}
 {% load static %}
 {% block title %}Home of{% endblock %}
-
 {% block content %}
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -20,7 +19,8 @@
               <h3 class="box-title"> Add a Post</h3>
             </div>
             <div class="box-body">
-			    <form action="/a/author_post/" method="POST">
+			    <form action="/author/author_post/" method="POST">
+
                     {% csrf_token %}
                     <div class="form-group">
                         <label>Post Text</label>

@@ -26,12 +26,13 @@ class Author(models.Model):
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
     gitURL = models.TextField(blank=True)
+    #uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return str(self.id)
 
     def getAuthorURL(self):
-        return settings.LOCAL_HOST + 'a/' + self.id
+        return settings.LOCAL_HOST + 'author/' + self.id.id
 
 
 class Follow(models.Model):
