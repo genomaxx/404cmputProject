@@ -19,10 +19,7 @@ def index(request):
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
-        posts = Post.objects.filter(
-            Q(privacyLevel=0) |
-            (Q(privacyLevel=4) & Q(author__id=author.id))
-            ).order_by('-publishDate')
+        posts = Post.objects.all().order_by('-publishDate')
     except:
         return HttpResponse(sys.exc_info[0])
 

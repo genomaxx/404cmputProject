@@ -7,7 +7,9 @@ def friends(viewer, post):
 
 
 def friends_of_friends(viewer, post):
-    return viewer.isFriendOfFriend(post.author) or private(viewer, post)
+    return viewer.isFriendOfFriend(post.author) \
+           or private(viewer, post) \
+           or viewer.isFriend(post.author)
 
 
 def private_message(viewer, post):
