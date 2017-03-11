@@ -1,8 +1,8 @@
 from django.db import models
 from author.models import Author
 from django.utils import timezone
-import uuid
 # Create your models here.
+
 
 class Post(models.Model):
     VISIBILITY = [
@@ -17,7 +17,7 @@ class Post(models.Model):
     content = models.TextField()
     privacyLevel = models.IntegerField(choices=VISIBILITY, default=0)
 
-    #Audit fields
+    # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
 
     def __str__(self):

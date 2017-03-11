@@ -90,23 +90,49 @@ class FollowTestCase(TestCase):
         emmett = Author.objects.get(id=self.emmett_user)
         scrunt = Author.objects.get(id=self.scrunt_user)
 
-        self.assertEqual(is_follower(emmett, scrunt), False)
-        self.assertEqual(is_follower(scrunt, emmett), False)
+        self.assertEqual(emmett.isFollowing(scrunt), False)
+        self.assertEqual(scrunt.isFollowing(emmett), False)
 
         Follow.objects.create(follower=emmett, followee=scrunt)
 
-        self.assertEqual(is_follower(emmett, scrunt), True)
-        self.assertEqual(is_follower(scrunt, emmett), False)
+        self.assertEqual(emmett.isFollowing(scrunt), True)
+        self.assertEqual(scrunt.isFollowing(emmett), False)
 
     def test_friend(self):
         emmett = Author.objects.get(id=self.emmett_user)
         scrunt = Author.objects.get(id=self.scrunt_user)
 
-        self.assertEqual(is_follower(emmett, scrunt), False)
-        self.assertEqual(is_follower(scrunt, emmett), False)
+        self.assertEqual(emmett.isFriend(scrunt), False)
+        self.assertEqual(scrunt.isFriend(emmett), False)
 
         Follow.objects.create(follower=emmett, followee=scrunt)
         Follow.objects.create(follower=scrunt, followee=emmett)
 
-        self.assertEqual(is_friend(emmett, scrunt), True)
-        self.assertEqual(is_friend(scrunt, emmett), True)
+        self.assertEqual(emmett.isFriend(scrunt), True)
+        self.assertEqual(scrunt.isFriend(emmett), True)
+
+    def test_friends_of_friends(self):
+        emmett = Author.objects.get(id=self.emmett_user)
+        scrunt = Author.objects.get(id=self.scrunt_user)
+        u1 = User.objects.create_user(username="u1")
+        u2 = User.objects.create_user(username="u2")
+        fof1 = Author.objects.create(id=u1)
+        fof2 = Author.objects.create(id=u2)
+
+        self.assertEqual(emmett.isFriendOfFriend(fof1), False)
+        self.assertEqual(scrunt.isFriendOfFriend(fof2), False)
+
+        Follow.objects.create(follower=emmett, followee=scrunt)
+        Follow.objects.create(follower=scrunt, followee=emmett)
+
+        self.assertEqual(emmett.isFriendOfFriend(fof1), False)
+        self.assertEqual(scrunt.isFriendOfFriend(fof2), False)
+
+        Follow.objects.create(follower=scrunt, followee=fof1)
+        Follow.objects.create(follower=fof1, followee=scrunt)
+        Follow.objects.create(follower=fof1, followee=fof2)
+        Follow.objects.create(follower=fof2, followee=fof1)
+
+        self.assertEqual(emmett.isFriendOfFriend(fof1), True)
+        self.assertEqual(emmett.isFriendOfFriend(fof2), False)
+        self.assertEqual(emmett.isFriendOfFriend(scrunt), False)
