@@ -20,16 +20,16 @@
               <h3 class="box-title"> {{request.user.username}}</h3>
             </div>
             <div class="box-body">
-                <p>Name: 
+                <p>Name:
 				{{author.firstname}}
                 {{author.lastname}}</p>
-                <p>Date Of Birth: 
+                <p>Date Of Birth:
                 {{author.dob}}</p>
-                <p>Phone Number: 
+                <p>Phone Number:
                 {{author.phone}}</p>
                 <p>Email:
                 {{request.user.email}}</p>
-                <p>Gender: 
+                <p>Gender:
                 {{author.get_gender_display}}</p>
                 <p>Github Profile:
                 {{author.gitURL}}</p>
@@ -66,6 +66,12 @@
                 </div>
                 <div class="timeline-footer">
                   <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+                  {% if request.user.id == post.author.id.id %}
+                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete">
+                    </form>
+                  {% endif %}
                 </div>
               </div>
             </li>
@@ -86,4 +92,3 @@
   </div>
   <!-- /.content-wrapper -->
 {% endblock %}
-
