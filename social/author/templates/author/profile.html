@@ -7,13 +7,16 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Profile
+        {{ author.id.username }}'s profile
+      </h1>
+      <h4>
 	{% if follows %}
 	<a href="{% url 'author:unfollow' id=author.id.id %}" class="btn btn-primary">Unfollow</a>
 	{% else %}
 	<a href="{% url 'author:follow' id=author.id.id %}" class="btn btn-primary">Follow</a>
 	{% endif %}
-      </h1>
+	{{friend_status}}
+      </h4>
     </section>
 
     <!-- Main content -->
@@ -22,9 +25,6 @@
         <div class="col-md-12">
           <div class="box box-primary">
             <div class="box-header">
-              <h2 class="box-title">
-		{{author.id.username}}: {{friend_status}}
-	      </h2>
 	    </div>
             <div class="box-body">
                 <p>Name: 
