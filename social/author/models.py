@@ -32,7 +32,7 @@ class Author(models.Model):
         return str(self.id)
 
     def getAuthorURL(self):
-        return settings.LOCAL_HOST + 'author/' + self.uuid
+        return settings.LOCAL_HOST + 'author/' + self.id.id
 
 
 class Follow(models.Model):
