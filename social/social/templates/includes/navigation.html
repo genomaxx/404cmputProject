@@ -1,16 +1,10 @@
-{% load startswith %}
-{% url 'application:subjects' as subjects %}
-{% url 'application:attributes' as attributes %}
-{% url 'application:experiments' as experimentslink %}
-{% url 'application:upload' as upload %}
-{% url 'application:index' as dashboard %}
   <header class="main-header">
     <!-- Logo -->
-    <a href="{% url 'application:index' %}" class="logo">
+    <a href="#" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>E</b>DB</span>
+      <span class="logo-mini"><b>B</b>So</span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Experiments</b>DB</span>
+      <span class="logo-lg"><b>Bearly</b>Social</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -23,7 +17,7 @@
         <ul class="nav navbar-nav">
           <!-- Control Sidebar Toggle Button -->
           <li>
-            <a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+            <a href="/logout/"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
           </li>
         </ul>
       </div>
@@ -34,34 +28,42 @@
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
       <div class="user-panel">
-      </div>
+        <div class="pull-left image">
+          <img src="/static/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p> {{request.user.username}}</p>
+          <a href="#"> Edit Profile</a>
+        </div>
+      </div>       
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
-        <li class="header">MAIN NAVIGATION</li>
-	    <li{% if request.path == '/application/' %} class="active"{% endif %}>
-          <a href="{{ dashboard }}">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+        <li class="header">NAVIGATE</li>
+	    <li>
+          <a href="#">
+            <i class="fa fa-dashboard"></i> <span>Home/Make a Post</span>
           </a>
         </li>
-        <li{% if request.path|startswith:'/application/upload/' %} class="active"{% endif %}>
-          <a href="{{ upload }}">
-            <i class="fa fa-upload"></i> <span>Upload Data</span>
+	    <li>
+          <a href="#">
+            <i class="fa fa-users"></i> <span>My Friends</span>
           </a>
         </li>
-        <li{% if request.path|startswith:'/application/experiments/' %} class="active"{% endif %}>
-          <a href="{{ experimentslink }}">
-            <i class="fa fa-flask"></i> <span>Experiments</span>
+	    <li>
+          <a href="#">
+            <i class="fa fa-list"></i> <span>Following</span>
           </a>
         </li>
-        <li{% if request.path|startswith:'/application/subjects/' %} class="active"{% endif %}>
-          <a href="{{ subjects }}">
-              <i class="fa fa-users"></i> <span>Subjects</span>
+        <li class="header">FUNCTIONS</li>
+	    <li>
+          <a href="#">
+            <i class="fa fa-eye"></i> <span>View Author List</span>
+          </a>
+	    <li>
+          <a href="#">
+            <i class="fa fa-comment"></i> <span>Make a Comment</span>
           </a>
         </li>
-        <li{% if request.path|startswith:'/application/modify-attributes/' %} class="active"{% endif %}>
-          <a href="{{ attributes }}">
-              <i class="fa fa-columns"></i> <span>Modify Attributes</span>
-          </a>
         </li>
       </ul>
     </section>
