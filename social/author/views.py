@@ -6,6 +6,7 @@ from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from . import forms
+from .utils import get_friend_status
 import sys
 # Create your views here.
 
@@ -64,6 +65,8 @@ def profile(request, id):
     user = User.objects.get(id=id)
     author = Author.objects.get(id=user)
     context = {'author': author}
+    visitor = Author.objects.get(id=request.user)
+    context["friend_status"] = get_friend_status(visitor, author)
 
     try:
         posts = Post.objects.filter(

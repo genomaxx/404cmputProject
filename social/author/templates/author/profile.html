@@ -7,7 +7,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Home
+        Profile
       </h1>
     </section>
 
@@ -17,11 +17,13 @@
         <div class="col-md-12">
           <div class="box box-primary">
             <div class="box-header">
-              <h3 class="box-title"> {{request.user.username}}</h3>
-            </div>
+              <h2 class="box-title">
+		{{request.user.username}} | {{friend_status}}
+	      </h2>
+	    </div>
             <div class="box-body">
                 <p>Name: 
-				{{author.firstname}}
+		{{author.firstname}}
                 {{author.lastname}}</p>
                 <p>Date Of Birth: 
                 {{author.dob}}</p>

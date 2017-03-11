@@ -31,3 +31,16 @@ post_predicates = [
 
 def can_view(viewer, post):
     return post_predicates[post.privacyLevel](viewer, post)
+
+
+def get_friend_status(author, visitor):
+    if author == visitor:
+        return "This is your profile"
+    elif author.isFriend(visitor):
+        return "You're friends"
+    elif author.isFollowing(visitor):
+        return "They follow you"
+    elif visitor.isFollowing(author):
+        return "You follow them"
+    else:
+        return "You're not friends"
