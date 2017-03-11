@@ -73,18 +73,18 @@ def profile(request, id):
         return HttpResponse(sys.exc_info[0])
 
     try:
-       if (len(posts) > 0):
-           context['posts'] = posts
+        if (len(posts) > 0):
+            context['posts'] = posts
     except:
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/profile.html', context)
 
+
 @login_required(login_url='/edit/')
 def edit(request):
     authorContext = Author.objects.get(id=request.user)
-    return render(request, 'author/edit.html', {'author':authorContext})
-
+    return render(request, 'author/edit.html', {'author': authorContext})
 
 
 @login_required(login_url='/edit_post/')
@@ -92,16 +92,14 @@ def edit_post(request):
     # This page edits the author's profile
 
     if (request.method != 'POST'):
-        return HttpReponseRedirect('/edit/')
+        return HttpResponseRedirect('/edit/')
 
     editForm = forms.EditForm(request.POST)
 
-
     if (not editForm.is_valid()):
         return HttpResponse('<h1>Form not valid</h1>')
- 
-    authorContext = Author.objects.get(id=request.user)
 
+    authorContext = Author.objects.get(id=request.user)
 
     try:
         authorContext.firstname = editForm.cleaned_data['firstname']
