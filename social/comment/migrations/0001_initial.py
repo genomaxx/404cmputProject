@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('author', '0001_initial'),
         ('post', '0001_initial'),
+        ('author', '0001_initial'),
     ]
 
     operations = [
