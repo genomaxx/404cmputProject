@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^author/', include('author.urls', namespace='author')),
     url(r'^logout/', views.logout, name='logout'),
     url(r'^post/', include('post.urls', namespace='post')),
-    url(r'^service/', include('api.urls', namespace='api')),
+    url(r'^api/', include('api.urls', namespace='api')),
 ]

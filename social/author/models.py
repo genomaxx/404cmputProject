@@ -6,7 +6,6 @@ from django.db.models import Q
 from .utils import can_view
 # Create your models here.
 
-
 class Author(models.Model):
 
     genderChoices = (
