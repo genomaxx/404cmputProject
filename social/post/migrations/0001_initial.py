@@ -23,7 +23,6 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('privacyLevel', models.IntegerField(choices=[(0, 'Public'), (1, 'Friends'), (2, 'Friends of friends'), (3, 'Private message'), (4, 'Private')], default=0)),
                 ('publishDate', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date published')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='author.Author')),
             ],
         ),
     ]

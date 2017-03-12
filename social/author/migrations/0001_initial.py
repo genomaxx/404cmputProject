@@ -26,19 +26,6 @@ class Migration(migrations.Migration):
                 ('dob', models.DateField(blank=True, null=True)),
                 ('gender', models.CharField(blank=True, choices=[('M', 'male'), ('F', 'female'), ('N', 'unknown')], max_length=1)),
                 ('gitURL', models.TextField(blank=True)),
-                ('friend', models.ManyToManyField(blank=True, related_name='_author_friend_+', to='author.Author')),
             ],
-        ),
-        migrations.CreateModel(
-            name='Follow',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('followee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='followee', to='author.Author')),
-                ('follower', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='follower', to='author.Author')),
-            ],
-        ),
-        migrations.AlterUniqueTogether(
-            name='follow',
-            unique_together=set([('follower', 'followee')]),
         ),
     ]

@@ -23,8 +23,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', models.TextField()),
                 ('publishDate', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date published')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='author.Author')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='post.Post')),
+                ('publishDate', models.DateTimeField(default=django.utils.timezone.now, verbose_name=b'date published')),
             ],
         ),
     ]

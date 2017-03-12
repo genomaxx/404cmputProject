@@ -163,6 +163,8 @@ STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, 'static'),
 ]
 
+APPEND_SLASH = True
+
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

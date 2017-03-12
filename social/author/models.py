@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
 
-from .utils import can_view
+from .utils import can_view_post, can_view_feed
 # Create your models here.
 
 class Author(models.Model):
@@ -22,12 +22,13 @@ class Author(models.Model):
         on_delete=models.CASCADE
     )
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
-    firstname = models.TextField(blank=True)
-    lastname = models.TextField(blank=True)
-    phone = models.TextField(blank=True)
+    firstname = models.CharField(max_length=64,blank=True)
+    lastname = models.CharField(max_length=64,blank=True)
+    phone = models.CharField(max_length=50,blank=True)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
-    gitURL = models.TextField(blank=True)
+    gitURL = models.CharField(max_length=200,blank=True)
+    approved = models.BooleanField(default=False)
     # uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
@@ -50,13 +51,16 @@ class Author(models.Model):
     def isFriendOfFriend(self, author):
         return author in get_friends_of_friends(self)
 
-    def canView(self, post):
-        return can_view(self, post)
+    def canViewPost(self, post):
+        return can_view_post(self, post)
+
+    def canViewFeed(self, post):
+        return can_view_feed(self, post)
 
     def followers(self):
         return get_followers(self)
 
-    def get_friends(self):
+    def getFriends(self):
         return get_friends(self)
 
 
