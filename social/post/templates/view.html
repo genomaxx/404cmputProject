@@ -21,7 +21,7 @@
             </div>
             <div class="box-body">
                {% if post.image %}
-               <img src="{{ post.image.url }}" class="margin img-responsive">
+               <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                {% endif %}
                <p>{{ content|safe }}</p>
             </div>
