@@ -53,14 +53,14 @@ class Author(models.Model):
 
     def canViewPost(self, post):
         return can_view_post(self, post)
-    
+
     def canViewFeed(self, post):
         return can_view_feed(self, post)
 
     def followers(self):
         return get_followers(self)
 
-    def get_friends(self):
+    def getFriends(self):
         return get_friends(self)
 
 
