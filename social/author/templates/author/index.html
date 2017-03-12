@@ -67,7 +67,9 @@
               <i class="fa fa-camera bg-purple"></i>
 
               <div class="timeline-item">
-                <h3 class="timeline-header">{{ post.author }} posted an image...</h3>
+                <h3 class="timeline-header">
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted an image...
+                </h3>
 
                 <div class="timeline-body">
                   <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
@@ -85,7 +87,9 @@
               <i class="fa fa-sticky-note bg-blue"></i>
 
               <div class="timeline-item">
-                <h3 class="timeline-header">{{ post.author }} posted...</h3>
+                <h3 class="timeline-header">
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted...
+                </h3>
 
                 <div class="timeline-body">
                     {{ post.content }}
