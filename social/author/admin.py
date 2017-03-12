@@ -5,7 +5,7 @@ from author.models import Follow, Author
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    fields = ('id', 'friend', 'firstname', 'lastname','phone', 'dob', 'gitURL', 'gender')
+    fields = ('id', 'approved', 'friend', 'firstname', 'lastname','phone', 'dob', 'gitURL', 'gender')
 
 
 class FollowAdmin(admin.ModelAdmin):
