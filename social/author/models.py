@@ -30,7 +30,7 @@ class Author(models.Model):
     approved = models.BooleanField(default=False)
 
     #For the API
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     gitURL = models.CharField(max_length=200,blank=True)
     host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
     displayName = models.CharField(max_length=64, blank=True)
