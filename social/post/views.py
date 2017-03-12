@@ -33,7 +33,7 @@ class PostView(DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         author = Author.objects.get(id=request.user)
-        if author.canView(self.get_object()):
+        if author.canViewPost(self.get_object()):
             return super(DetailView, self).dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect("/author/")

@@ -10,6 +10,7 @@ class Post(models.Model):
         (2, 'Friends of friends'),
         (3, 'Private message'),
         (4, 'Private'),
+        (5, 'Unlisted'),
     ]
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
