@@ -219,7 +219,8 @@ class FollowersList(View):
         context = {
             'follow_list': follow_list,
             'title': "Friend Requests",
-            'author': auth
+            'author': auth,
+            'none': "No friend requests"
         }
         return render(request, 'author/followers.html', context)
 
@@ -232,6 +233,7 @@ class FriendsList(View):
         context = {
             'follow_list': follow_list,
             'title': "Friends",
-            'author': author
+            'author': author,
+            'none': "You have no friends!"
         }
         return render(request, 'author/followers.html', context)
