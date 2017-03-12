@@ -19,15 +19,35 @@ def private_message(viewer, post):
 def private(viewer, post):
     return viewer == post.author
 
+def unlistedView(viewer, post):
+    return True
+
+def unlistedFeed(viewer, post):
+    return False
+
+
 
 post_predicates = [
     public,
     friends,
     friends_of_friends,
     private_message,
-    private
+    private,
+    unlistedView,
+]
+
+feed_predicates = [
+    public,
+    friends,
+    friends_of_friends,
+    private_message,
+    private,
+    unlistedFeed,
 ]
 
 
-def can_view(viewer, post):
+def can_view_post(viewer, post):
     return post_predicates[post.privacyLevel](viewer, post)
+
+def can_view_feed(viewer, post):
+    return feed_predicates[post.privacyLevel](viewer, post)

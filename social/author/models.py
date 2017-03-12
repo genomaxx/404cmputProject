@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
 
-from .utils import can_view
+from .utils import can_view_post, can_view_feed
 # Create your models here.
 
 
@@ -51,8 +51,11 @@ class Author(models.Model):
     def isFriendOfFriend(self, author):
         return author in get_friends_of_friends(self)
 
-    def canView(self, post):
-        return can_view(self, post)
+    def canViewPost(self, post):
+        return can_view_post(self, post)
+    
+    def canViewFeed(self, post):
+        return can_view_feed(self, post)
 
     def followers(self):
         return get_followers(self)

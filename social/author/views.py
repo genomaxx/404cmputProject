@@ -16,16 +16,20 @@ def index(request):
     # https://docs.djangoproject.com/en/1.10/topics/db/queries/
     author = Author.objects.get(id=request.user)
     context = {'author': author}
+    viewablePosts = []
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
         posts = Post.objects.all().order_by('-publishDate')
+        for post in posts:
+            if author.canViewFeed(post):
+                viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
 
     try:
         if (len(posts) > 0):
-            context['posts'] = posts
+            context['posts'] = viewablePosts
             return render(request, 'author/index.html', context)
     except:
         return HttpResponse(sys.exc_info[0])
@@ -53,6 +57,10 @@ def author_post(request):
                        content=request.POST['post_content'],
                        privacyLevel=request.POST['privacy_level'])
         newPost.save()
+        if newPost.privacyLevel == '5':
+            redirect = '/post/' + str(newPost.id)
+            return HttpResponseRedirect(redirect)
+
     except:
         return HttpResponse(sys.exc_info[0])
 
@@ -64,17 +72,23 @@ def profile(request, id):
     user = User.objects.get(id=id)
     author = Author.objects.get(id=user)
     context = {'author': author}
+    viewer = Author.objects.get(id=request.user)
+    viewablePosts = []
 
     try:
         posts = Post.objects.filter(
             Q(author__id=author.id)
             ).order_by('-publishDate')
+
+        for post in posts:
+            if viewer.canViewFeed(post):
+                viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
 
     try:
        if (len(posts) > 0):
-           context['posts'] = posts
+           context['posts'] = viewablePosts
     except:
         return HttpResponse(sys.exc_info[0])
 
