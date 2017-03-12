@@ -2,6 +2,7 @@ from django.db import models
 from author.models import Author
 from django.conf import settings
 from django.utils import timezone
+import uuid;
 # Create your models here.
 
 class Post(models.Model):
@@ -34,6 +35,7 @@ class Post(models.Model):
     description = models.Charfield(max_length=64, blank=True)
     categories = models.CharField(max_length=128, blank=True)
     unlisted = models.BooleanField(default=False)
+    UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
 

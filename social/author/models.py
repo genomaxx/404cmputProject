@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
-
+import uuid;
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
