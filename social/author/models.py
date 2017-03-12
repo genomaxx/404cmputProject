@@ -69,9 +69,6 @@ class Author(models.Model):
     def followers(self):
         return get_followers(self)
 
-    def friendRequests(self):
-        return get_friend_requests(self)
-
     def getFriends(self):
         return get_friends(self)
 
