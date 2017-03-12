@@ -19,12 +19,13 @@ def private_message(viewer, post):
 def private(viewer, post):
     return viewer == post.author
 
+
 def unlistedView(viewer, post):
     return True
 
+
 def unlistedFeed(viewer, post):
     return False
-
 
 
 post_predicates = [
@@ -65,4 +66,3 @@ def get_friend_status(author, visitor):
         return "you follow them"
     else:
         return "you two aren't friends"
-
