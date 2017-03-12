@@ -45,7 +45,7 @@
           </a>
         </li>
 	    <li>
-          <a href="#">
+          <a href="{% url 'author:friends' request.user.id %}">
             <i class="fa fa-users"></i> <span>My Friends</span>
           </a>
         </li>
@@ -55,8 +55,8 @@
           </a>
         </li>
 	    <li>
-          <a href="#">
-            <i class="fa fa-hand-spock-o"></i> <span>Followers</span>
+          <a href="{% url 'author:followers' request.user.id %}">
+            <i class="fa fa-hand-spock-o"></i> <span>Friend Requests</span>
           </a>
         </li>
         <li class="header">FUNCTIONS</li>
