@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 {% extends "base_cp.html" %}
 {% load static %}
 {% block title %}Profile in{% endblock %}
@@ -64,12 +65,12 @@
                 <div class="timeline-body">
                     {{ post.content }}
                 </div>
-                <div class="timeline-footer">
-                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+                <div class="timeline-footer" style="display:inline">
+                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs" style="display:inline">Read more</a>
                   {% if request.user.id == post.author.id.id %}
-                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
+                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST" style="display:inline">
                     {% csrf_token %}
-                    <input type="submit" value="Delete">
+                    <input type="submit" value="Delete" class="btn btn-primary btn-xs">
                     </form>
                   {% endif %}
                 </div>

@@ -76,7 +76,7 @@ def author_delete_post(request, postpk):
         the_post = Post.objects.get(id=postpk)
         user = request.user
         postauthor = the_post.author
-        
+
         # Verify that the user was the author of that post
         if user.id != postauthor.id.id:
             return HttpResponseForbidden()
@@ -86,7 +86,7 @@ def author_delete_post(request, postpk):
     except:
         HttpResponse(sys.exc_info[0])
 
-    return HttpResponseRedirect('/author/')
+    return HttpResponseRedirect('/profile/')
 
 
 @login_required(login_url='/profile/')
