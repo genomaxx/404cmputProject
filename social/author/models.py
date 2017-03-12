@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+import socket
 from django.db.models import Q
 import uuid;
 from .utils import can_view_post, can_view_feed
@@ -32,7 +33,7 @@ class Author(models.Model):
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     gitURL = models.CharField(max_length=200,blank=True)
-    host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
+    host = models.CharField(max_length=200, default=socket.gethostname())
     displayName = models.CharField(max_length=64, blank=True)
     url = models.URLField(blank=True)
 
