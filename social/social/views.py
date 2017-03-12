@@ -47,6 +47,8 @@ def register(request):
         newUser = User.objects.get(email=userEmail)
         # Create and save the Author model
         author = Author(id=newUser)
+        author.setDisplayName()
+        author.setAuthorURL()
         author.save()
         return render(request, 'login/index.html',{'success':'Signed up! Please wait for admin approval.'})
     
