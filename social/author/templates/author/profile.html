@@ -27,9 +27,9 @@
           <div class="box box-primary">
             <div class="box-header">
 	    </div>
-            <div class="box-body"
-                <p>Name:
-		{{author.firstname}}
+            <div class="box-body">
+                <p>Name: 
+		            {{author.firstname}}
                 {{author.lastname}}</p>
                 <p>Date Of Birth:
                 {{author.dob}}</p>
@@ -76,7 +76,16 @@
                   <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                 </div>
                 <div class="timeline-footer">
-                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>
+                 {% if request.user.id != post.author.id.id %}
+                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>
+                 {% endif %}
+                  {% if request.user.id == post.author.id.id %}
+                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
+                    {% csrf_token %}
+                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
+                  {% endif %}
                 </div>
               </div>
             </li>
@@ -96,12 +105,15 @@
                     {{ post.content }}
                 </div>
                 <div class="timeline-footer">
-                  <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
+                 {% if request.user.id != post.author.id.id %}
+                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>
+                 {% endif %}
                   {% if request.user.id == post.author.id.id %}
                   <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
                     {% csrf_token %}
-                    <input type="submit" value="Delete">
-                    </form>
+                     <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
                   {% endif %}
                 </div>
               </div>
