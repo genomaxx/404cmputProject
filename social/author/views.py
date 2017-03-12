@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from author.models import Author
+from author.models import Author, Follow
 from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from . import forms
+from .utils import get_friend_status
 import sys
 
 
@@ -95,6 +96,11 @@ def profile(request, id):
     user = User.objects.get(id=id)
     author = Author.objects.get(id=user)
     context = {'author': author}
+    visitor = Author.objects.get(id=request.user)
+    context["friend_status"] = get_friend_status(author, visitor)
+    context["follows"] = False
+    if visitor.isFollowing(author):
+        context["follows"] = True
 
     try:
         posts = Post.objects.filter(
@@ -104,18 +110,18 @@ def profile(request, id):
         return HttpResponse(sys.exc_info[0])
 
     try:
-       if (len(posts) > 0):
-           context['posts'] = posts
+        if (len(posts) > 0):
+            context['posts'] = posts
     except:
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/profile.html', context)
 
+
 @login_required(login_url='/edit/')
 def edit(request):
     authorContext = Author.objects.get(id=request.user)
-    return render(request, 'author/edit.html', {'author':authorContext})
-
+    return render(request, 'author/edit.html', {'author': authorContext})
 
 
 @login_required(login_url='/edit_post/')
@@ -123,16 +129,14 @@ def edit_post(request):
     # This page edits the author's profile
 
     if (request.method != 'POST'):
-        return HttpReponseRedirect('/edit/')
+        return HttpResponseRedirect('/edit/')
 
     editForm = forms.EditForm(request.POST)
-
 
     if (not editForm.is_valid()):
         return HttpResponse('<h1>Form not valid</h1>')
 
     authorContext = Author.objects.get(id=request.user)
-
 
     try:
         authorContext.firstname = editForm.cleaned_data['firstname']
@@ -148,3 +152,22 @@ def edit_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
+
+
+def follow(request, id):
+    profile = User.objects.get(id=id)
+    follower = Author.objects.get(id=request.user)
+    followee = Author.objects.get(id=profile)
+
+    Follow(follower=follower, followee=followee).save()
+    return HttpResponseRedirect("/author/" + id)
+
+
+def unfollow(request, id):
+    profile = User.objects.get(id=id)
+    follower = Author.objects.get(id=request.user)
+    followee = Author.objects.get(id=profile)
+
+    relation = Follow.objects.get(follower=follower, followee=followee)
+    relation.delete()
+    return HttpResponseRedirect("/author/" + id)
