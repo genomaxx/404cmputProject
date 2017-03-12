@@ -2,10 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
-
+import uuid;
 from .utils import can_view_post, can_view_feed
 # Create your models here.
-
 
 class Author(models.Model):
 
@@ -23,19 +22,28 @@ class Author(models.Model):
         on_delete=models.CASCADE
     )
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
-    firstname = models.TextField(blank=True)
-    lastname = models.TextField(blank=True)
-    phone = models.TextField(blank=True)
+    firstname = models.CharField(max_length=64,blank=True)
+    lastname = models.CharField(max_length=64,blank=True)
+    phone = models.CharField(max_length=50,blank=True)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
-    gitURL = models.TextField(blank=True)
-    # uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    approved = models.BooleanField(default=False)
+
+    #For the API
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    gitURL = models.CharField(max_length=200,blank=True)
+    host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
+    displayName = models.CharField(max_length=64, blank=True)
+    url = models.URLField(blank=True)
 
     def __str__(self):
         return str(self.id)
 
-    def getAuthorURL(self):
-        return settings.LOCAL_HOST + 'author/' + self.id.id
+    def setDisplayName(self):
+        self.displayName = str(self.id.username)
+
+    def setAuthorURL(self):
+        self.url = str(self.host) + 'author/' + str(self.id)
 
     def isFollowing(self, author):
         return Follow.objects.filter(

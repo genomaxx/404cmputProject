@@ -11,10 +11,16 @@
     <b>Bearly</b>Social
   </div>
   <!-- /.login-logo -->
-    {% if form.errors %}
+    {% if errors %}
     <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        An error occurred. Please try again.
+        <p>{{ errors }}</p>
+    </div>
+    {% endif %}  
+    {% if success %}
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <p>{{ success }}</p>
     </div>
     {% endif %}  
   <div class="login-box-body">

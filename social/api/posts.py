@@ -2,6 +2,8 @@
 from django.http import HttpResponse
 from django.core import serializers
 # Django REST
+from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -11,7 +13,7 @@ from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
 # App
 from post.models import Post
-from api.serializers.post_serializer import PostSerializer
+from api.serializer import PostSerializer
 
 '''
 Follow the tutorial online if you get lost:
@@ -30,6 +32,16 @@ Django Serialization:
 https://docs.djangoproject.com/en/1.10/topics/serialization/
 '''
 
+class PublicPostListAPIView(ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def get(self, request, *args, **kwargs):
+        query = self.Post.objects.filter(
+            privacyLevel=0).order_by('-publishDate')
+        return Response(query)
+
+
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
@@ -47,11 +59,13 @@ def getAllPosts(request):
     if (len(query) > 0):
         try:
             response = PostSerializer(query, many=True)
+            print(response.data)
             return Response(response.data)
         except:
             return Response(response.errrors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response('No posts found', status=status.HTTP_200_OK)
+
 
 
 

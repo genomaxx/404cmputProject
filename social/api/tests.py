@@ -44,13 +44,13 @@ class PostApiTestCase(TestCase):
     # Test GET request to end-point: service/post/
     def test_getAllPublicPosts(self):
         response = self.client.login(username=self.userObj.username, password="test")
-        response = self.client.get('/service/post/')
+        response = self.client.get('/api/post/')
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         self.client.logout()
     
     # Test POST request to end-point: service/post/
     def test_postAllPublicPosts(self):
         response = self.client.login(username=self.userObj.username, password="test")
-        response = self.client.post('/service/post/', {'test': 'test'}, format='json')
+        response = self.client.post('/api/post/', {'test': 'test'}, format='json')
         self.assertEqual(response.status_code, 405, "Status code is not 405")
         self.client.logout()
