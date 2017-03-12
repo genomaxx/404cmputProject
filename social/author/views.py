@@ -60,6 +60,7 @@ def author_post(request):
                            privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image'].read()),\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
                            image_type = request.FILES['image'].content_type)
+
         else:
             newPost = Post(author=authorContext,
                content=request.POST['post_content'],

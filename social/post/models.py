@@ -19,6 +19,7 @@ class Post(models.Model):
     image = models.TextField(blank=True)
     image_type = models.TextField(blank=True)
 
+
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
 
