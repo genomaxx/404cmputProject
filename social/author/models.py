@@ -27,15 +27,23 @@ class Author(models.Model):
     phone = models.CharField(max_length=50,blank=True)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
-    gitURL = models.CharField(max_length=200,blank=True)
     approved = models.BooleanField(default=False)
-    # uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    #For the API
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    gitURL = models.CharField(max_length=200,blank=True)
+    host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
+    displayName = models.CharField(max_length=64, blank=True)
+    url = models.URLField(blank=True)
 
     def __str__(self):
         return str(self.id)
 
-    def getAuthorURL(self):
-        return settings.LOCAL_HOST + 'author/' + self.id.id
+    def setDisplayName(self):
+        self.displayName = str(self.id.username)
+
+    def setAuthorURL(self):
+        self.url = str(self.host) + 'author/' + str(self.id)
 
     def isFollowing(self, author):
         return Follow.objects.filter(
