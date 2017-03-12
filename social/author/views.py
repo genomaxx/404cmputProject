@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from author.models import Author, Follow
@@ -8,8 +8,9 @@ from django.db.models import Q
 from . import forms
 from .utils import get_friend_status
 import sys
-
-
+import base64
+import uuid
+import re
 # Create your views here.
 
 
@@ -52,15 +53,33 @@ def author_post(request):
 
         authorContext = Author.objects.get(id=request.user)
 
-        # Create and save a new post.
-        newPost = Post(author=authorContext,
-                       content=request.POST['post_content'],
-                       privacyLevel=request.POST['privacy_level'])
+        if ('image' in request.FILES.keys()):
+            # Create and save a new post.
+            # encode image into base64 here and make nice image url too
+            imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
+            newPost = Post(author=authorContext,
+                           content=request.POST['post_content'],
+                           privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image'].read()),\
+                           image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
+                           image_type = request.FILES['image'].content_type)
+
+        else:
+            newPost = Post(author=authorContext,
+               content=request.POST['post_content'],
+               privacyLevel=request.POST['privacy_level'])
         newPost.save()
     except:
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
+    
+# http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
+@login_required()
+def author_image(request,pk,pk1):
+    post = get_object_or_404(Post, id=pk, image_url= pk1)
+    response = HttpResponse(content=base64.b64decode(post.image), content_type=post.image_type)
+    response['Content-Disposition'] = "filename="+post.image_url
+    return response
 
 
 # Implementation based upon the code found here
