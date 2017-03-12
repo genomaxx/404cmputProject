@@ -10,10 +10,11 @@
         {{ author.id.username }}'s profile
       </h1>
       <h4>
-	{% if follows %}
-	<a href="{% url 'author:unfollow' id=author.id.id %}" class="btn btn-primary">Unfollow</a>
+	{% if request.user == author.id %}
+	{% elif follows %}
+	  <a href="{% url 'author:unfollow' id=author.id.id %}" class="btn btn-primary">Unfollow</a>
 	{% else %}
-	<a href="{% url 'author:follow' id=author.id.id %}" class="btn btn-primary">Follow</a>
+	  <a href="{% url 'author:follow' id=author.id.id %}" class="btn btn-primary">Follow</a>
 	{% endif %}
 	{{friend_status}}
       </h4>
@@ -26,9 +27,9 @@
           <div class="box box-primary">
             <div class="box-header">
 	    </div>
-            <div class="box-body
-                <p>Name: 
-		            {{author.firstname}}
+            <div class="box-body"
+                <p>Name:
+		{{author.firstname}}
                 {{author.lastname}}</p>
                 <p>Date Of Birth:
                 {{author.dob}}</p>
