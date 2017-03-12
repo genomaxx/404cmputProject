@@ -5,7 +5,10 @@ from author.models import Follow, Author
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    fields = ('id', 'approved', 'friend', 'firstname', 'lastname','phone', 'dob', 'gitURL', 'gender')
+    fields = ('id', 'approved', 'friend', 'firstname', 
+              'lastname','phone', 'dob', 'gitURL', 
+              'gender', 'host', 'displayName',
+              'url')
 
 
 class FollowAdmin(admin.ModelAdmin):
