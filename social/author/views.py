@@ -5,6 +5,8 @@ from author.models import Author, Follow
 from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.views import View
+
 from . import forms
 from .utils import get_friend_status
 import sys
@@ -207,3 +209,29 @@ def unfollow(request, id):
     relation = Follow.objects.get(follower=follower, followee=followee)
     relation.delete()
     return HttpResponseRedirect("/author/" + id)
+
+
+class FollowersList(View):
+
+    def get(self, request, id):
+        auth = Author.objects.get(id__id=id)
+        follow_list = auth.getFriendRequests()
+        context = {
+            'follow_list': follow_list,
+            'title': "Friend Requests",
+            'author': auth
+        }
+        return render(request, 'author/followers.html', context)
+
+
+class FriendsList(View):
+
+    def get(self, request, id):
+        author = Author.objects.get(id__id=id)
+        follow_list = author.getFriends()
+        context = {
+            'follow_list': follow_list,
+            'title': "Friends",
+            'author': author
+        }
+        return render(request, 'author/followers.html', context)
