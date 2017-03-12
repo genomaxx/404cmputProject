@@ -23,12 +23,13 @@ class Author(models.Model):
         on_delete=models.CASCADE
     )
     friend = models.ManyToManyField("self", related_name="friend", blank=True)
-    firstname = models.TextField(blank=True)
-    lastname = models.TextField(blank=True)
-    phone = models.TextField(blank=True)
+    firstname = models.CharField(max_length=64,blank=True)
+    lastname = models.CharField(max_length=64,blank=True)
+    phone = models.CharField(max_length=50,blank=True)
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
-    gitURL = models.TextField(blank=True)
+    gitURL = models.CharField(max_length=200,blank=True)
+    approved = models.BooleanField(default=False)
     # uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):

@@ -8,10 +8,15 @@ from . import forms
 from author.models import Author
 import sys
 
-#Create your views here
+#Create your views
 
-# The homee page for registration and login.
+# The home page for registration and login.
 def index(request):
+    try:
+        if request.user.is_authenticated() and Author.objects.get(id=request.user):
+            return HttpResponseRedirect('/author/')
+    except:
+        return render(request, 'login/index.html')
     return render(request, 'login/index.html')
 
 # Register a user
@@ -24,27 +29,28 @@ def register(request):
     
     # Check if the form is valid
     if (not regForm.is_valid()):
-        return HttpResponse('<h1>Form not valid</h1>')
+        return render(request, 'login/index.html',{'errors':'Invalid Form. Please try again.'})
 
     # Create and save the User and Author model.
     # Both need to be saved because there is no point of saving one with out the other since
     # they are in a one-to-one relationship.
+    userEmail = request.POST['email']
     try:
+        if User.objects.get(email=userEmail):
+            return render(request, 'login/index.html',{'errors':'E-mail already in use. Please use another.'})
+    except:
         user = regForm.save() # Save the form data
         # Ref: http://stackoverflow.com/questions/2936276/django-modelforms-user-and-userprofile-not-hashing-password
         user.set_password(user.password) # Set the password
         user.is_active = True
         user.save() # Push to db
-        userEmail = request.POST['email']
         newUser = User.objects.get(email=userEmail)
-
         # Create and save the Author model
         author = Author(id=newUser)
         author.save()
-    except:
-        return HttpResponse(sys.exc_info[0]) #TODO: Will need to change this to a nicer UI later
-
-    return HttpResponseRedirect('/') #TODO: Will need to change the page that gets returned
+        return render(request, 'login/index.html',{'success':'Signed up! Please wait for admin approval.'})
+    
+    return render(request, 'login/index.html',{'errors':'An error occurred. Please try again.'})
 
 # User login
 def login(request):
@@ -58,15 +64,19 @@ def login(request):
     # Get the user. Doubles as making sure the user exists.
     try:
         logInUser = User.objects.get(email=email)
+        author = Author.objects.get(id=logInUser)
     except User.DoesNotExist:
-        return HttpResponse('<h1>This email does not exist</h1>') #TODO: Make this pretty
+        return render(request, 'login/index.html',{'errors':'Invalid e-mail or password. Please try again.'})
+        
+    if not author.approved:
+        return render(request, 'login/index.html',{'errors':'User has not been approved by system admin yet. Please try again later.'})
 
     author = authenticate(username=logInUser.username, password=password)
     if author is not None:
         django_login(request, author)
         return redirect('/author/')
     
-    return HttpResponse('<h1>Wrong password :(</h1>')
+    return render(request, 'login/index.html',{'errors':'Invalid e-mail or password. Please try again.'})
 
 @login_required()
 def logout(request):
