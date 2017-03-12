@@ -29,7 +29,7 @@ def register(request):
     
     # Check if the form is valid
     if (not regForm.is_valid()):
-        return render(request, 'login/index.html',{'errors':'Invalid Form. Please try again.'})
+        return render(request, 'login/index.html',{'errors':'Username (case-sensitive) already in use. Please try again.'})
 
     # Create and save the User and Author model.
     # Both need to be saved because there is no point of saving one with out the other since
