@@ -80,7 +80,7 @@ def author_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
-    
+
 # http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
 @login_required()
 def author_image(request,pk,pk1):
@@ -104,7 +104,7 @@ def author_delete_post(request, postpk):
         the_post = Post.objects.get(id=postpk)
         user = request.user
         postauthor = the_post.author
-        
+
         # Verify that the user was the author of that post
         if user.id != postauthor.id.id:
             return HttpResponseForbidden()
@@ -114,7 +114,7 @@ def author_delete_post(request, postpk):
     except:
         HttpResponse(sys.exc_info[0])
 
-    return HttpResponseRedirect('/author/')
+    return HttpResponseRedirect("/author/" + str(user.id))
 
 
 @login_required(login_url='/profile/')
