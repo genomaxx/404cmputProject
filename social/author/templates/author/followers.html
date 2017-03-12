@@ -1,0 +1,37 @@
+{% extends "base_cp.html" %}
+{% load static %}
+{% block title %}Edit Profile in{% endblock %}
+
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Your Followers
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box box-primary">
+            <div class="box-body">
+	      { % for follower in follower_list % }
+	        <a href="{% url:profile author.id.id %}">{{ follower.displayName }}</a>
+	      {% endfor %}
+	    </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+      <!-- row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
