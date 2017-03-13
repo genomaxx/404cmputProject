@@ -10,14 +10,37 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username']
 
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['UID',
+                  'displayName',
+                  'host',
+                  'url']
+
 class AuthorSerializer(serializers.ModelSerializer):
+    friend = FriendSerializer(many=True, read_only=True)
+
     class Meta:
         model = Author
         fields = ['UID',
                   'displayName',
                   'host',
                   'url',
-                  'gitURL']
+                  'gitURL',
+                  'friend']
+
+    # Override method
+    # http://stackoverflow.com/questions/37985581/how-to-dynamically-remove-fields-from-serializer-output
+    # http://www.django-rest-framework.org/api-guide/serializers/#overriding-serialization-and-deserialization-behavior
+    def to_representation(self, authObj):
+        rep = super(AuthorSerializer, self).to_representation(authObj)
+
+        # Friends do not need to show up if it is not a profile request
+        if (self.context != 'profile'):
+            rep.pop('friend')
+
+        return rep
 
 class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
@@ -35,6 +58,7 @@ class PostSerializer(serializers.ModelSerializer):
     query = 'post'
     comments = serializers.SerializerMethodField('add_comments')
     count = serializers.SerializerMethodField('count_comments')
+    size = serializers.SerializerMethodField('add_page_size')
 
     class Meta:
         model = Post
@@ -49,21 +73,25 @@ class PostSerializer(serializers.ModelSerializer):
                   'categories',
                   'unlisted',
                   'publishDate',
-                  'comments',
-                  'count']
+                  'size',
+                  'count',
+                  'comments']
     
     def add_comments(self, postObj):
-        paginator = PageNumberPagination(page_size=5)
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
         query = Comment.objects.filter(post=postObj).order_by('-publishDate')
-        paginated = paginator.paginate_queryset(query, self.context['request'])
-        if (len(query) <= 1):
-                response = CommentSerializer(paginated, context={'request': self.context['request']})
-                return response.data
-        response = CommentSerializer(paginated, many=True, context={'request': self.context['request']})
+        paginated = paginator.paginate_queryset(query, self.context)
+        response = CommentSerializer(paginated, many=True)
         return response.data
      
     def count_comments(self, postObj):
         query = Comment.objects.filter(post=postObj)
         return (len(query))
+
+    def add_page_size(self, postObj):
+        if ('size' not in self.context.GET):
+            return 20;
+        return self.context.GET['size']
         
    

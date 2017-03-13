@@ -15,8 +15,11 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 # App
 from post.models import Post
-from api.serializer import PostSerializer, AuthorSerializer, UserSerializer
-
+from comment.models import Comment
+from author.models import Author, Follow
+from api.serializer import PostSerializer, AuthorSerializer, UserSerializer, CommentSerializer
+from api.paginator import CustomPagination
+from collections import OrderedDict
 '''
 Follow the tutorial online if you get lost:
 http://www.django-rest-framework.org/
@@ -56,9 +59,73 @@ def getAllPosts(request):
     if (len(query) > 0):
         try:
             paginated = paginator.paginate_queryset(query, request)
-            response = PostSerializer(paginated, many=True)
+            response = PostSerializer(paginated, many=True, context=request)
             return paginator.get_paginated_response(response.data)
         except:
-            return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
+            if (not response.is_valid()):
+                return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
 
     return Response('No posts found', status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getProfile(request, id):
+    query = Author.objects.get(UID=id)
+    if (query != None): # Check if there is a result
+        try:
+            response = AuthorSerializer(query, context='profile')
+            return Response(response.data)
+        except Exception as e:
+            return Response('Request failure' + str(e), status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response('No author found', status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getComments(request, id):
+    query = Comment.objects.filter(post__UID=id)
+    paginator = CustomPagination()
+    if (len(query) > 0):
+        try:
+            paginated = paginator.paginate_queryset(query, request)
+            response = CommentSerializer(paginated, many=True)
+            return paginator.get_paginated_response(response.data, request)
+        except Exception as e:
+            return Response('Pagination failed' + str(e), status=status.HTTP_400_BAD_REQUEST)
+
+    return Response('No comments found for post ID ' + str(id), status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getSinglePost(request, id):
+    query = Post.objects.get(UID=id)
+    if (query != None):
+        try:
+            response = PostSerializer(query, context=request)
+            return Response(response.data)
+        except Exception as e:
+            return Response('Request failure' + str(e), status=status.HTTP_400_BAD_REQUEST)
+
+    return Response('No post found for post ID ' + str(id), status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getFriends(request, id):
+    author = Author.objects.get(UID=id)
+    query = author.getFriends()
+    if (len(query) == 0):
+        return Response('No friends found for author ' + str(id), status=status.HTTP_200_OK)
+
+    response = OrderedDict([
+        ('authors',[])
+        ])
+    for auth in query:
+        response['authors'].append(str(auth.UID))
+
+    return Response(response, status=status.HTTP_200_OK)
+
