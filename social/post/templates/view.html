@@ -58,7 +58,10 @@
               <i class="fa fa-comments bg-blue"></i>
 
               <div class="timeline-item">
-                <h3 class="timeline-header">{{ comment.author }} says...</h3>
+                <h3 class="timeline-header">
+                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author }}</a>
+		  says...
+		</h3>
                 <div class="timeline-body">
                     {{ comment.content }}
                 </div>
