@@ -43,7 +43,7 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = str(self.host) + 'author/' + str(self.id)
+        self.url = "http://" + str(self.host) + '/author/' + str(self.id.id)
 
     def isFollowing(self, author):
         return Follow.objects.filter(
