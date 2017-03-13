@@ -5,6 +5,8 @@ from author.models import Author, Follow
 from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.views import View
+
 from . import forms
 from .utils import get_friend_status
 import sys
@@ -80,7 +82,7 @@ def author_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
-    
+
 # http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
 @login_required()
 def author_image(request,pk,pk1):
@@ -104,7 +106,7 @@ def author_delete_post(request, postpk):
         the_post = Post.objects.get(id=postpk)
         user = request.user
         postauthor = the_post.author
-        
+
         # Verify that the user was the author of that post
         if user.id != postauthor.id.id:
             return HttpResponseForbidden()
@@ -114,7 +116,7 @@ def author_delete_post(request, postpk):
     except:
         HttpResponse(sys.exc_info[0])
 
-    return HttpResponseRedirect('/author/')
+    return HttpResponseRedirect("/author/" + str(user.id))
 
 
 @login_required(login_url='/profile/')
@@ -207,3 +209,31 @@ def unfollow(request, id):
     relation = Follow.objects.get(follower=follower, followee=followee)
     relation.delete()
     return HttpResponseRedirect("/author/" + id)
+
+
+class FollowersList(View):
+
+    def get(self, request, id):
+        auth = Author.objects.get(id__id=id)
+        follow_list = auth.getFriendRequests()
+        context = {
+            'follow_list': follow_list,
+            'title': "Friend Requests",
+            'author': auth,
+            'none': "No friend requests"
+        }
+        return render(request, 'author/followers.html', context)
+
+
+class FriendsList(View):
+
+    def get(self, request, id):
+        author = Author.objects.get(id__id=id)
+        follow_list = author.getFriends()
+        context = {
+            'follow_list': follow_list,
+            'title': "Friends",
+            'author': author,
+            'none': "You have no friends!"
+        }
+        return render(request, 'author/followers.html', context)
