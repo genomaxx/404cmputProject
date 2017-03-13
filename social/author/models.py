@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-import socket
 from django.db.models import Q
 import uuid;
 from .utils import can_view_post, can_view_feed
@@ -33,7 +32,7 @@ class Author(models.Model):
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     gitURL = models.CharField(max_length=200,blank=True)
-    host = models.CharField(max_length=200, default=socket.gethostname())
+    host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
     displayName = models.CharField(max_length=64, blank=True)
     url = models.URLField(blank=True)
 
@@ -44,7 +43,7 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = str(self.host) + 'author/' + str(self.id)
+        self.url = "http://" + str(self.host) + '/author/' + str(self.id.id)
 
     def isFollowing(self, author):
         return Follow.objects.filter(
@@ -71,6 +70,9 @@ class Author(models.Model):
 
     def getFriends(self):
         return get_friends(self)
+
+    def getFriendRequests(self):
+        return get_friend_requests(self)
 
 
 class Follow(models.Model):
@@ -104,3 +106,7 @@ def get_friends(author):
 
 def get_followers(author):
     return Follow.objects.filter(followee=author)
+
+
+def get_friend_requests(author):
+    return [a.follower for a in author.followers() if not author.isFollowing(a.follower)]
