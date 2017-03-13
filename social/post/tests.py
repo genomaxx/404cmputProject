@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from author.models import Follow, Author
 from post.models import Post
+from urllib import request
+import base64, mimetypes
 
 
 # Create your tests here.
@@ -56,6 +58,16 @@ class PostTestCase(TestCase):
         post = Post.objects.create(author=authorObj, content=context, privacyLevel=privacy)
         return post
 
+    def createAnImagePost(self, authorObj, context, privacy, input_image, imageurl):
+        img = open(input_image, "rb").read()
+        f = bytearray(img)
+        mimetypes.init()
+        newPost = Post.objects.create(author=authorObj, content=context,
+                       privacyLevel=privacy, image = base64.b64encode(f),\
+                       image_url = imageurl,\
+                       image_type = mimetypes.guess_type(input_image))
+        return newPost
+
     def queryForPublicPosts(self):
         return
 
@@ -69,7 +81,35 @@ class PostTestCase(TestCase):
             self.assertFalse(True, "Author could not create a post")
 
         post2 = Post.objects.get(author=authorObj)
-        self.assertEqual(post.author, post2.author, "Post is not make by the same author")
+        self.assertEqual(post.author, post2.author, "Post is not made by the same author")
+        authorObj.delete()
+
+    # Tests if an author can post an image
+    def test_canUserPostImage(self):
+        authorObj = self.setUpOneAuthor("Abram")
+        imagename = "local-filename.jpg"
+        request.urlretrieve("http://www.chrysanthemums.org/wp-content/uploads/2016/04/White-chrysanthemum-flowers-beautifull.png", imagename)
+        try:
+            post = self.createAnImagePost(authorObj, "test image post", 0, imagename, "https://0.0.0.0:5000/post/1/")
+            post.save()
+        except:
+            self.assertFalse(True, "Image post couldn't be made")
+
+        get_post = Post.objects.get(author=authorObj)
+        self.assertEqual(post.author, get_post.author, "Image post is not made by the same author")
+        authorObj.delete()
+
+
+    # Tests if posts can be deleted
+    def test_canUserDeletePost(self):
+        authorObj = self.setUpOneAuthor("Abram")
+        post = self.createAPost(authorObj, "This is a test post!!!")
+        post.save()
+        post.delete()
+        with self.assertRaises(Exception) as ex:
+            getPost = Post.objects.get(author=authorObj)
+            self.assertIsNone(getPost, "Post was not deleted")
+
         authorObj.delete()
 
     # Test if a post is public
