@@ -1,9 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView
 from django.views import View
-from django.utils.html import escape
 from django.db.models import Q
-from CommonMark import commonmark
 
 from post.models import Post
 from post.forms import CommentForm
@@ -18,9 +16,6 @@ class PostView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        content = escape(self.get_object().content)
-        content = commonmark(content)
-        context['content'] = content
         context['comment_list'] = self.get_comment_list()
         context['form'] = CommentForm()
         return context

@@ -6,6 +6,8 @@ from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
+from django.utils.html import escape
+from CommonMark import commonmark
 
 from . import forms
 from .utils import get_friend_status
@@ -70,9 +72,14 @@ def author_post(request):
                            image_type = request.FILES['image'].content_type)
 
         else:
-            newPost = Post(author=authorContext,
-               content=request.POST['post_content'],
-               privacyLevel=request.POST['privacy_level'])
+            content = request.POST['post_content']
+            content = escape(content)
+            content = commonmark(content)
+            newPost = Post(
+                author=authorContext,
+                content=content,
+                privacyLevel=request.POST['privacy_level']
+            )
         newPost.save()
         if newPost.privacyLevel == '5':
             redirect = '/post/' + str(newPost.id)
