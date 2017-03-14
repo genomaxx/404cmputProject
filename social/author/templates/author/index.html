@@ -94,7 +94,7 @@
                 </h3>
 
                 <div class="timeline-body">
-                    {{ post.content }}
+                    {{ post.content|safe }}
                 </div>
                 <div class="timeline-footer">
                   <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read more</a>
