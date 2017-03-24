@@ -70,7 +70,7 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted an image...
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted an image...
                 </h3>
 
                 <div class="timeline-body">
@@ -90,7 +90,7 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted...
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted...
                 </h3>
 
                 <div class="timeline-body">
