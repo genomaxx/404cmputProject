@@ -11,10 +11,12 @@ from CommonMark import commonmark
 
 from . import forms
 from .utils import get_friend_status
+from node.get import create_remote_author
 import sys
 import base64
 import uuid
 import re
+from node.models import Node
 # Create your views here.
 
 
@@ -25,6 +27,7 @@ def index(request):
     author = Author.objects.get(id=request.user)
     context = {'author': author}
     viewablePosts = []
+    get_remote_posts()
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
@@ -43,6 +46,12 @@ def index(request):
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/index.html', context)
+
+
+def get_remote_posts():
+    trusted_nodes = Node.objects.filter(trusted=True)
+    for n in trusted_nodes:
+        n.grab_public_posts()
 
 
 @login_required(login_url='/author_post/')
@@ -124,6 +133,12 @@ def author_delete_post(request, postpk):
         HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect("/author/" + str(user.id))
+
+
+@login_required
+def remote_profile(request, uuid):
+    author = create_remote_author(uuid)
+    return render(request, 'author/profile.html', context)
 
 
 @login_required(login_url='/profile/')
