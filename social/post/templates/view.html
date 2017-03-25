@@ -17,13 +17,13 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">{{ post.author }} posted...</h3>
+              <h3 class="box-title">{{ post.author.displayName }} posted...</h3>
             </div>
             <div class="box-body">
                {% if post.image %}
                <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                {% endif %}
-               <p>{{ content|safe }}</p>
+               <p>{{ post.content|safe }}</p>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">

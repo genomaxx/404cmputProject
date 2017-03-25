@@ -45,7 +45,7 @@ class PublicPostListAPIView(APIView):
     #print(serializer_class.data)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes(())
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getAllPosts(request):
     ###########
@@ -69,7 +69,7 @@ def getAllPosts(request):
     return Response('No posts found', status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes(())
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getProfile(request, id):
     query = Author.objects.get(UID=id)

@@ -6,13 +6,17 @@ from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
+from django.utils.html import escape
+from CommonMark import commonmark
 
 from . import forms
 from .utils import get_friend_status
+from node.get import create_remote_author
 import sys
 import base64
 import uuid
 import re
+from node.models import Node
 # Create your views here.
 
 
@@ -23,6 +27,7 @@ def index(request):
     author = Author.objects.get(id=request.user)
     context = {'author': author}
     viewablePosts = []
+    get_remote_posts()
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
     try:
@@ -41,6 +46,12 @@ def index(request):
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/index.html', context)
+
+
+def get_remote_posts():
+    trusted_nodes = Node.objects.filter(trusted=True)
+    for n in trusted_nodes:
+        n.grab_public_posts()
 
 
 @login_required(login_url='/author_post/')
@@ -70,9 +81,34 @@ def author_post(request):
                            image_type = request.FILES['image'].content_type)
 
         else:
-            newPost = Post(author=authorContext,
-               content=request.POST['post_content'],
-               privacyLevel=request.POST['privacy_level'])
+            content = request.POST['post_content']
+            content = escape(content)
+            content = commonmark(content)
+            newPost = Post(
+                author=authorContext,
+                content=content,
+                privacyLevel=request.POST['privacy_level']
+            )
+        priv = newPost.privacyLevel
+
+        if priv == '0':
+            newPost.visibility = 'PUBLIC'
+        elif priv == '1':
+            newPost.visibility = 'FRIENDS'
+        elif priv == '2':
+            newPost.visibility = 'FOAF'
+        elif priv == '3':
+            newPost.visibility = 'PRIVATE'
+        elif priv == '4':
+            newPost.visibility = 'PRIVATE'
+        elif priv == '5':
+            newPost.visibility = 'UNLISTED'
+
+        newPost.setApiID()
+        newPost.save()
+        # need django to autogenerate the ID before using it to set the origin url 
+        newPost.setOrigin()
+        newPost.source = newPost.origin
         newPost.save()
         if newPost.privacyLevel == '5':
             redirect = '/post/' + str(newPost.id)
@@ -117,6 +153,12 @@ def author_delete_post(request, postpk):
         HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect("/author/" + str(user.id))
+
+
+@login_required
+def remote_profile(request, uuid):
+    author = create_remote_author(uuid)
+    return render(request, 'author/profile.html', context)
 
 
 @login_required(login_url='/profile/')
@@ -182,7 +224,7 @@ def edit_post(request):
         authorContext.phone = editForm.cleaned_data['phone']
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
-        authorContext.gitURL = editForm.cleaned_data['gitURL']
+        authorContext.github = editForm.cleaned_data['github']
 
         authorContext.save()
 

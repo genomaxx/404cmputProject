@@ -20,8 +20,12 @@ class Comment(models.Model):
     # TODO: Add the option to add content type to when making a comment
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/plain')
+    apiID = models.CharField(max_length=128, blank=True)
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
 
     def __str__(self):
         return str(self.content)
+    
+    def setApiID (self):
+        self.apiID = str(self.UID).replace("-", "")    
