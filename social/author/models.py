@@ -45,10 +45,10 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = APP_URL + "/author/" + str(self.id.id)
+        self.url = APP_URL + "/api/author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
-        self.apiID = APP_URL + "/api/author/" + str(self.UID).replace("-", "")
+        self.apiID = str(self.UID).replace("-", "")
 
     def isFollowing(self, author):
         return Follow.objects.filter(
