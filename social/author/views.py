@@ -204,7 +204,7 @@ def edit_post(request):
         authorContext.phone = editForm.cleaned_data['phone']
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
-        authorContext.gitURL = editForm.cleaned_data['gitURL']
+        authorContext.github = editForm.cleaned_data['github']
 
         authorContext.save()
 

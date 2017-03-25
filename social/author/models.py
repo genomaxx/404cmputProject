@@ -6,6 +6,8 @@ import uuid
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
+APP_URL = "http://calm-wave-83737.herokuapp.com"
+
 class Author(models.Model):
 
     genderChoices = (
@@ -21,7 +23,6 @@ class Author(models.Model):
         max_length=32,
         on_delete=models.CASCADE
     )
-    friend = models.ManyToManyField("self", related_name="friend", blank=True)
     firstname = models.CharField(max_length=64,blank=True)
     lastname = models.CharField(max_length=64,blank=True)
     phone = models.CharField(max_length=50,blank=True)
@@ -31,8 +32,9 @@ class Author(models.Model):
 
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    gitURL = models.CharField(max_length=200,blank=True)
-    host = models.CharField(max_length=200, default=settings.LOCAL_HOST)
+    apiID = models.CharField(max_length=200, blank=True)
+    github = models.CharField(max_length=200,blank=True)
+    host = models.CharField(max_length=200, default=APP_URL)
     displayName = models.CharField(max_length=64, blank=True)
     url = models.URLField(blank=True)
 
@@ -43,7 +45,10 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = "http://" + str(self.host) + '/author/' + str(self.id.id)
+        self.url = APP_URL + "/author/" + str(self.id.id)
+    
+    def setApiID (self):
+        self.apiID = APP_URL + "/api/author/" + str(self.UID).replace("-", "")
 
     def isFollowing(self, author):
         return Follow.objects.filter(

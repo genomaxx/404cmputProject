@@ -6,7 +6,7 @@ import uuid;
 # Create your models here.
 
 class Post(models.Model):
-    VISIBILITY = [
+    VISIBILITY_CHOICES = [
         (0, 'Public'),
         (1, 'Friends'),
         (2, 'Friends of friends'),
@@ -22,13 +22,13 @@ class Post(models.Model):
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     content = models.TextField()
-    privacyLevel = models.IntegerField(choices=VISIBILITY, default=0)
+    privacyLevel = models.IntegerField(choices=VISIBILITY_CHOICES, default=0)
     image_url = models.TextField(blank=True)
     image = models.TextField(blank=True)
     image_type = models.TextField(blank=True)
 
     # NEW API FIELDS (You might want to integrate these with the UI so they set properly)
-    title = models.CharField(max_length=124, blank=True)
+    title = models.CharField(max_length=128, blank=True)
     source = models.URLField(blank=True)
     origin = models.URLField(blank=True)
     contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/plain')
@@ -38,6 +38,10 @@ class Post(models.Model):
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
+    visibility = models.CharField(max_length=32, blank=True)
+    
+    # visibleTo needs to be a list of author profile URI's a post is private to. 
+    # (when private to other authors is implemented) 
 
     def __str__(self):
         return str(self.content)

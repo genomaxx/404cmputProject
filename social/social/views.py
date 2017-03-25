@@ -49,6 +49,7 @@ def register(request):
         author = Author(id=newUser)
         author.setDisplayName()
         author.setAuthorURL()
+        author.setApiID()
         author.save()
         return render(request, 'login/index.html',{'success':'Signed up! Please wait for admin approval.'})
     
