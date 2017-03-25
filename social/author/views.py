@@ -89,6 +89,26 @@ def author_post(request):
                 content=content,
                 privacyLevel=request.POST['privacy_level']
             )
+        priv = newPost.privacyLevel
+
+        if priv == '0':
+            newPost.visibility = 'PUBLIC'
+        elif priv == '1':
+            newPost.visibility = 'FRIENDS'
+        elif priv == '2':
+            newPost.visibility = 'FOAF'
+        elif priv == '3':
+            newPost.visibility = 'PRIVATE'
+        elif priv == '4':
+            newPost.visibility = 'PRIVATE'
+        elif priv == '5':
+            newPost.visibility = 'UNLISTED'
+
+        newPost.setApiID()
+        newPost.save()
+        # need django to autogenerate the ID before using it to set the origin url 
+        newPost.setOrigin()
+        newPost.source = newPost.origin
         newPost.save()
         if newPost.privacyLevel == '5':
             redirect = '/post/' + str(newPost.id)
@@ -204,7 +224,7 @@ def edit_post(request):
         authorContext.phone = editForm.cleaned_data['phone']
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
-        authorContext.gitURL = editForm.cleaned_data['gitURL']
+        authorContext.github = editForm.cleaned_data['github']
 
         authorContext.save()
 

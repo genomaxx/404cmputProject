@@ -45,6 +45,7 @@ class AddComment(View):
                 author=comment_author,
                 post=Post.objects.get(id=pk)
             )
+            comment.setApiID()
             comment.save()
 
         return HttpResponseRedirect("/post/" + pk)
