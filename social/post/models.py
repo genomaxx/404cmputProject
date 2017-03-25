@@ -5,6 +5,8 @@ from django.utils import timezone
 import uuid;
 # Create your models here.
 
+APP_URL = "http://polar-savannah-14727.herokuapp.com"
+
 class Post(models.Model):
     VISIBILITY_CHOICES = [
         (0, 'Public'),
@@ -36,9 +38,10 @@ class Post(models.Model):
     categories = models.CharField(max_length=128, blank=True)
     unlisted = models.BooleanField(default=False)
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    apiID = models.CharField(max_length=128, blank=True)
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
-    visibility = models.CharField(max_length=32, blank=True)
+    visibility = models.CharField(max_length=128, blank=True)
     
     # visibleTo needs to be a list of author profile URI's a post is private to. 
     # (when private to other authors is implemented) 
@@ -47,8 +50,14 @@ class Post(models.Model):
         return str(self.content)
 
     def setOrigin(self):
-        self.origin = str(settings.LOCAL_HOST) + 'post/' + str(self.id)
+        self.origin = APP_URL + '/post/' + str(self.id)
 
     def checkIfPostShouldBeUnlisted(self):
         if (self.privacyLevel == 5):
             self.unlisted = True
+    
+    def setApiID (self):
+        self.apiID = str(self.UID).replace("-", "")
+    
+    def setVisibility (self):
+        self.visibility = self.get_privacyLevel_display()
