@@ -8,7 +8,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        {{ author.id.username }}'s profile
+        {{ author.displayName }}'s profile
       </h1>
       <h4>
 	{% if request.user == author.id %}
@@ -30,18 +30,18 @@
 	    </div>
             <div class="box-body">
                 <p>Name:
-		            {{author.firstname}}
+		{{author.firstname}}
                 {{author.lastname}}</p>
                 <p>Date Of Birth:
                 {{author.dob}}</p>
                 <p>Phone Number:
                 {{author.phone}}</p>
                 <p>Email:
-                {{request.user.email}}</p>
+                {{author.email}}</p>
                 <p>Gender:
                 {{author.get_gender_display}}</p>
                 <p>Github Profile:
-                {{author.gitURL}}</p>
+                {{author.github}}</p>
             </div>
             <!-- /.box-body -->
           </div>
@@ -70,7 +70,7 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted an image...
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted an image...
                 </h3>
 
                 <div class="timeline-body">
@@ -99,11 +99,11 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author }}</a> posted...
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted...
                 </h3>
 
                 <div class="timeline-body">
-                    {{ post.content }}
+                    {{ post.content|safe }}
                 </div>
                 <div class="timeline-footer" style="display:inline">
                  {% if request.user.id != post.author.id.id %}

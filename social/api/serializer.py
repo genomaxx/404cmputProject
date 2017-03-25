@@ -11,58 +11,59 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username']
 
 class FriendSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='apiID')
+
     class Meta:
         model = Author
-        fields = ['UID',
-                  'displayName',
+        fields = ['id',
                   'host',
+                  'displayName',
                   'url']
 
 class AuthorSerializer(serializers.ModelSerializer):
-    friend = FriendSerializer(many=True, read_only=True)
+    friends = serializers.SerializerMethodField('add_friends')
+    id = serializers.CharField(source='apiID')
 
     class Meta:
         model = Author
-        fields = ['UID',
-                  'displayName',
+        fields = ['id',
                   'host',
+                  'displayName',
                   'url',
-                  'gitURL',
-                  'friend']
+                  'github',
+                  'friends']
 
-    # Override method
-    # http://stackoverflow.com/questions/37985581/how-to-dynamically-remove-fields-from-serializer-output
-    # http://www.django-rest-framework.org/api-guide/serializers/#overriding-serialization-and-deserialization-behavior
-    def to_representation(self, authObj):
-        rep = super(AuthorSerializer, self).to_representation(authObj)
-
-        # Friends do not need to show up if it is not a profile request
-        if (self.context != 'profile'):
-            rep.pop('friend')
-
-        return rep
+    def add_friends(self, postObj):
+        query = postObj.getFriends()
+        response = FriendSerializer(query, many=True)
+        return response.data
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
+    author = FriendSerializer(read_only=True)
+    comment = serializers.CharField(source='content')
+    id = serializers.CharField(source='apiID')
+    published = serializers.CharField(source='publishDate')
 
     class Meta:
         model = Comment
-        fields = ['UID',
+        fields = ['id',
                   'author',
-                  'content',
+                  'comment',
                   'contentType', 
-                  'publishDate']
+                  'published']
 
 class PostSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
+    author = FriendSerializer(read_only=True)
     query = 'post'
     comments = serializers.SerializerMethodField('add_comments')
     count = serializers.SerializerMethodField('count_comments')
     size = serializers.SerializerMethodField('add_page_size')
+    id = serializers.CharField(source='apiID')
+    published = serializers.CharField(source='publishDate')
 
     class Meta:
         model = Post
-        fields = ['UID',
+        fields = ['id',
                   'title',
                   'source',
                   'origin',
@@ -72,10 +73,11 @@ class PostSerializer(serializers.ModelSerializer):
                   'author',
                   'categories',
                   'unlisted',
-                  'publishDate',
+                  'published',
                   'size',
                   'count',
-                  'comments']
+                  'comments',
+                  'visibility']
     
     def add_comments(self, postObj):
         paginator = PageNumberPagination()
