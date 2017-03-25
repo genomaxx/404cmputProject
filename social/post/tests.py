@@ -128,7 +128,7 @@ class PostTestCase(TestCase):
         authorObj.delete()
 
     # Tests if posts can be deleted by the correct author_user
-    def test_canSpecificAuthorDeletePost(self):
+    def canSpecificAuthorDeletePost(self):
         c = Client()
         user, auth = self.doLoginSetUp()
         # response = c.login(username=user.username, password=user.password)
@@ -138,6 +138,7 @@ class PostTestCase(TestCase):
         self.assertEqual(response.status_code, 302, "User is not persistant across views")
         response = c.post('/author/author_post/', {'post_content':"I made a post, ain't that cool!", 'privacyLevel':"0"})
         self.assertEqual(response.status_code, 302, "User is not persistant across views")
+
         post2 = Post.objects.get(author=auth)
         print(post2.content)
         self.assertEqual("I made a post, ain't that cool!", post2.content, "Post is not made by the same author")
