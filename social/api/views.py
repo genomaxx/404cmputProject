@@ -54,7 +54,7 @@ def getAllPosts(request):
     ############
     paginator = PageNumberPagination()
     query = Post.objects.filter(
-        privacyLevel=0).order_by('-publishDate')
+        privacyLevel=0).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
@@ -138,7 +138,7 @@ def getPosts(request):
     # I'm keeping this here as a reminder while we build out the API
     ############
     paginator = PageNumberPagination()
-    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).order_by('-publishDate')
+    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
