@@ -166,7 +166,6 @@ def getPosts(request):
             return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
 
     return Response('No posts found', status=status.HTTP_200_OK)
-
 @api_view(['GET'])
 @permission_classes(())
 @authentication_classes((SessionAuthentication, BasicAuthentication))
