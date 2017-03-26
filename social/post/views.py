@@ -18,6 +18,7 @@ class PostView(DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['comment_list'] = self.get_comment_list()
         context['form'] = CommentForm()
+        context['content'] = self.get_content()
         return context
 
     def get_comment_list(self):
@@ -32,6 +33,15 @@ class PostView(DetailView):
             return super(DetailView, self).dispatch(request, *args, **kwargs)
         else:
             return HttpResponseRedirect("/author/")
+
+    def get_content(self):
+        if self.object.is_image():
+            return self.build_image()
+        return self.object.content
+
+    def build_image(self):
+        content = self.object.content
+        return "<img src=\"{}\"/>".format(content)
 
 
 class AddComment(View):
