@@ -112,10 +112,14 @@ def getSinglePost(request, id):
 
     return Response('No post found for post ID ' + str(id), status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriends(request, id):
+
+    if (request.method == 'POST'):
+        return checkManyFriends(reuest, id)
+
     author = Author.objects.get(UID=id)
     query = author.getFriends()
     if (len(query) == 0):
@@ -209,4 +213,19 @@ def checkFriends2(request, id1, id2):
     else:
         response['friends'] = 'False'
 
+    return Response(response, status=status.HTTP_200_OK)
+
+def checkManyFriends(request, id):
+    author = Author.objects.get(UID=id)
+    the_json = json.loads(request)
+
+    response = OrderedDict([
+        ('author', id),
+        ('authors',[])
+        ])
+    
+    for frnd in the_json["authors"]:
+        if author.isFriend(frnd):
+            response['authors'].append(frnd)
+            
     return Response(response, status=status.HTTP_200_OK)
