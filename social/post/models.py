@@ -42,6 +42,7 @@ class Post(models.Model):
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
     visibility = models.CharField(max_length=128, blank=True)
+    serverOnly = models.BooleanField(default=False)
     
     # visibleTo needs to be a list of author profile URI's a post is private to. 
     # (when private to other authors is implemented) 
