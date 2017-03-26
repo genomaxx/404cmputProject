@@ -23,7 +23,7 @@
                {% if post.image %}
                <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                {% endif %}
-               <p>{{ post.content|safe }}</p>
+               <p>{{ content|safe }}</p>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
