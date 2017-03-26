@@ -100,8 +100,8 @@ def author_post(request):
             )
         priv = newPost.privacyLevel
 
-        if 'serverOnly' not in request.POST:
-            newPost.serverOnly = False
+        if 'serverOnly' in request.POST:
+            newPost.serverOnly = True
 
         if priv == '0':
             newPost.visibility = 'PUBLIC'
