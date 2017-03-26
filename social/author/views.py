@@ -237,6 +237,7 @@ def edit_post(request):
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
         authorContext.github = editForm.cleaned_data['github']
+        authorContext.githubusername = editForm.cleaned_data['githubusername']
 
         authorContext.save()
 

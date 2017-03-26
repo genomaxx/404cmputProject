@@ -29,6 +29,7 @@ class Author(models.Model):
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
     approved = models.BooleanField(default=False)
+    githubusername = models.CharField(max_length=200, blank=True)
 
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
