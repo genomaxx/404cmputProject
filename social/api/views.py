@@ -151,3 +151,27 @@ def getPosts(request):
             return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
 
     return Response('No posts found', status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes(())
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getAuthorPosts(request, id):
+    ###########
+    # NOTE: The decorator automatically checks for you. Error reponse is 405
+    # I'm keeping this here as a reminder while we build out the API
+    ############
+    paginator = PageNumberPagination()
+    author = Author.objects.get(UID=id)
+    query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+
+    if (len(query) > 0):
+        try:
+            paginated = paginator.paginate_queryset(query, request)
+            response = PostSerializer(paginated, many=True, context=request)
+            return paginator.get_paginated_response(response.data)
+        except:
+            if (not response.is_valid()):
+                return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
+
+    return Response('No posts found', status=status.HTTP_200_OK)
