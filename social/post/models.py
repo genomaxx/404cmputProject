@@ -61,3 +61,6 @@ class Post(models.Model):
     
     def setVisibility (self):
         self.visibility = self.get_privacyLevel_display()
+
+    def is_image(self):
+        return self.contentType.startswith("image")

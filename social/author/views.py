@@ -38,6 +38,9 @@ def index(request):
     except:
         return HttpResponse(sys.exc_info[0])
 
+    for p in posts:
+        p.content = get_content(p)
+
     try:
         if (len(posts) > 0):
             context['posts'] = viewablePosts
@@ -46,6 +49,12 @@ def index(request):
         return HttpResponse(sys.exc_info[0])
 
     return render(request, 'author/index.html', context)
+
+
+def get_content(post):
+    if post.contentType.startswith("image"):
+        return "<img src=\"{}\"/>".format(post.content)
+    return post.content
 
 
 def get_remote_posts():
