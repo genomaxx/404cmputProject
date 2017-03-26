@@ -116,7 +116,7 @@ def getSinglePost(request, id):
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
-def getFriends(request, postId):
+def getFriends(request, id):
     author = Author.objects.get(UID=id)
     query = author.getFriends()
     if (len(query) == 0):
