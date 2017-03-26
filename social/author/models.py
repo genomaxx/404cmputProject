@@ -6,7 +6,7 @@ import uuid
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
-APP_URL = "http://polar-savannah-14727.herokuapp.com"
+APP_URL = "http://polar-savannah-14727.herokuapp.com/api/"
 
 class Author(models.Model):
 
@@ -29,6 +29,7 @@ class Author(models.Model):
     dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=1, choices=genderChoices, blank=True)
     approved = models.BooleanField(default=False)
+    githubusername = models.CharField(max_length=200, blank=True)
 
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -45,7 +46,7 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = APP_URL + "/api/author/" + str(self.UID).replace("-", "")
+        self.url = APP_URL + "author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
         self.apiID = str(self.UID).replace("-", "")

@@ -100,6 +100,9 @@ def author_post(request):
             )
         priv = newPost.privacyLevel
 
+        if 'serverOnly' in request.POST:
+            newPost.serverOnly = True
+
         if priv == '0':
             newPost.visibility = 'PUBLIC'
         elif priv == '1':
@@ -184,7 +187,6 @@ def profile(request, id):
     if visitor.isFollowing(author):
         context["follows"] = True
 
-
     try:
         posts = Post.objects.filter(
             Q(author__id=author.id)
@@ -234,6 +236,7 @@ def edit_post(request):
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
         authorContext.github = editForm.cleaned_data['github']
+        authorContext.githubusername = editForm.cleaned_data['githubusername']
 
         authorContext.save()
 
@@ -252,7 +255,8 @@ def follow(request, id):
 
     if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
         # do some things!! like posting a friend request to the remote server!
-        pass
+        host = "http://" + followee.host.strip("http://").strip("/") + "/"
+        Node.objects.get(url=host).friend_request(follower, followee)
 
     return HttpResponseRedirect("/author/" + id)
 

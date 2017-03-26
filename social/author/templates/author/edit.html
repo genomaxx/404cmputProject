@@ -34,7 +34,7 @@
 
                   <div class="form-group">
                   <label>Date of Birth</label>
-                  <input class="form-control" type="date" name="dob" value="{{author.dob}}">
+                  <input class="form-control" type="date" name="dob" value="{% if author.dob %}{{author.dob}}{% endif %}">
                   </div>
                   
                   <div class="form-group">
@@ -60,10 +60,15 @@
                   <label>Phone Number</label>
                   <input class="form-control" type="tel" pattern='[\(]\d{3}[\)]\d{3}[\-]\d{4}' name='phone' value="{{author.phone}}"> 
                   </div>
+                  
+                  <div class="form-group">
+                  <label>Github Username</label>
+                  <input class="form-control" type="text" name="githubusername" value="{{author.githubusername}}">
+                  </div>                  
 
                   <div class="form-group">
                   <label>Github URL</label>
-                  <input class="form-control" type="url" name="github" value="{{author.gitURL}}">
+                  <input class="form-control" type="url" name="github" value="{{author.github}}">
                   </div>
 
                   <div class="form-group">
