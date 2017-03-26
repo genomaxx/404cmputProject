@@ -133,12 +133,13 @@ def getFriends(request, id):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
-def getFriendRequests(request, id):
-    author = Author.objects.get(UID=id)
-    profile = User.objects.get(id=id)
-
-    follower = Author.objects.get(id=request.user)
-    followee = Author.objects.get(id=profile)
-
+def getFriendRequests(request):
+    the_json = json.loads(request)
+    # request is just json
+    # author follow friend
+    id_author = the_json["author"]["id"]
+    id_friend = the_json["friend"]["id"]
+    follower = Author.objects.get(id=id_author)
+    followee = Author.objects.get(id=id_friend)
     Follow(follower=follower, followee=followee).save()
-    return HttpResponseRedirect("/author/" + id)
+    return Response(response, status=status.HTTP_200_OK)

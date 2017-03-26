@@ -106,7 +106,7 @@ def author_post(request):
 
         newPost.setApiID()
         newPost.save()
-        # need django to autogenerate the ID before using it to set the origin url 
+        # need django to autogenerate the ID before using it to set the origin url
         newPost.setOrigin()
         newPost.source = newPost.origin
         newPost.save()
@@ -240,6 +240,10 @@ def follow(request, id):
     followee = Author.objects.get(id=profile)
 
     Follow(follower=follower, followee=followee).save()
+
+    if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
+        # do some things!! like posting a friend request to the remote server!
+
     return HttpResponseRedirect("/author/" + id)
 
 
