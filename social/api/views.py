@@ -79,7 +79,7 @@ def getProfile(request, id):
             return Response(response.data)
         except Exception as e:
             return Response('Request failure' + str(e), status=status.HTTP_400_BAD_REQUEST)
-    
+
     return Response('No author found', status=status.HTTP_200_OK)
 
 @api_view(['GET'])
@@ -126,6 +126,21 @@ def getFriends(request, id):
         ])
     for auth in query:
         response['authors'].append(str(auth.UID))
+
+    return Response(response, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def getFriendRequests(request):
+    the_json = json.loads(request)
+    # request is just json
+    # author follow friend
+    id_author = the_json["author"]["id"]
+    id_friend = the_json["friend"]["id"]
+    follower = Author.objects.get(id=id_author)
+    followee = Author.objects.get(id=id_friend)
+    Follow(follower=follower, followee=followee).save()
 
     return Response(response, status=status.HTTP_200_OK)
 
@@ -194,5 +209,5 @@ def checkFriends2(request, id1, id2):
         response['friends'] = 'True'
     else:
         response['friends'] = 'False'
-    
+
     return Response(response, status=status.HTTP_200_OK)
