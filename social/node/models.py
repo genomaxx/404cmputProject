@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 from post.models import Post
 from author.models import Author
-
+from comment.models import Comment
 
 # Create your models here.
 class Node(models.Model):
@@ -46,16 +46,26 @@ def build_post(post_json):
 
 
 def build_author(author_json):
-    uid = uuid.UUID(author_json["UID"])
+    uid = uuid.UUID(author_json["id"])
 
-    user, _ = User.objects.get_or_create(username=author_json["UID"])
+    user, _ = User.objects.get_or_create(username=author_json["displayName"])
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
-    author.gitURL = author_json["gitURL"]
+    author.gitURL = author_json["github"]
     author.save()
 
     return author
+
+def build_comment(comment_json, postObj):
+    uid = uuid.UUID(comment_json['guid'])
+    authorObj = build_author(comment_json['author'])
+    comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
+    comment.content = comment_json['comment']
+    comment.contentType = comment_json['contentType']
+    comment.publishDate = comment_json['published']
+    comment.setApiID
+    comment.save()
