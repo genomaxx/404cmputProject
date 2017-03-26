@@ -62,6 +62,10 @@ class PostApiTestCase(TestCase):
     # Test ADD COMMENT request to end-point: api/posts/<uuid>/comments
     def test_addCommentToPost(self):
         response = self.client.login(username=self.userObj.username, password="test")
+        user = User.objects.create(username="stupid")
+        author = Author.objects.create(id=user, displayName="auth")
+        author.setApiID()
+        author.id.username = author.apiID
         post = Post.objects.get(author=self.authorObj, content=self.post1.content)
         post.setApiID()
         comment =  Comment.objects.create(post=post, author=self.authorObj, content='test comment')
@@ -70,16 +74,16 @@ class PostApiTestCase(TestCase):
                    'post': 'whatever/test',
                    'comment': {
                        'author': {
-                           'id': self.authorObj.UID,
+                           'id': '0d5ea6edace642178ac5a29d43e14bfe',
                            'host': 'local host',
-                           'displayName': str(self.userObj.username),
-                           'url': self.authorObj.url,
-                           'github': self.authorObj.github,
+                           'displayName': str(author.displayName),
+                           'url': author.url,
+                           'github': author.github,
                             },
                        'comment': comment.content,
                        'contentType': comment.contentType,
                        'published': comment.publishDate,
-                       'guid': comment.apiID,
+                       'guid': '0d5ea6edace642178ac5a29d43e14fff',
                        },
                    }
         print('/api/posts/' + post.apiID + '/comments/')

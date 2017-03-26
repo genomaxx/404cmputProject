@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from author.models import Follow, Author
 from post.models import Post
@@ -47,6 +47,21 @@ class PostTestCase(TestCase):
     def setUp(self):
         User.objects.create(username="Abram")
         User.objects.create(username="Bill")
+
+    def doLoginSetUp(self):
+        # Set up users
+        User.objects.create(username="Jerry", email="bill@nye.com", password="tweety")
+        User.objects.create(username="Tom", email="abram@hindle.com", password="tweety")
+        userObj = User.objects.get(username="Jerry")
+        userObj.set_password(userObj.password)
+
+        # Set up authors
+        authorObj = Author.objects.create(id=userObj)
+        authorObj.save()
+        userObj.save()
+
+        # Return a user and author object
+        return userObj, authorObj
 
     def setUpOneAuthor(self, name):
         user = User.objects.get(username=name)
@@ -111,6 +126,26 @@ class PostTestCase(TestCase):
             self.assertIsNone(getPost, "Post was not deleted")
 
         authorObj.delete()
+
+    # Tests if posts can be deleted by the correct author_user
+    def canSpecificAuthorDeletePost(self):
+        c = Client()
+        user, auth = self.doLoginSetUp()
+        # response = c.login(username=user.username, password=user.password)
+        response = c.post('/login/', {'user': user.username, 'password': user.password})
+        self.assertEqual(response.status_code, 200, "User is not authenticated and logged in")
+        response = c.get('/author/')
+        self.assertEqual(response.status_code, 302, "User is not persistant across views")
+        response = c.post('/author/author_post/', {'post_content':"I made a post, ain't that cool!", 'privacyLevel':"0"})
+        self.assertEqual(response.status_code, 302, "User is not persistant across views")
+
+        post2 = Post.objects.get(author=auth)
+        print(post2.content)
+        self.assertEqual("I made a post, ain't that cool!", post2.content, "Post is not made by the same author")
+
+        response = c.get('/post/1/')
+        print(response.content)
+        user.delete()
 
     # Test if a post is public
     def test_isPostPublic(self):
