@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^posts/(?P<id>[0-9a-f]+)/comments/$', views.getComments),
     url(r'^posts/(?P<id>[0-9a-f]+)/$', views.getSinglePost),
     url(r'^author/(?P<id>[0-9a-f]+)/friends/$', views.getFriends),
+    url(r'^author/(?P<id>[0-9a-f]+)/posts/$', views.getAuthorPosts),
     ]
