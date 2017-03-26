@@ -15,12 +15,15 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 # App
 from post.models import Post
+from node.models import Node
 from comment.models import Comment
 from author.models import Author, Follow
 from node.models import *
 from api.serializer import PostSerializer, AuthorSerializer, UserSerializer, CommentSerializer
 from api.paginator import CustomPagination
 from collections import OrderedDict
+import uuid
+import json
 '''
 Follow the tutorial online if you get lost:
 http://www.django-rest-framework.org/
@@ -166,23 +169,32 @@ def successResponse(query, msg):
         ('message', msg)
         ])
 
+
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriendRequests(request):
-    the_json = json.loads(request)
-    # request is just json
-    # author follow friend
-    id_author = the_json["author"]["id"]
-    id_friend = the_json["friend"]["id"]
-    follower = Author.objects.get(id=id_author)
-    followee = Author.objects.get(id=id_friend)
+    the_json = json.loads(request.body)
+    followee_id = uuid.UUID(the_json["author"]["id"])
+    follower_host = uuid.UUID(the_json["friend"]["host"])
+    follower_url = uuid.UUID(the_json["friend"]["url"])
+    node = Node.objects.get(url=follower_host)
+    friend = node.get_author(follower_url)
+    follower = Author.objects.get(UID=followee_id)
+    followee = friend
     Follow(follower=follower, followee=followee).save()
 
-    return Response(response, status=status.HTTP_200_OK)
+    response = {
+        "query": "friendrequest",
+        "message": "Request Completed",
+        "success": True
+    }
+
+    return Response(json.dumps(response), status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
-@permission_classes(())
+@permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getPosts(request):
     ###########
@@ -204,7 +216,7 @@ def getPosts(request):
 
     return Response('No posts found', status=status.HTTP_200_OK)
 @api_view(['GET'])
-@permission_classes(())
+@permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getAuthorPosts(request, id):
     ###########
