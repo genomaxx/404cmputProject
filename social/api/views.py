@@ -209,3 +209,5 @@ def checkFriends2(request, id1, id2):
         response['friends'] = 'True'
     else:
         response['friends'] = 'False'
+
+    return Response(response, status=status.HTTP_200_OK)
