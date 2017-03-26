@@ -175,3 +175,24 @@ def getAuthorPosts(request, id):
             return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
 
     return Response('No posts found', status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((SessionAuthentication, BasicAuthentication))
+def checkFriends2(request, id1, id2):
+    author1 = Author.objects.get(UID=id1)
+    author2 = Author.objects.get(UID=id2)
+
+    response = OrderedDict([
+        ('authors',[])
+        ])
+
+    response['authors'].append(str(id1))
+    response['authors'].append(str(id2))
+
+    if author1.isFriend(author2):
+        response['friends'] = 'True'
+    else:
+        response['friends'] = 'False'
+    
+    return Response(response, status=status.HTTP_200_OK)
