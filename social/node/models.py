@@ -31,6 +31,11 @@ class Node(models.Model):
         "SERVERONLY": 5
     }
 
+    def get_author(self, url):
+        response = json.loads(self.make_request(url))
+        author = build_author(response)
+        return author
+
     def grab_public_posts(self):
         full_path = self.url + self.post_route
         response = self.make_request(full_path)
@@ -85,6 +90,7 @@ class Node(models.Model):
 
     def friend_request(self, follower, followee):
         data = {
+            "query": "friendrequest",
             "author": {
                 "id": str(follower.UID).replace("-", ""),
                 "host": follower.host,
@@ -92,7 +98,7 @@ class Node(models.Model):
                 "url": follower.url
             },
             "friend": {
-                "id": str(follower.UID).replace("-", ""),
+                "id": str(followee.UID).replace("-", ""),
                 "host": followee.host,
                 "displayName": followee.displayName,
                 "url": followee.url
@@ -104,7 +110,14 @@ class Node(models.Model):
         sys.stderr.write("Sending friend request!\n")
         sys.stderr.write(str(data) + "\n")
 
-        r = requests.post(request_url, data)
+        r = requests.post(
+            url=request_url,
+            data=json.dumps(data),
+            auth=requests.auth.HTTPBasicAuth(
+                self.user,
+                self.password
+            )
+        )
 
         sys.stderr.write(r.text + "\n")
 

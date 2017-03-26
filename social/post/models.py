@@ -5,7 +5,7 @@ from django.utils import timezone
 import uuid;
 # Create your models here.
 
-APP_URL = "http://polar-savannah-14727.herokuapp.com"
+APP_URL = "http://polar-savannah-14727.herokuapp.com/api/"
 
 class Post(models.Model):
     VISIBILITY_CHOICES = [
@@ -50,7 +50,7 @@ class Post(models.Model):
         return str(self.content)
 
     def setOrigin(self):
-        self.origin = APP_URL + '/post/' + str(self.id)
+        self.origin = APP_URL + 'post/' + str(self.id)
 
     def checkIfPostShouldBeUnlisted(self):
         if (self.privacyLevel == 5):
