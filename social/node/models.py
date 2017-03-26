@@ -15,9 +15,15 @@ from comment.models import Comment
 class Node(models.Model):
 
     url = models.CharField(max_length=128)
-    user = models.CharField(max_length=128)
+    username = models.CharField(max_length=128)
     password = models.CharField(max_length=128)
     trusted = models.BooleanField()
+
+    user = models.OneToOneField(
+        User,
+        max_length=32,
+        on_delete=models.CASCADE
+    )
 
     post_route = "posts/"
     friends_route = "author/{}/friends/"
@@ -48,7 +54,7 @@ class Node(models.Model):
         return requests.get(
             url,
             auth=requests.auth.HTTPBasicAuth(
-                self.user,
+                self.username,
                 self.password
             )
         ).text
@@ -84,7 +90,9 @@ class Node(models.Model):
         friend_path = self.url + self.friends_route.format(author.UID)
         friend_json = json.loads(self.make_request(friend_path))
 
-        for f in friend_json["friends"]:
+        sys.stderr.write(str(friend_json))
+
+        for f in friend_json["authors"]:
             author_json = json.loads(self.make_request(f))
             build_author(author_json)
 
@@ -114,12 +122,15 @@ class Node(models.Model):
             url=request_url,
             data=json.dumps(data),
             auth=requests.auth.HTTPBasicAuth(
-                self.user,
+                self.username,
                 self.password
             )
         )
 
         sys.stderr.write(r.text + "\n")
+
+    def __str__(self):
+        return self.url
 
 
 def build_author(author_json):
