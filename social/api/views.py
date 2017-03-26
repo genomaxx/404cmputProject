@@ -17,6 +17,7 @@ from rest_framework.pagination import PageNumberPagination
 from post.models import Post
 from comment.models import Comment
 from author.models import Author, Follow
+from node.models import *
 from api.serializer import PostSerializer, AuthorSerializer, UserSerializer, CommentSerializer
 from api.paginator import CustomPagination
 from collections import OrderedDict
@@ -38,11 +39,6 @@ https://docs.djangoproject.com/en/1.10/topics/serialization/
 '''
 
 # Create your views here.
-class PublicPostListAPIView(APIView):
-    query = Post.objects.filter(
-           Q(privacyLevel=0)).order_by('-publishDate')
-    serializer_class = PostSerializer(query, many=True)
-    #print(serializer_class.data)
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
@@ -82,10 +78,15 @@ def getProfile(request, id):
 
     return Response('No author found', status=status.HTTP_200_OK)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getComments(request, id):
+
+    # Add a comment
+    if (request.method == 'POST'):
+        return addComment(request, id)
+
     query = Comment.objects.filter(post__UID=id)
     paginator = CustomPagination()
     if (len(query) > 0):
@@ -128,6 +129,25 @@ def getFriends(request, id):
         response['authors'].append(str(auth.UID))
 
     return Response(response, status=status.HTTP_200_OK)
+
+
+def addComment(request, postId):
+    try:
+        post = Post.objects.get(UID=postId)
+        if (post == None):
+            return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
+        build_comment(request.data['comment'], post)
+    except Exception as e:
+        print(str(e))
+        return Response('Request failure ' + str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(successResponse('addComment', 'Comment Added'), status=status.HTTP_200_OK)
+
+def successResponse(query, msg):
+   return OrderedDict ([
+        ('query', query),
+        ('success', True),
+        ('message', msg)
+        ])
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))

@@ -8,7 +8,7 @@ import sys
 
 from post.models import Post
 from author.models import Author
-
+from comment.models import Comment
 
 # Create your models here.
 class Node(models.Model):
@@ -63,9 +63,9 @@ def build_author(author_json):
     uid = uuid.UUID(author_json["id"])
 
     user, _ = User.objects.get_or_create(username=author_json["id"])
-
+ 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
-
+    print(author)
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
@@ -73,3 +73,13 @@ def build_author(author_json):
     author.save()
 
     return author
+
+def build_comment(comment_json, postObj):
+    uid = uuid.UUID(comment_json['guid'])
+    authorObj = build_author(comment_json['author'])
+    comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
+    comment.content = comment_json['comment']
+    comment.contentType = comment_json['contentType']
+    comment.publishDate = comment_json['published']
+    comment.setApiID
+    comment.save()
