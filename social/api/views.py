@@ -50,7 +50,8 @@ def getAllPosts(request):
     ############
     paginator = PageNumberPagination()
     query = Post.objects.filter(
-        privacyLevel=0).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+        Q(privacyLevel=0) &
+        Q(serverOnly=False)).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
@@ -87,6 +88,10 @@ def getComments(request, id):
     if (request.method == 'POST'):
         return addComment(request, id)
 
+    post = checkForPost(id)
+    if (post == None):
+        return postIsServerOnlyOrNone()
+
     query = Comment.objects.filter(post__UID=id)
     paginator = CustomPagination()
     if (len(query) > 0):
@@ -103,7 +108,8 @@ def getComments(request, id):
 @permission_classes((IsAuthenticated,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getSinglePost(request, id):
-    query = Post.objects.get(UID=id)
+    query = Post.objects.get(Q(UID=id) &
+                             Q(serverOnly=False))
     if (query != None):
         try:
             response = PostSerializer(query, context=request)
@@ -133,14 +139,25 @@ def getFriends(request, id):
 
 def addComment(request, postId):
     try:
-        post = Post.objects.get(UID=postId)
+        post = checkForPost(id)
         if (post == None):
-            return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
+            return postIsServerOnlyOrNone()
+        #post = Post.objects.get(UID=postId)
+        #if (post == None):
+        #    return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
         build_comment(request.data['comment'], post)
     except Exception as e:
         print(str(e))
         return Response('Request failure ' + str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(successResponse('addComment', 'Comment Added'), status=status.HTTP_200_OK)
+
+def checkForPost(id):
+    post = Post.objects.filter(Q(UID=id) &
+                               Q(serverOnly=False))
+    return post
+
+def postIsServerOnlyOrNone():
+    return Response('Post is either private to server or none was found', status=status.HTTP_400_BAD_REQUEST)
 
 def successResponse(query, msg):
    return OrderedDict ([
@@ -173,7 +190,7 @@ def getPosts(request):
     # I'm keeping this here as a reminder while we build out the API
     ############
     paginator = PageNumberPagination()
-    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
@@ -196,7 +213,7 @@ def getAuthorPosts(request, id):
     ############
     paginator = PageNumberPagination()
     author = Author.objects.get(UID=id)
-    query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
