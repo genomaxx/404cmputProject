@@ -62,23 +62,25 @@ def getAllPosts(request):
             response = PostSerializer(paginated, many=True, context=request)
             return paginator.get_paginated_response(response.data)
         except:
-            if (not response.is_valid()):
-                return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No posts found', status=status.HTTP_200_OK)
+    return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getProfile(request, id):
-    query = Author.objects.get(UID=id)
+    try:
+        query = Author.objects.get(UID=id)
+    except:
+        return Response("No author exists with id " + id, status=status.HTTP_404_NOT_FOUND)
+
     if (query != None): # Check if there is a result
         try:
             response = AuthorSerializer(query, context='profile')
             return Response(response.data)
         except Exception as e:
-            return Response('Request failure' + str(e), status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response('No author found', status=status.HTTP_200_OK)
 
@@ -103,33 +105,41 @@ def getComments(request, id):
             response = CommentSerializer(paginated, many=True)
             return paginator.get_paginated_response(response.data, request)
         except Exception as e:
-            return Response('Pagination failed' + str(e), status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No comments found for post ID ' + str(id), status=status.HTTP_200_OK)
+    return Response('No comments found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getSinglePost(request, id):
-    query = Post.objects.get(Q(UID=id) &
-                             Q(serverOnly=False))
+    try:
+        query = Post.objects.get(Q(UID=id) &
+                                 Q(serverOnly=False))
+    except:
+        return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
     if (query != None):
         try:
             response = PostSerializer(query, context=request)
             return Response(response.data)
         except Exception as e:
-            return Response('Request failure' + str(e), status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No post found for post ID ' + str(id), status=status.HTTP_200_OK)
+    return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriends(request, id):
-    author = Author.objects.get(UID=id)
+    try:
+        author = Author.objects.get(UID=id)
+    except:
+        return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
     query = author.getFriends()
     if (len(query) == 0):
-        return Response('No friends found for author ' + str(id), status=status.HTTP_200_OK)
+        return Response('No friends found for author ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
     response = OrderedDict([
         ('authors',[])
@@ -149,8 +159,7 @@ def addComment(request, postId):
         #    return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
         build_comment(request.data['comment'], post)
     except Exception as e:
-        print(str(e))
-        return Response('Request failure ' + str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(successResponse('addComment', 'Comment Added'), status=status.HTTP_200_OK)
 
 def checkForPost(id):
@@ -179,7 +188,10 @@ def getFriendRequests(request):
     follower_url = uuid.UUID(the_json["friend"]["url"])
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
-    follower = Author.objects.get(UID=followee_id)
+    try:
+        follower = Author.objects.get(UID=followee_id)
+    except:
+        return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
     followee = friend
     Follow(follower=follower, followee=followee).save()
 
@@ -209,11 +221,10 @@ def getPosts(request):
             response = PostSerializer(paginated, many=True, context=request)
             return paginator.get_paginated_response(response.data)
         except:
-            if (not response.is_valid()):
-                return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No posts found', status=status.HTTP_200_OK)
+    return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
@@ -224,7 +235,11 @@ def getAuthorPosts(request, id):
     # I'm keeping this here as a reminder while we build out the API
     ############
     paginator = PageNumberPagination()
-    author = Author.objects.get(UID=id)
+    try:
+        author = Author.objects.get(UID=id)
+    except:
+         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
     query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
@@ -233,18 +248,23 @@ def getAuthorPosts(request, id):
             response = PostSerializer(paginated, many=True, context=request)
             return paginator.get_paginated_response(response.data)
         except:
-            if (not response.is_valid()):
-                return Response(response.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response('Pagination did not work', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No posts found', status=status.HTTP_200_OK)
+    return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def checkFriends2(request, id1, id2):
-    author1 = Author.objects.get(UID=id1)
-    author2 = Author.objects.get(UID=id2)
+    try:
+        author1 = Author.objects.get(UID=id1)
+    except:
+         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        author2 = Author.objects.get(UID=id2)
+    except:
+         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
     response = OrderedDict([
         ('authors',[])

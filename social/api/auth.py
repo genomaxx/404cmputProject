@@ -11,9 +11,11 @@ class APIAuthentication(permissions.BasePermission):
             return True
 
         user = request.user
+        if not user.is_authenticated:
+            return False
+
         try:
             Node.objects.get(user=user)
         except Node.DoesNotExist:
             return False
-
-        return user.is_authenticated
+        return True
