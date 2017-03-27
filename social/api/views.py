@@ -92,7 +92,6 @@ def getComments(request, id):
 
     # Add a comment
     if (request.method == 'POST'):
-        print("Is post")
         return addComment(request, id)
 
     post = checkForPost(id)
