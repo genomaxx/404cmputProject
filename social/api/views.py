@@ -192,18 +192,26 @@ def getFriendRequests(request):
     follower_url = the_json["author"]["url"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
+
     try:
         followee = Author.objects.get(UID=followee_id)
+        follower = friend
     except:
         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
-    follower = friend
-    Follow(follower=follower, followee=followee).save()
 
-    response = {
-        "query": "friendrequest",
-        "message": "Request Completed",
-        "success": True
-    }
+    try:
+        Follow(follower=follower, followee=followee).save()
+        response = {
+            "query": "friendrequest",
+            "message": "Request Completed",
+            "success": True
+        }
+    except Exception:
+        response = {
+            "query": "friendrequest",
+            "message": "This friend relation already exists",
+            "success": False
+        }
 
     return Response(json.dumps(response), status=status.HTTP_200_OK)
 
