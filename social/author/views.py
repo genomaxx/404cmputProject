@@ -53,7 +53,7 @@ def index(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
-        return "<img src=\"{}\"/>".format(post.content)
+        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
     return post.content
 
 
