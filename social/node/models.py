@@ -169,5 +169,5 @@ def build_comment(comment_json, postObj):
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
     comment.publishDate = comment_json['published']
-    comment.setApiID()
+    comment.apiID = comment_json['id']
     comment.save()
