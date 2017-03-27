@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import PageNumberPagination
 # App
 from post.models import Post
@@ -23,6 +24,7 @@ from api.paginator import CustomPagination
 from collections import OrderedDict
 import uuid
 import json
+import sys
 from .auth import APIAuthentication
 '''
 Follow the tutorial online if you get lost:
@@ -181,12 +183,13 @@ def successResponse(query, msg):
 
 @api_view(['POST'])
 @permission_classes((APIAuthentication,))
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((BasicAuthentication, SessionAuthentication))
+#@csrf_exempt
 def getFriendRequests(request):
     the_json = json.loads(request.body)
-    followee_id = uuid.UUID(the_json["author"]["id"])
-    follower_host = uuid.UUID(the_json["friend"]["host"])
-    follower_url = uuid.UUID(the_json["friend"]["url"])
+    followee_id = uuid.UUID(the_json["friend"]["id"])
+    follower_host = the_json["author"]["host"]
+    follower_url = the_json["author"]["url"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
     try:
