@@ -58,9 +58,12 @@ def get_content(post):
 
 
 def get_remote_posts():
-    trusted_nodes = Node.objects.filter(trusted=True)
-    for n in trusted_nodes:
-        n.grab_public_posts()
+    try:
+        trusted_nodes = Node.objects.filter(trusted=True)
+        for n in trusted_nodes:
+            n.grab_public_posts()
+    except:
+        pass
 
 
 @login_required(login_url='/author_post/')
@@ -194,6 +197,7 @@ def profile(request, id):
 
         for post in posts:
             if viewer.canViewFeed(post):
+                post.content = get_content(post)
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
