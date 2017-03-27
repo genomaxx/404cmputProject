@@ -144,6 +144,7 @@ def build_author_maybe(author_json):
     user, created = User.objects.get_or_create(username=author_json["id"])
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
+    author.UID = uid
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]

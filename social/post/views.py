@@ -30,36 +30,37 @@ class PostView(DetailView):
 
     def get_comment_list(self):
         author_post = self.get_object()
-        comments = Comment.objects.filter(
-            Q(post=author_post.id)
-        ).order_by('-publishDate')
+        comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
         
         parsed_post_url = urlparse(author_post.origin)
+        parsed_app_url = urlparse(APP_URL)
         
-        comment_ids = comments.values_list('UID',flat = True)
-        
-        host = "http://"+parsed_post_url.netloc + "/"
+        if parsed_post_url.netloc != parsed_app_url.netloc:
+            comment_ids = comments.values_list('UID',flat = True)
+            comment_ids = [str(x) for x in comment_ids]
+            
+            host = "http://"+parsed_post_url.netloc + "/"
+                    
+            n = Node.objects.get(url=host)
+            
+            r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
+            
+            if r.status_code == requests.codes.ok:
+                post_objects = json.loads(r.text)
+                for o in post_objects['comments']:
+                    if o['id'] not in comment_ids:
+                        build_comment(o, author_post)
                 
-        n = Node.objects.get(url=host)
-        
-        r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
-        
-        if r.status_code == requests.codes.ok:
-            post_objects = json.loads(r.text)
-            for o in post_objects['comments']:
-                if o['id'] not in comment_ids:
-                    build_comment(o, author_post)
-            
-            # get the new comments
-            comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
-            return comments
-            
-        elif r.status_code == requests.codes.forbidden:
-            # can't retrieve posts, just return servers post
-            return comments
-        else:
-            # can't retrieve posts, just return servers post
-            return comments
+                # get the new comments
+                comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
+                return comments
+                
+            elif r.status_code == requests.codes.forbidden:
+                # can't retrieve posts, just return servers post
+                return comments
+            else:
+                # can't retrieve posts, just return servers post
+                return comments
 
         return comments
 
