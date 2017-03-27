@@ -7,6 +7,9 @@ u1 = User.objects.create_user("usera", "usera@usera.com", "usera")
 u1.save()
 
 a1 = Author(id=u1)
+a1.setDisplayName()
+a1.setAuthorURL()
+a1.setApiID()
 a1.approved = True
 a1.save()
 

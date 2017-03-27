@@ -8,10 +8,10 @@ from post.models import Post
 from post.forms import CommentForm
 from comment.models import Comment
 from author.models import Author
-from node.models import Node
+from node.models import Node, build_comment
 
 from urllib.parse import urlparse
-import json
+import simplejson as json
 import requests
 
 APP_URL = settings.APP_URL
@@ -29,9 +29,38 @@ class PostView(DetailView):
         return context
 
     def get_comment_list(self):
+        author_post = self.get_object()
         comments = Comment.objects.filter(
-            Q(post=self.get_object().id)
+            Q(post=author_post.id)
         ).order_by('-publishDate')
+        
+        parsed_post_url = urlparse(author_post.origin)
+        
+        comment_ids = comments.values_list('UID',flat = True)
+        
+        host = "http://"+parsed_post_url.netloc + "/"
+                
+        n = Node.objects.get(url=host)
+        
+        r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
+        
+        if r.status_code == requests.codes.ok:
+            post_objects = json.loads(r.text)
+            for o in post_objects['comments']:
+                if o['id'] not in comment_ids:
+                    build_comment(o, author_post)
+            
+            # get the new comments
+            comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
+            return comments
+            
+        elif r.status_code == requests.codes.forbidden:
+            # can't retrieve posts, just return servers post
+            return comments
+        else:
+            # can't retrieve posts, just return servers post
+            return comments
+
         return comments
 
     def dispatch(self, request, *args, **kwargs):
@@ -80,7 +109,7 @@ class AddComment(View):
                 body['query'] = "addComment"
                 body['post'] = comment_post.origin
                 obj_author = dict()
-                obj_author['id'] = comment_author.url
+                obj_author['id'] = str(comment_author.UID)
                 obj_author['host'] = comment_author.host
                 obj_author['displayName'] = comment_author.displayName
                 obj_author['url'] = comment_author.url
@@ -90,22 +119,24 @@ class AddComment(View):
                 obj_comment['comment'] = form.cleaned_data['content']
                 obj_comment['contentType'] = 'text/markdown'
                 obj_comment['published'] = comment.publishDate.isoformat()
-                obj_comment['guid'] = str(comment.UID)
+                # commented out for T5 atm
+                #obj_comment['guid'] = str(comment.UID)
+                obj_comment['id'] = str(comment.UID)
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
-                
                 host = "http://"+parsed_comment_url.netloc + "/"
                 
                 n = Node.objects.get(url=host)
                 
-                r = requests.post(comment_post.origin + "comments", msg, auth = requests.auth.HTTPBasicAuth(n.username,n.password))
+                r = requests.post(comment_post.origin + "comments" +"/", data=msg, auth = requests.auth.HTTPBasicAuth(n.username,n.password))
                 
-                if r.status_code == request.codes.ok:
+                if r.status_code == requests.codes.ok:
                     return HttpResponseRedirect("/post/" + pk)
-                elif r.status_code == request.codes.forbidden:
+                elif r.status_code == requests.codes.forbidden:
                     Comment.objects.filter(UID=comment.UID).delete()
                     return HttpResponseForbidden()
                 else:
-                    return HttpResponse('<h1>Unknown Error Ocurred</h1>')
+                    Comment.objects.filter(UID=comment.UID).delete()
+                    return HttpResponse(r.content)
                     
         return HttpResponseRedirect("/post/" + pk)
