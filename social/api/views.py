@@ -190,10 +190,10 @@ def getFriendRequests(request):
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
     try:
-        follower = Author.objects.get(UID=followee_id)
+        followee = Author.objects.get(UID=followee_id)
     except:
         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
-    followee = friend
+    follower = friend
     Follow(follower=follower, followee=followee).save()
 
     response = {
