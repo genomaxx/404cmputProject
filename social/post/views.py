@@ -78,7 +78,7 @@ class PostView(DetailView):
 
     def build_image(self):
         content = self.object.content
-        return "<img src=\"{}\"/>".format(content)
+        return "<img class=\"img-responsive\" src=\"{}\"/>".format(content)
 
 
 class AddComment(View):
