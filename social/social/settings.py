@@ -177,6 +177,8 @@ APPEND_SLASH = True
 # This model requires authentication before entry is allowed
 AUTH_PROFILE_MODULE = 'authors.Author'
 
+API_AUTH_REQUIRED = True
+
 # Django REST settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

@@ -51,7 +51,7 @@ class Post(models.Model):
         return str(self.content)
 
     def setOrigin(self):
-        self.origin = APP_URL + '/post/' + str(self.id)
+        self.origin = APP_URL + 'post/' + str(self.id)
 
     def checkIfPostShouldBeUnlisted(self):
         if (self.privacyLevel == 5):

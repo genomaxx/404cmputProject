@@ -8,19 +8,22 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 # App
 from post.models import Post
+from node.models import Node
 from comment.models import Comment
 from author.models import Author, Follow
 from node.models import *
 from api.serializer import PostSerializer, AuthorSerializer, UserSerializer, CommentSerializer
 from api.paginator import CustomPagination
 from collections import OrderedDict
+import uuid
+import json
+from .auth import APIAuthentication
 '''
 Follow the tutorial online if you get lost:
 http://www.django-rest-framework.org/
@@ -38,10 +41,10 @@ Django Serialization:
 https://docs.djangoproject.com/en/1.10/topics/serialization/
 '''
 
-# Create your views here.
 
+# Create your views here.
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getAllPosts(request):
     ###########
@@ -66,7 +69,7 @@ def getAllPosts(request):
     return Response('No posts found', status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getProfile(request, id):
     query = Author.objects.get(UID=id)
@@ -80,7 +83,7 @@ def getProfile(request, id):
     return Response('No author found', status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getComments(request, id):
 
@@ -105,7 +108,7 @@ def getComments(request, id):
     return Response('No comments found for post ID ' + str(id), status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getSinglePost(request, id):
     query = Post.objects.get(Q(UID=id) &
@@ -120,7 +123,7 @@ def getSinglePost(request, id):
     return Response('No post found for post ID ' + str(id), status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriends(request, id):
     author = Author.objects.get(UID=id)
@@ -166,23 +169,32 @@ def successResponse(query, msg):
         ('message', msg)
         ])
 
+
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriendRequests(request):
-    the_json = json.loads(request)
-    # request is just json
-    # author follow friend
-    id_author = the_json["author"]["id"]
-    id_friend = the_json["friend"]["id"]
-    follower = Author.objects.get(id=id_author)
-    followee = Author.objects.get(id=id_friend)
+    the_json = json.loads(request.body)
+    followee_id = uuid.UUID(the_json["author"]["id"])
+    follower_host = uuid.UUID(the_json["friend"]["host"])
+    follower_url = uuid.UUID(the_json["friend"]["url"])
+    node = Node.objects.get(url=follower_host)
+    friend = node.get_author(follower_url)
+    follower = Author.objects.get(UID=followee_id)
+    followee = friend
     Follow(follower=follower, followee=followee).save()
 
-    return Response(response, status=status.HTTP_200_OK)
+    response = {
+        "query": "friendrequest",
+        "message": "Request Completed",
+        "success": True
+    }
+
+    return Response(json.dumps(response), status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
-@permission_classes(())
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getPosts(request):
     ###########
@@ -204,7 +216,7 @@ def getPosts(request):
 
     return Response('No posts found', status=status.HTTP_200_OK)
 @api_view(['GET'])
-@permission_classes(())
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getAuthorPosts(request, id):
     ###########
@@ -228,7 +240,7 @@ def getAuthorPosts(request, id):
     return Response('No posts found', status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def checkFriends2(request, id1, id2):
     author1 = Author.objects.get(UID=id1)

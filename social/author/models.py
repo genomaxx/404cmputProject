@@ -6,6 +6,7 @@ import uuid
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
+
 APP_URL = settings.APP_URL
 
 class Author(models.Model):
@@ -46,7 +47,7 @@ class Author(models.Model):
         self.displayName = str(self.id.username)
 
     def setAuthorURL(self):
-        self.url = APP_URL + "/api/author/" + str(self.UID).replace("-", "")
+        self.url = APP_URL + "author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
         self.apiID = str(self.UID).replace("-", "")

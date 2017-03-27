@@ -55,6 +55,16 @@ def can_view_feed(viewer, post):
     return feed_predicates[post.privacyLevel](viewer, post)
 
 
+def is_friends(author, visitor):
+    if author.is_remote():
+        return check_remote_friends(author, visitor)
+    return author.isFriends(visitor)
+
+
+def check_remote_friends(author, visitor):
+    return None
+
+
 def get_friend_status(author, visitor):
     if author == visitor:
         return "this is your profile"

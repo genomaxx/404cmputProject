@@ -187,7 +187,6 @@ def profile(request, id):
     if visitor.isFollowing(author):
         context["follows"] = True
 
-
     try:
         posts = Post.objects.filter(
             Q(author__id=author.id)
@@ -256,7 +255,8 @@ def follow(request, id):
 
     if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
         # do some things!! like posting a friend request to the remote server!
-        pass
+        host = "http://" + followee.host.strip("http://").strip("/") + "/"
+        Node.objects.get(url=host).friend_request(follower, followee)
 
     return HttpResponseRedirect("/author/" + id)
 
