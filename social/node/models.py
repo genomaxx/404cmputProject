@@ -25,7 +25,7 @@ class Node(models.Model):
         on_delete=models.CASCADE
     )
 
-    post_route = "posts/"
+    post_route = "author/posts/"
     friends_route = "author/{}/friends/"
     friend_request_route = "friendrequest/"
 
