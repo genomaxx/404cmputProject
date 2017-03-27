@@ -39,7 +39,7 @@ class Node(models.Model):
 
     def get_author(self, url):
         response = json.loads(self.make_request(url))
-        author = build_author(response)
+        author = build_author(response["author"])
         return author
 
     def grab_public_posts(self):
