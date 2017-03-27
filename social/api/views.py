@@ -11,7 +11,9 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 # App
 from post.models import Post
 from node.models import Node
@@ -23,6 +25,7 @@ from api.paginator import CustomPagination
 from collections import OrderedDict
 import uuid
 import json
+import sys
 from .auth import APIAuthentication
 '''
 Follow the tutorial online if you get lost:
@@ -151,12 +154,17 @@ def getFriends(request, id):
 
 def addComment(request, postId):
     try:
-        post = checkForPost(id)
-        if (post == None):
-            return postIsServerOnlyOrNone()
+        post = Post.objects.get(UID=postId)
+    except:
+        return postIsServerOnlyOrNone()
+    try:
+        #post = checkForPost(id)
+        #if (post == None):
+        #    return postIsServerOnlyOrNone()
         #post = Post.objects.get(UID=postId)
         #if (post == None):
         #    return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
+        #print(post)
         build_comment(request.data['comment'], post)
     except Exception as e:
         return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -180,19 +188,20 @@ def successResponse(query, msg):
 
 @api_view(['POST'])
 @permission_classes((APIAuthentication,))
-@authentication_classes((SessionAuthentication, BasicAuthentication))
+@authentication_classes((BasicAuthentication, SessionAuthentication))
+#@csrf_exempt
 def getFriendRequests(request):
     the_json = json.loads(request.body)
-    followee_id = uuid.UUID(the_json["author"]["id"])
-    follower_host = uuid.UUID(the_json["friend"]["host"])
-    follower_url = uuid.UUID(the_json["friend"]["url"])
+    followee_id = uuid.UUID(the_json["friend"]["id"])
+    follower_host = the_json["author"]["host"]
+    follower_url = the_json["author"]["url"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
     try:
-        follower = Author.objects.get(UID=followee_id)
+        followee = Author.objects.get(UID=followee_id)
     except:
         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
-    followee = friend
+    follower = friend
     Follow(follower=follower, followee=followee).save()
 
     response = {
