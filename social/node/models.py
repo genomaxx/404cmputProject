@@ -154,7 +154,9 @@ def build_author_maybe(author_json):
 
 
 def build_comment(comment_json, postObj):
-    uid = uuid.UUID(comment_json['guid'])
+    # commented out for T5 atm
+    #uid = uuid.UUID(comment_json['guid'])
+    uid = uuid.UUID(comment_json['id'])
     authorObj = build_author(comment_json['author'])
     comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
     comment.content = comment_json['comment']
