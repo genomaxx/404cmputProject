@@ -27,5 +27,5 @@ class Comment(models.Model):
     def __str__(self):
         return str(self.content)
     
-    def setApiID (self):
-        self.apiID = str(self.UID).replace("-", "")    
+    def setApiID(self):
+        self.apiID = str(self.UID).replace("-", "")
