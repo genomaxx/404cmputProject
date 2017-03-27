@@ -12,6 +12,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 # App
 from post.models import Post
 from node.models import Node
@@ -91,6 +92,7 @@ def getComments(request, id):
 
     # Add a comment
     if (request.method == 'POST'):
+        print("Is post")
         return addComment(request, id)
 
     post = checkForPost(id)
@@ -152,14 +154,20 @@ def getFriends(request, id):
 
 def addComment(request, postId):
     try:
-        post = checkForPost(id)
-        if (post == None):
-            return postIsServerOnlyOrNone()
+        post = Post.objects.get(UID=postId)
+    except:
+        return postIsServerOnlyOrNone()
+    try:
+        #post = checkForPost(id)
+        #if (post == None):
+        #    return postIsServerOnlyOrNone()
         #post = Post.objects.get(UID=postId)
         #if (post == None):
         #    return Response('No post with the id ' + postId + ' exists', status=status.HTTP_400_BAD_REQUEST)
+        #print(post)
         build_comment(request.data['comment'], post)
     except Exception as e:
+        print(str(e))
         return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(successResponse('addComment', 'Comment Added'), status=status.HTTP_200_OK)
 
