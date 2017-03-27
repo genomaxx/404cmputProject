@@ -61,7 +61,7 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author }}</a>
+                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author.displayName }}</a>
 		  says...
 		</h3>
                 <div class="timeline-body">

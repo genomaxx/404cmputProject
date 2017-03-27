@@ -6,7 +6,7 @@ import uuid
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
-APP_URL = "http://polar-savannah-14727.herokuapp.com/api/"
+APP_URL = settings.APP_URL
 
 class Author(models.Model):
 

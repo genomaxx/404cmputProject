@@ -65,11 +65,15 @@ class Node(models.Model):
         author = self.add_author_and_friends(post_json["author"])
         post, _ = Post.objects.get_or_create(UID=uid, author=author)
 
+        post.apiID = post_json["id"]
+        sys.stderr.write(post.apiID)
+        post.UID = uid
         post.content = post_json["content"]
         post.title = post_json["title"]
         post.source = post_json["source"]
         post.origin = post_json["origin"]
         post.privacyLevel = self.PRIVACY[post_json["visibility"]]
+        post.visibility = post_json["visibility"]
         post.contentType = post_json["contentType"]
         post.description = post_json["description"]
         post.categories = post_json["categories"]
@@ -144,17 +148,22 @@ def build_author_maybe(author_json):
     user, created = User.objects.get_or_create(username=author_json["id"])
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
+
+    author.apiID = author_json["id"]
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
     author.gitURL = author_json["github"]
+    # sys.stderr.write(author.apiID)
     author.save()
 
     return author, created
 
 
 def build_comment(comment_json, postObj):
-    uid = uuid.UUID(comment_json['guid'])
+    # commented out for T5 atm
+    #uid = uuid.UUID(comment_json['guid'])
+    uid = uuid.UUID(comment_json['id'])
     authorObj = build_author(comment_json['author'])
     comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
     comment.content = comment_json['comment']
