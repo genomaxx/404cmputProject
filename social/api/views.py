@@ -166,7 +166,6 @@ def addComment(request, postId):
         #print(post)
         build_comment(request.data['comment'], post)
     except Exception as e:
-        print(str(e))
         return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(successResponse('addComment', 'Comment Added'), status=status.HTTP_200_OK)
 
