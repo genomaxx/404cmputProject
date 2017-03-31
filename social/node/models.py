@@ -75,7 +75,6 @@ class Node(models.Model):
         post.visibility = post_json["visibility"]
         post.contentType = post_json["contentType"]
         post.description = post_json["description"]
-        post.categories = post_json["categories"]
         post.unlisted = post_json["unlisted"]
         post.publishDate = parse_datetime(post_json["published"])
 
@@ -153,7 +152,7 @@ def build_author_maybe(author_json):
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
-    author.gitURL = author_json["github"]
+    # author.gitURL = author_json["github"]
     # sys.stderr.write(author.apiID)
     author.save()
 
