@@ -54,7 +54,7 @@ def getAllPosts(request):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
+    paginator = CustomPagination()
     query = Post.objects.filter(
         Q(privacyLevel=0) &
         Q(serverOnly=False)).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
@@ -63,7 +63,7 @@ def getAllPosts(request):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -106,7 +106,7 @@ def getComments(request, id):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = CommentSerializer(paginated, many=True)
-            return paginator.get_paginated_response(response.data, request)
+            return paginator.get_paginated_comments(response.data, request)
         except Exception as e:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -235,14 +235,14 @@ def getPosts(request):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
+    paginator = CustomPagination()
     query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -256,7 +256,7 @@ def getAuthorPosts(request, id):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
+    paginator = CustomPagination()
     try:
         author = Author.objects.get(UID=id)
     except:
@@ -268,7 +268,7 @@ def getAuthorPosts(request, id):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
