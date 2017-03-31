@@ -312,13 +312,13 @@ def checkManyFriends(request, id):
     the_json = json.loads(request)
 
     response = OrderedDict([
-        ('author', id),
+        ('author', author.apiID),
         ('authors',[])
         ])
 
     for frndId in the_json["authors"]:
         try:
-            friend = Author.objects.get(UID=frndId)
+            friend = Author.objects.get(apiID=frndId)
         except:
             continue
 
