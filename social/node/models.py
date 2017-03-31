@@ -33,8 +33,7 @@ class Node(models.Model):
         "PUBLIC": 0,
         "FRIENDS": 1,
         "FOAF": 2,
-        "PRIVATE": 3,
-        "SERVERONLY": 5
+        "PRIVATE": 3
     }
 
     def get_author(self, url):

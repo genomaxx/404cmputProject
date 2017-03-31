@@ -198,17 +198,17 @@ def successResponse(query, msg):
 #@csrf_exempt
 def getFriendRequests(request):
     the_json = json.loads(request.body)
-    followee_id = uuid.UUID(the_json["friend"]["id"])
+    followee_id = the_json["friend"]["id"]
     follower_host = the_json["author"]["host"]
     follower_url = the_json["author"]["url"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
 
     try:
-        followee = Author.objects.get(UID=followee_id)
+        followee = Author.objects.get(apiID=followee_id)
         follower = friend
     except:
-        return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+        return Response('No author found with id ' + followee_id, status=status.HTTP_404_NOT_FOUND)
 
     try:
         Follow(follower=follower, followee=followee).save()
@@ -236,7 +236,7 @@ def getPosts(request):
     # I'm keeping this here as a reminder while we build out the API
     ############
     paginator = CustomPagination()
-    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
