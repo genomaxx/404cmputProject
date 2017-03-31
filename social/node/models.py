@@ -150,7 +150,7 @@ def build_author_maybe(author_json):
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
-    author.apiID = id
+    author.apiID = author_json["id"]
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
