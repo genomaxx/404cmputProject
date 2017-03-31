@@ -117,7 +117,7 @@ def getComments(request, id):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getSinglePost(request, id):
     try:
-        query = Post.objects.get(Q(UID=id) & 
+        query = Post.objects.get(Q(UID=id) &
                                  Q(serverOnly=False))
     except:
         return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
@@ -131,10 +131,14 @@ def getSinglePost(request, id):
 
     return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriends(request, id):
+
+    if (request.method == 'POST'):
+        return checkManyFriends(reuest, id)
+
     try:
         author = Author.objects.get(UID=id)
     except:
@@ -147,8 +151,9 @@ def getFriends(request, id):
     response = OrderedDict([
         ('authors',[])
         ])
+
     for auth in query:
-        response['authors'].append(str(auth.UID))
+        response['authors'].append(str(auth.URL))
 
     return Response(response, status=status.HTTP_200_OK)
 
@@ -294,5 +299,30 @@ def checkFriends2(request, id1, id2):
         response['friends'] = 'True'
     else:
         response['friends'] = 'False'
+
+    return Response(response, status=status.HTTP_200_OK)
+
+def checkManyFriends(request, id):
+
+    try:
+        author = Author.objects.get(UID=id)
+    except:
+         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
+    the_json = json.loads(request)
+
+    response = OrderedDict([
+        ('author', author.apiID),
+        ('authors',[])
+        ])
+
+    for frndId in the_json["authors"]:
+        try:
+            friend = Author.objects.get(apiID=frndId)
+        except:
+            continue
+
+        if author.isFriend(friend):
+            response['authors'].append(friend.apiID)
 
     return Response(response, status=status.HTTP_200_OK)

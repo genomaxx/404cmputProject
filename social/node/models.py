@@ -104,13 +104,13 @@ class Node(models.Model):
         data = {
             "query": "friendrequest",
             "author": {
-                "id": str(follower.UID).replace("-", ""),
+                "id": follower.apiID,
                 "host": follower.host,
                 "displayName": follower.displayName,
                 "url": follower.url
             },
             "friend": {
-                "id": str(followee.UID).replace("-", ""),
+                "id": followee.apiID,
                 "host": followee.host,
                 "displayName": followee.displayName,
                 "url": followee.url

@@ -33,7 +33,7 @@ class Author(models.Model):
 
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    apiID = models.CharField(max_length=200, blank=True)
+    apiID = models.CharField(max_length=200, blank=True, unique=True)
     github = models.CharField(max_length=200,blank=True)
     host = models.CharField(max_length=200, default=APP_URL)
     displayName = models.CharField(max_length=64, blank=True)
@@ -49,7 +49,7 @@ class Author(models.Model):
         self.url = APP_URL + "author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
-        self.apiID = str(self.UID).replace("-", "")
+        self.apiID = APP_URL + "author/" + str(self.UID).replace("-", "")
 
     def isFollowing(self, author):
         return Follow.objects.filter(
