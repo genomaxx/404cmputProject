@@ -33,8 +33,7 @@ class Node(models.Model):
         "PUBLIC": 0,
         "FRIENDS": 1,
         "FOAF": 2,
-        "PRIVATE": 3,
-        "SERVERONLY": 5
+        "PRIVATE": 3
     }
 
     def get_author(self, url):
@@ -104,13 +103,13 @@ class Node(models.Model):
         data = {
             "query": "friendrequest",
             "author": {
-                "id": str(follower.UID).replace("-", ""),
+                "id": follower.apiID,
                 "host": follower.host,
                 "displayName": follower.displayName,
                 "url": follower.url
             },
             "friend": {
-                "id": str(followee.UID).replace("-", ""),
+                "id": followee.apiID,
                 "host": followee.host,
                 "displayName": followee.displayName,
                 "url": followee.url
@@ -150,7 +149,7 @@ def build_author_maybe(author_json):
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
-    author.apiID = id
+    author.apiID = author_json["id"]
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]

@@ -54,7 +54,7 @@ def getAllPosts(request):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
+    paginator = CustomPagination()
     query = Post.objects.filter(
         Q(privacyLevel=0) &
         Q(serverOnly=False)).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
@@ -63,7 +63,7 @@ def getAllPosts(request):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -106,7 +106,7 @@ def getComments(request, id):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = CommentSerializer(paginated, many=True)
-            return paginator.get_paginated_response(response.data, request)
+            return paginator.get_paginated_comments(response.data, request)
         except Exception as e:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -117,7 +117,7 @@ def getComments(request, id):
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getSinglePost(request, id):
     try:
-        query = Post.objects.get(Q(UID=id) & 
+        query = Post.objects.get(Q(UID=id) &
                                  Q(serverOnly=False))
     except:
         return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
@@ -131,10 +131,14 @@ def getSinglePost(request, id):
 
     return Response('No post found for post ID ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getFriends(request, id):
+
+    if (request.method == 'POST'):
+        return checkManyFriends(reuest, id)
+
     try:
         author = Author.objects.get(UID=id)
     except:
@@ -147,8 +151,9 @@ def getFriends(request, id):
     response = OrderedDict([
         ('authors',[])
         ])
+
     for auth in query:
-        response['authors'].append(str(auth.UID))
+        response['authors'].append(str(auth.URL))
 
     return Response(response, status=status.HTTP_200_OK)
 
@@ -193,17 +198,17 @@ def successResponse(query, msg):
 #@csrf_exempt
 def getFriendRequests(request):
     the_json = json.loads(request.body)
-    followee_id = uuid.UUID(the_json["friend"]["id"])
+    followee_id = the_json["friend"]["id"]
     follower_host = the_json["author"]["host"]
     follower_url = the_json["author"]["url"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
 
     try:
-        followee = Author.objects.get(UID=followee_id)
+        followee = Author.objects.get(apiID=followee_id)
         follower = friend
     except:
-        return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+        return Response('No author found with id ' + followee_id, status=status.HTTP_404_NOT_FOUND)
 
     try:
         Follow(follower=follower, followee=followee).save()
@@ -230,14 +235,14 @@ def getPosts(request):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
-    query = Post.objects.exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    paginator = CustomPagination()
+    query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -251,7 +256,7 @@ def getAuthorPosts(request, id):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
-    paginator = PageNumberPagination()
+    paginator = CustomPagination()
     try:
         author = Author.objects.get(UID=id)
     except:
@@ -263,7 +268,7 @@ def getAuthorPosts(request, id):
         try:
             paginated = paginator.paginate_queryset(query, request)
             response = PostSerializer(paginated, many=True, context=request)
-            return paginator.get_paginated_response(response.data)
+            return paginator.get_paginated_posts(response.data, request)
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -294,5 +299,30 @@ def checkFriends2(request, id1, id2):
         response['friends'] = 'True'
     else:
         response['friends'] = 'False'
+
+    return Response(response, status=status.HTTP_200_OK)
+
+def checkManyFriends(request, id):
+
+    try:
+        author = Author.objects.get(UID=id)
+    except:
+         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
+
+    the_json = json.loads(request)
+
+    response = OrderedDict([
+        ('author', author.apiID),
+        ('authors',[])
+        ])
+
+    for frndId in the_json["authors"]:
+        try:
+            friend = Author.objects.get(apiID=frndId)
+        except:
+            continue
+
+        if author.isFriend(friend):
+            response['authors'].append(friend.apiID)
 
     return Response(response, status=status.HTTP_200_OK)
