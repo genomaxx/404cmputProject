@@ -23,6 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 LOCAL_HOST = socket.gethostname()
 
+APP_URL = "http://polar-savannah-14727.herokuapp.com/api/"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -174,6 +176,8 @@ APPEND_SLASH = True
 
 # This model requires authentication before entry is allowed
 AUTH_PROFILE_MODULE = 'authors.Author'
+
+API_AUTH_REQUIRED = True
 
 # Django REST settings
 REST_FRAMEWORK = {

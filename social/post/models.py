@@ -5,7 +5,7 @@ from django.utils import timezone
 import uuid;
 # Create your models here.
 
-APP_URL = "http://polar-savannah-14727.herokuapp.com"
+APP_URL = settings.APP_URL
 
 class Post(models.Model):
     VISIBILITY_CHOICES = [
@@ -20,6 +20,7 @@ class Post(models.Model):
     CONTENT_TYPE = [
         ('text/plain', 'Plain Text'),
         ('text/markdown', 'Markdown'),
+        ('text/html', 'HTML'),
     ]
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -33,7 +34,7 @@ class Post(models.Model):
     title = models.CharField(max_length=128, blank=True)
     source = models.URLField(blank=True)
     origin = models.URLField(blank=True)
-    contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/plain')
+    contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/html')
     description = models.CharField(max_length=64, blank=True)
     categories = models.CharField(max_length=128, blank=True)
     unlisted = models.BooleanField(default=False)
@@ -42,6 +43,7 @@ class Post(models.Model):
     # Audit fields
     publishDate = models.DateTimeField('date published', default=timezone.now)
     visibility = models.CharField(max_length=128, blank=True)
+    serverOnly = models.BooleanField(default=False)
     
     # visibleTo needs to be a list of author profile URI's a post is private to. 
     # (when private to other authors is implemented) 
@@ -50,7 +52,7 @@ class Post(models.Model):
         return str(self.content)
 
     def setOrigin(self):
-        self.origin = APP_URL + '/post/' + str(self.id)
+        self.origin = APP_URL + 'post/' + str(self.id)
 
     def checkIfPostShouldBeUnlisted(self):
         if (self.privacyLevel == 5):
@@ -61,3 +63,6 @@ class Post(models.Model):
     
     def setVisibility (self):
         self.visibility = self.get_privacyLevel_display()
+
+    def is_image(self):
+        return self.contentType.startswith("image")

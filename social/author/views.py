@@ -38,6 +38,9 @@ def index(request):
     except:
         return HttpResponse(sys.exc_info[0])
 
+    for p in posts:
+        p.content = get_content(p)
+
     try:
         if (len(posts) > 0):
             context['posts'] = viewablePosts
@@ -48,10 +51,19 @@ def index(request):
     return render(request, 'author/index.html', context)
 
 
+def get_content(post):
+    if post.contentType.startswith("image"):
+        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+    return post.content
+
+
 def get_remote_posts():
-    trusted_nodes = Node.objects.filter(trusted=True)
-    for n in trusted_nodes:
-        n.grab_public_posts()
+    try:
+        trusted_nodes = Node.objects.filter(trusted=True)
+        for n in trusted_nodes:
+            n.grab_public_posts()
+    except:
+        pass
 
 
 @login_required(login_url='/author_post/')
@@ -90,6 +102,9 @@ def author_post(request):
                 privacyLevel=request.POST['privacy_level']
             )
         priv = newPost.privacyLevel
+
+        if 'serverOnly' in request.POST:
+            newPost.serverOnly = True
 
         if priv == '0':
             newPost.visibility = 'PUBLIC'
@@ -175,7 +190,6 @@ def profile(request, id):
     if visitor.isFollowing(author):
         context["follows"] = True
 
-
     try:
         posts = Post.objects.filter(
             Q(author__id=author.id)
@@ -183,6 +197,7 @@ def profile(request, id):
 
         for post in posts:
             if viewer.canViewFeed(post):
+                post.content = get_content(post)
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
@@ -225,6 +240,7 @@ def edit_post(request):
         authorContext.dob = editForm.cleaned_data['dob']
         authorContext.gender = editForm.cleaned_data['gender']
         authorContext.github = editForm.cleaned_data['github']
+        authorContext.githubusername = editForm.cleaned_data['githubusername']
 
         authorContext.save()
 
@@ -243,7 +259,8 @@ def follow(request, id):
 
     if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
         # do some things!! like posting a friend request to the remote server!
-        pass
+        host = "http://" + followee.host.strip("http://").strip("/") + "/"
+        Node.objects.get(url=host).friend_request(follower, followee)
 
     return HttpResponseRedirect("/author/" + id)
 

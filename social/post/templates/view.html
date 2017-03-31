@@ -23,14 +23,16 @@
                {% if post.image %}
                <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
                {% endif %}
-               <p>{{ post.content|safe }}</p>
+               <p>{{ content|safe }}</p>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
                 <form action="{% url 'post:comment' pk=post.id %}" method="post">
 	                {% csrf_token %}
+	                <div class="form-group">
 	                {{ form }}
-	                <input type="submit" value="Post Comment" />
+	                </div>
+	                <button type="submit" class="btn btn-block btn-primary">Post Comment</button>
                 </form>
             </div>
             <!-- /.box-footer-->
@@ -59,7 +61,7 @@
 
               <div class="timeline-item">
                 <h3 class="timeline-header">
-                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author }}</a>
+                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author.displayName }}</a>
 		  says...
 		</h3>
                 <div class="timeline-body">
