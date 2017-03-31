@@ -143,13 +143,14 @@ def build_author(author_json):
 
 
 def build_author_maybe(author_json):
-    uid = uuid.UUID(author_json["id"])
+    id = build_id(author_json["id"])
+    uid = uuid.UUID(id)
 
     user, created = User.objects.get_or_create(username=author_json["id"])
 
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
-    author.apiID = author_json["id"]
+    author.apiID = id
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
@@ -160,12 +161,20 @@ def build_author_maybe(author_json):
     return author, created
 
 
+def build_id(author_url):
+    return author_url.strip("/").split("/")[-1]
+
+
 def build_comment(comment_json, postObj):
     # commented out for T5 atm
-    #uid = uuid.UUID(comment_json['guid'])
+    # uid = uuid.UUID(comment_json['guid'])
     uid = uuid.UUID(comment_json['id'])
     authorObj = build_author(comment_json['author'])
-    comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
+    comment, _ = Comment.objects.get_or_create(
+        UID=uid,
+        post=postObj,
+        author=authorObj
+    )
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
     comment.publishDate = comment_json['published']
