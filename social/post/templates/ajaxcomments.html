@@ -1,0 +1,26 @@
+            <li class="time-label">
+                  <span class="bg-red">
+                    Comments
+                  </span>
+            </li>
+            <!-- /.timeline-label -->
+            {% for comment in comment_list %}
+            <li>
+              <i class="fa fa-comments bg-blue"></i>
+
+              <div class="timeline-item">
+                <h3 class="timeline-header">
+                  <a href="{% url 'author:profile' comment.author.id.id %}">{{ comment.author.displayName }}</a>
+		  says...
+		</h3>
+                <div class="timeline-body">
+                    {{ comment.content }}
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+            <!-- timeline item -->
+            <!-- END timeline item -->
+            <li>
+              <i class="fa fa-clock-o bg-gray"></i>
+            </li>

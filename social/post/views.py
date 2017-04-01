@@ -1,8 +1,11 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.generic import DetailView
 from django.views import View
 from django.db.models import Q
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 from post.models import Post
 from post.forms import CommentForm
@@ -16,10 +19,43 @@ import requests
 
 APP_URL = settings.APP_URL
 
+@login_required
+def AjaxComments(request, pk):
+    author_post = get_object_or_404(Post, id=pk)
+    comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
+    
+    parsed_post_url = urlparse(author_post.origin)
+    parsed_app_url = urlparse(APP_URL)
+    
+    if parsed_post_url.netloc != parsed_app_url.netloc:
+        comment_ids = comments.values_list('UID',flat = True)
+        comment_ids = [str(x) for x in comment_ids]
+        
+        host = "http://"+parsed_post_url.netloc + "/"
+                
+        n = Node.objects.get(url=host)
+        
+        r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
+        
+        if r.status_code == requests.codes.ok:
+            post_objects = json.loads(r.text)
+            for o in post_objects['comments']:
+                if o['id'] not in comment_ids:
+                    build_comment(o, author_post)
+            
+            # get the new comments
+            comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
+
+    context = dict()
+    html = dict()    
+    context['comment_list'] = comments
+    html['comments'] = render_to_string('ajaxcomments.html', context, request=request)       
+    return JsonResponse(html)
+
 # Create your views here.
 class PostView(DetailView):
     model = Post
-    template_name = 'view.html'
+    template_name = 'view.html'      
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
