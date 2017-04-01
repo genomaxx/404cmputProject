@@ -3,6 +3,7 @@ from django.views.generic import DetailView
 from django.views import View
 from django.db.models import Q
 from django.conf import settings
+import sys
 
 from post.models import Post
 from post.forms import CommentForm
@@ -95,13 +96,13 @@ class AddComment(View):
             post=comment_post,
             )
             comment.setApiID()
-            comment.save()
-            
+
             parsed_comment_url = urlparse(comment_post.origin)
             parsed_app_url = urlparse(APP_URL)
-            
+
             if parsed_comment_url.netloc == parsed_app_url.netloc:
                 # post is on server, proceed as normal
+                comment.save()
                 return HttpResponseRedirect("/post/" + pk)
             
             else:
@@ -126,11 +127,18 @@ class AddComment(View):
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
                 host = "http://"+parsed_comment_url.netloc + "/"
-                
                 n = Node.objects.get(url=host)
-                
-                r = requests.post(comment_post.origin + "comments" +"/", data=msg, auth = requests.auth.HTTPBasicAuth(n.username,n.password))
-                
+
+                r = requests.post(
+                    comment_post.origin + "comments" +"/",
+                    data=msg,
+                    auth = requests.auth.HTTPBasicAuth(n.username,n.password),
+                    headers={
+                        "content-type": "application/json"
+                    })
+
+                sys.stderr.write(r.text)
+
                 if r.status_code == requests.codes.ok:
                     return HttpResponseRedirect("/post/" + pk)
                 elif r.status_code == requests.codes.forbidden:
@@ -139,5 +147,5 @@ class AddComment(View):
                 else:
                     Comment.objects.filter(UID=comment.UID).delete()
                     return HttpResponse(r.content)
-                    
+
         return HttpResponseRedirect("/post/" + pk)
