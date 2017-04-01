@@ -49,7 +49,7 @@ class Author(models.Model):
         self.url = APP_URL + "author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
-        self.apiID = APP_URL + "author/" + str(self.UID).replace("-", "")
+        self.apiID = self.host + "author/" + str(self.UID)
 
     def isFollowing(self, author):
         return Follow.objects.filter(
