@@ -118,6 +118,7 @@ def author_post(request):
             newPost.visibility = 'PRIVATE'
         elif priv == '5':
             newPost.visibility = 'UNLISTED'
+            newPost.unlisted = True
 
         newPost.setApiID()
         newPost.save()
