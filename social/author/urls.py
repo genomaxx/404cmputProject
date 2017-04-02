@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^(?P<id>[0-9]+)/followers/$', views.FollowersList.as_view(), name='followers'),
     url(r'edit_post/', views.edit_post, name='edit_post'),
     url(r'^$', views.index, name='index'),
+    url(r'ajaxposts/', views.ajaxposts, name='ajax_posts'),    
+    url(r'^(?P<id>[0-9]+)/ajaxprofileposts/', views.ajaxprofileposts, name='ajax_profile_posts'),    
 ]

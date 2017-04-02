@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, JsonResponse
 from django.contrib.auth.decorators import login_required
 from author.models import Author, Follow
 from post.models import Post
@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
 from django.utils.html import escape
+from django.template.loader import render_to_string
 from CommonMark import commonmark
 
 from . import forms
@@ -19,8 +20,7 @@ import re
 from node.models import Node
 # Create your views here.
 
-
-@login_required(login_url='/author/')
+@login_required
 def index(request):
     # This page displays the author's stream/post feed.
     # https://docs.djangoproject.com/en/1.10/topics/db/queries/
@@ -50,6 +50,35 @@ def index(request):
 
     return render(request, 'author/index.html', context)
 
+@login_required
+def ajaxposts(request):
+    author = Author.objects.get(id=request.user)
+    context = dict()
+    html = dict()    
+    viewablePosts = []
+    get_remote_posts()
+    # Get all post objects that are public and private
+    # TODO: Add to the query to expand the feed.
+    try:
+        posts = Post.objects.all().order_by('-publishDate')
+        for post in posts:
+            if author.canViewFeed(post):
+                viewablePosts.append(post)
+    except:
+        return HttpResponse(sys.exc_info[0])
+        
+    for p in posts:
+        p.content = get_content(p)
+
+    try:
+        if (len(posts) > 0):
+            context['posts'] = viewablePosts
+            html['posts'] = render_to_string('author/ajaxposts.html', context, request=request)
+            return JsonResponse(html)
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return JsonResponse(html)
 
 def get_content(post):
     if post.contentType.startswith("image"):
@@ -66,7 +95,7 @@ def get_remote_posts():
         pass
 
 
-@login_required(login_url='/author_post/')
+@login_required
 def author_post(request):
     # Only process the author's post if it is a POST request
     if (request.method != 'POST'):
@@ -146,7 +175,7 @@ def author_image(request,pk,pk1):
 
 # Implementation based upon the code found here
 # http://stackoverflow.com/questions/19754103/django-how-to-delete-an-object-using-a-view
-@login_required(login_url='/author_delete_post/')
+@login_required
 def author_delete_post(request, postpk):
     # Only process the request if it is in fact a request to delete the post
 
@@ -177,7 +206,7 @@ def remote_profile(request, uuid):
     return render(request, 'author/profile.html', context)
 
 
-@login_required(login_url='/profile/')
+@login_required
 def profile(request, id):
     # This page displays the author's profile.
     user = User.objects.get(id=id)
@@ -213,14 +242,46 @@ def profile(request, id):
 
     return render(request, 'author/profile.html', context)
 
+@login_required
+def ajaxprofileposts(request, id):
+    # This page displays the author's profile.
+    user = User.objects.get(id=id)
+    author = Author.objects.get(id=user)
+    context = dict()
+    html = dict()
+    viewer = Author.objects.get(id=request.user)
+    viewablePosts = []
 
-@login_required(login_url='/edit/')
+    try:
+        posts = Post.objects.filter(
+            Q(author__id=author.id)
+            ).order_by('-publishDate')
+
+        for post in posts:
+            if viewer.canViewFeed(post):
+                post.content = get_content(post)
+                viewablePosts.append(post)
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    try:
+       if (len(posts) > 0):
+           context['posts'] = viewablePosts
+           html['posts'] = render_to_string('author/ajaxprofileposts.html', context, request=request)
+           return JsonResponse(html)
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return JsonResponse(html)
+
+
+@login_required
 def edit(request):
     authorContext = Author.objects.get(id=request.user)
     return render(request, 'author/edit.html', {'author': authorContext})
 
 
-@login_required(login_url='/edit_post/')
+@login_required
 def edit_post(request):
     # This page edits the author's profile
 

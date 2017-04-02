@@ -1,0 +1,70 @@
+            <!-- timeline time label -->
+            <li class="time-label">
+                  <span class="bg-red">
+                    Posts
+                  </span>
+            </li>
+            <!-- /.timeline-label -->
+            {% for post in posts %}
+            {% if post.image %}
+            <li>
+              <i class="fa fa-camera bg-purple"></i>
+
+              <div class="timeline-item">
+                <h3 class="timeline-header">
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted an image...
+                </h3>
+
+                <div class="timeline-body">
+                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive">
+                </div>
+                <div class="timeline-footer">
+                 {% if request.user.id != post.author.id.id %}
+                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>
+                 {% endif %}
+                  {% if request.user.id == post.author.id.id %}
+                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
+                    {% csrf_token %}
+                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+            <!-- END timeline item -->
+            <!-- timeline item -->
+            {% endif %}
+            {% if not post.image %}
+            <li>
+              <i class="fa fa-sticky-note bg-blue"></i>
+
+              <div class="timeline-item">
+                <h3 class="timeline-header">
+                    <a href="{% url 'author:profile' post.author.id.id %}">{{ post.author.displayName }}</a> posted...
+                </h3>
+
+                <div class="timeline-body">
+                    {{ post.content|safe }}
+                </div>
+                <div class="timeline-footer">
+                 {% if request.user.id != post.author.id.id %}
+                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>
+                 {% endif %}
+                  {% if request.user.id == post.author.id.id %}
+                  <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
+                    {% csrf_token %}
+                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>&nbsp;&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+            <!-- timeline item -->
+            <!-- END timeline item -->
+            <li>
+              <i class="fa fa-clock-o bg-gray"></i>
+            </li>
