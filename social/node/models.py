@@ -149,13 +149,17 @@ def build_author_maybe(author_json):
     id = build_id(author_json["id"])
     uid = uuid.UUID(id)
 
-    user = ""
+    user = None
     if not author_json["host"].startswith(settings.APP_URL):
-        user, created = User.objects.get_or_create(username=author_json["id"])
+        user, created = User.objects.get_or_create(username=str(uid))
     else:
         created = False
         user = User.objects.get(username=author_json["displayName"])
 
+    sys.stderr.write(str(id))
+    sys.stderr.write("\n")
+    sys.stderr.write(str(uid))
+    sys.stderr.write("\n")
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
     author.displayName = author_json["displayName"]
