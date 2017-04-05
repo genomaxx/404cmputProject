@@ -1,5 +1,5 @@
 from django.db import models
-import json
+import simplejson as json
 import uuid
 from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
@@ -9,6 +9,7 @@ import sys
 from post.models import Post
 from author.models import Author
 from comment.models import Comment
+from django.conf import settings
 
 
 # Create your models here.
@@ -25,7 +26,7 @@ class Node(models.Model):
         on_delete=models.CASCADE
     )
 
-    post_route = "posts/"
+    post_route = "author/posts/"
     friends_route = "author/{}/friends/"
     friend_request_route = "friendrequest/"
 
@@ -33,8 +34,7 @@ class Node(models.Model):
         "PUBLIC": 0,
         "FRIENDS": 1,
         "FOAF": 2,
-        "PRIVATE": 3,
-        "SERVERONLY": 5
+        "PRIVATE": 3
     }
 
     def get_author(self, url):
@@ -65,14 +65,17 @@ class Node(models.Model):
         author = self.add_author_and_friends(post_json["author"])
         post, _ = Post.objects.get_or_create(UID=uid, author=author)
 
+        post.apiID = post_json["id"]
+        sys.stderr.write(post.apiID)
+        post.UID = uid
         post.content = post_json["content"]
         post.title = post_json["title"]
         post.source = post_json["source"]
         post.origin = post_json["origin"]
         post.privacyLevel = self.PRIVACY[post_json["visibility"]]
+        post.visibility = post_json["visibility"]
         post.contentType = post_json["contentType"]
         post.description = post_json["description"]
-        post.categories = post_json["categories"]
         post.unlisted = post_json["unlisted"]
         post.publishDate = parse_datetime(post_json["published"])
 
@@ -100,23 +103,24 @@ class Node(models.Model):
         data = {
             "query": "friendrequest",
             "author": {
-                "id": str(follower.UID).replace("-", ""),
+                "id": follower.apiID,
                 "host": follower.host,
                 "displayName": follower.displayName,
                 "url": follower.url
             },
             "friend": {
-                "id": str(followee.UID).replace("-", ""),
+                "id": followee.apiID,
                 "host": followee.host,
                 "displayName": followee.displayName,
                 "url": followee.url
 
             }
         }
+
         request_url = self.url + self.friend_request_route
 
         sys.stderr.write("Sending friend request!\n")
-        sys.stderr.write(str(data) + "\n")
+        sys.stderr.write(str(json.dumps(data)) + "\n")
 
         r = requests.post(
             url=request_url,
@@ -124,7 +128,10 @@ class Node(models.Model):
             auth=requests.auth.HTTPBasicAuth(
                 self.username,
                 self.password
-            )
+            ),
+            headers={
+                "content-type": "application/json"
+            }
         )
 
         sys.stderr.write(r.text + "\n")
@@ -139,26 +146,53 @@ def build_author(author_json):
 
 
 def build_author_maybe(author_json):
-    uid = uuid.UUID(author_json["id"])
+    id = build_id(author_json["id"])
+    uid = uuid.UUID(id)
 
-    user, created = User.objects.get_or_create(username=author_json["id"])
+    user = None
+    if not author_json["host"].startswith(settings.APP_URL):
+        user, created = User.objects.get_or_create(username=str(uid))
+    else:
+        created = False
+        user = User.objects.get(username=author_json["displayName"])
 
+    sys.stderr.write(str(id))
+    sys.stderr.write("\n")
+    sys.stderr.write(str(uid))
+    sys.stderr.write("\n")
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
+
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
-    author.gitURL = author_json["github"]
+    author.setApiID()
+    # author.gitURL = author_json["github"]
+    # sys.stderr.write(author.apiID)
     author.save()
 
     return author, created
 
 
+def build_id(author_url):
+    return author_url.strip("/").split("/")[-1]
+
+
 def build_comment(comment_json, postObj):
-    uid = uuid.UUID(comment_json['guid'])
+    # commented out for T5 atm
+    # uid = uuid.UUID(comment_json['guid'])
+
+    uid = uuid.UUID(comment_json['id'])
+
     authorObj = build_author(comment_json['author'])
-    comment, _ = Comment.objects.get_or_create(UID=uid, post=postObj, author=authorObj)
+
+    comment, _ = Comment.objects.get_or_create(
+        UID=uid,
+        post=postObj,
+        author=authorObj
+    )
+
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
     comment.publishDate = comment_json['published']
-    comment.setApiID()
+    comment.apiID = comment_json['id']
     comment.save()

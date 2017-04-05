@@ -6,7 +6,7 @@ import uuid
 from .utils import can_view_post, can_view_feed
 # Create your models here.
 
-APP_URL = "http://polar-savannah-14727.herokuapp.com/api/"
+APP_URL = settings.APP_URL
 
 class Author(models.Model):
 
@@ -33,7 +33,7 @@ class Author(models.Model):
 
     #For the API
     UID = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    apiID = models.CharField(max_length=200, blank=True)
+    apiID = models.CharField(max_length=200, blank=True, unique=True)
     github = models.CharField(max_length=200,blank=True)
     host = models.CharField(max_length=200, default=APP_URL)
     displayName = models.CharField(max_length=64, blank=True)
@@ -49,7 +49,7 @@ class Author(models.Model):
         self.url = APP_URL + "author/" + str(self.UID).replace("-", "")
     
     def setApiID (self):
-        self.apiID = str(self.UID).replace("-", "")
+        self.apiID = self.host + "author/" + str(self.UID)
 
     def isFollowing(self, author):
         return Follow.objects.filter(

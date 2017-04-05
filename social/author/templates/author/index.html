@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 {% extends "base_cp.html" %}
 {% load static %}
 {% block title %}Home of{% endblock %}
@@ -35,8 +34,11 @@
                           <option value=5>Unlisted (URL only)</option>
 		                    </select>
                     </div>
-                    <div class="form-group">
-                        <input type="checkbox" name="serverOnly">Server Only
+                    <div class="checkbox">
+                        <label>
+                        <input type="checkbox" name="serverOnly">
+                        Server Only
+                        </label>
                     </div>
                     <div class="form-group">
                       <label>Make this an Image Post</label>
@@ -58,7 +60,7 @@
       <div class="row">
         <div class="col-md-12">
           <!-- The time line -->
-          <ul class="timeline">
+          <ul class="timeline" id="indextimeline">
             <!-- timeline time label -->
             <li class="time-label">
                   <span class="bg-red">
@@ -121,4 +123,20 @@
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block cp_javascript %}
+<script>
+    setInterval(ajaxCall, 20000);
+    function ajaxCall() {
+        $.ajax({
+            url:'/author/ajaxposts/',
+            type: 'get',
+            dataType:'json',
+            success: function(data) {
+                $("#indextimeline").html(data.posts);
+            }
+        });
+    }
+</script>
 {% endblock %}

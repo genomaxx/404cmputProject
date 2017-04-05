@@ -57,7 +57,7 @@
       <div class="row">
         <div class="col-md-6">
           <!-- The time line -->
-          <ul class="timeline">
+          <ul class="timeline" id="posttimeline">
             <!-- timeline time label -->
             <li class="time-label">
                   <span class="bg-red">
@@ -76,7 +76,7 @@
                 </h3>
 
                 <div class="timeline-body">
-                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="margin img-responsive">
+                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive">
                 </div>
                 <div class="timeline-footer">
                  {% if request.user.id != post.author.id.id %}
@@ -165,6 +165,16 @@
     {% else %}
      $('ul#githubtimeline').append('<!-- END timeline item --><li><i class="fa fa-clock-o bg-gray"></i></li>');    
     {% endif %}
-</script>
+    setInterval(ajaxCall, 20000);
+    function ajaxCall() {
+        $.ajax({
+            url:'/author/{{author.id.id}}/ajaxprofileposts/',
+            type: 'get',
+            dataType:'json',
+            success: function(data) {
+                $("#posttimeline").html(data.posts);
+            }
+        });
+    }    
 </script>
 {% endblock %}
