@@ -6,7 +6,7 @@ from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.template.loader import render_to_string
 from CommonMark import commonmark
 
@@ -111,20 +111,27 @@ def author_post(request):
 
         authorContext = Author.objects.get(id=request.user)
 
+        content = request.POST['post_content']
+        content = escape(content) # Should always be escaping HTML tags
+        if request.POST['contentType'] == 'markdown':
+            content = commonmark(content)
+            ctype = 'commonmark'
+        else:
+            ctype = 'plain'
+
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
             # encode image into base64 here and make nice image url too
             imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
             newPost = Post(author=authorContext,
-                           content=request.POST['post_content'],
+                           content=content,
                            privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image'].read()),\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
                            image_type = request.FILES['image'].content_type)
 
         else:
-            content = request.POST['post_content']
-            content = escape(content)
-            content = commonmark(content)
+            #content = request.POST['post_content']
+            #content = escape(content)
             newPost = Post(
                 author=authorContext,
                 content=content,
@@ -149,6 +156,7 @@ def author_post(request):
             newPost.visibility = 'UNLISTED'
             newPost.unlisted = True
 
+        newPost.contentType = ctype
         newPost.setApiID()
         newPost.save()
         # need django to autogenerate the ID before using it to set the origin url
