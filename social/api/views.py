@@ -306,17 +306,18 @@ def checkFriends2(request, id1, id2):
 def checkManyFriends(request, id):
     # id = /api/author/<author__id>/friends
 
-    try:
-        author = Author.objects.get(UID=id)
-    except:
-         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
-
     the_json = json.loads(request)
 
     response = OrderedDict([
-        ('author', author.apiID),
+        ('author', the_json["author"]),
         ('authors',[])
-        ])
+    ])
+
+    try:
+        author = Author.objects.get(apiID=the_json["author"])
+    except:
+         return Response(response, status=status.HTTP_200_OK)
+
 
     for frndId in the_json["authors"]:
         try:
@@ -327,7 +328,7 @@ def checkManyFriends(request, id):
             node.get_author(follower_url)
             continue
 
-        if author.isFriend(friend):
+        if friend.isFollowing(author):
             response['authors'].append(friend.apiID)
 
     return Response(response, status=status.HTTP_200_OK)
