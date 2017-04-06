@@ -13,7 +13,13 @@ class PrivacyTestCase(TestCase):
         self.author_user = User.objects.create_user(username="author")
         self.viewer_user = User.objects.create_user(username="viewer")
         self.author = Author.objects.create(id=self.author_user)
+        self.author.setApiID()
+        self.author.approved = True
+        self.author.save()
         self.viewer = Author.objects.create(id=self.viewer_user)
+        self.viewer.setApiID()
+        self.viewer.approved = True
+        self.viewer.save()
 
     def test_public_post(self):
         post = Post.objects.create(author=self.author, privacyLevel=0)
@@ -66,6 +72,8 @@ class PostTestCase(TestCase):
     def setUpOneAuthor(self, name):
         user = User.objects.get(username=name)
         authorObj = Author.objects.create(id=user)
+        authorObj.setApiID()
+        authorObj.approved = True
         authorObj.save()
         return authorObj
 

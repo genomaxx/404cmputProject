@@ -64,12 +64,16 @@ class AuthorTestCase(TestCase):
         user1 = User.objects.get(username="Bill")
         user2 = User.objects.get(username="Abram")
         author1 = Author.objects.create(id=user1)
+        author1.setApiID()
+        author1.approved = True
+        author1.save()
         author2 = Author.objects.create(id=user2)
+        author2.setApiID()
+        author2.approved = True
 
         self.assertIsNot(author1, author2, "Two authors are the same")
 
         try:
-            author1.save()
             author2.save()
         except Exception as e:
             self.assertFalse(True, "Author did not save")
@@ -84,8 +88,14 @@ class FollowTestCase(TestCase):
     def setUp(self):
         self.emmett_user = User.objects.create_user(username="emmettu")
         self.scrunt_user = User.objects.create_user(username="scruntscrunt")
-        Author.objects.create(id=self.emmett_user)
-        Author.objects.create(id=self.scrunt_user)
+        a1 = Author.objects.create(id=self.emmett_user)
+        a1.setApiID()
+        a1.approved = True
+        a1.save()
+        a2 = Author.objects.create(id=self.scrunt_user)
+        a2.setApiID()
+        a2.approved = True
+        a2.save()
 
     def test_follower(self):
         emmett = Author.objects.get(id=self.emmett_user)
@@ -118,7 +128,13 @@ class FollowTestCase(TestCase):
         u1 = User.objects.create_user(username="u1")
         u2 = User.objects.create_user(username="u2")
         fof1 = Author.objects.create(id=u1)
+        fof1.setApiID()
+        fof1.approved = True
+        fof1.save()
         fof2 = Author.objects.create(id=u2)
+        fof2.setApiID()
+        fof2.approved = True
+        fof2.save()
 
         self.assertEqual(emmett.isFriendOfFriend(fof1), False)
         self.assertEqual(scrunt.isFriendOfFriend(fof2), False)

@@ -91,6 +91,7 @@ def getProfile(request, id):
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getComments(request, id):
+    # id = api/posts/<post_id>/comment
 
     # Add a comment
     if (request.method == 'POST'):
@@ -303,6 +304,7 @@ def checkFriends2(request, id1, id2):
     return Response(response, status=status.HTTP_200_OK)
 
 def checkManyFriends(request, id):
+    # id = /api/author/<author__id>/friends
 
     try:
         author = Author.objects.get(UID=id)
@@ -320,6 +322,9 @@ def checkManyFriends(request, id):
         try:
             friend = Author.objects.get(apiID=frndId)
         except:
+            # if they are not an author on our system, get that author from the Node
+            follower_url = frndId
+            node.get_author(follower_url)
             continue
 
         if author.isFriend(friend):
