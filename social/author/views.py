@@ -104,8 +104,8 @@ def author_post(request):
     if (request.method != 'POST'):
         return HttpResponseRedirect('/author/')
 
-    if (request.POST['post_content'] is None):
-        return
+    if (request.POST['post_content'] == '' and 'image' not in request.FILES.keys()):
+        return HttpResponseRedirect('/author/')
 
     try:
         # Get the logged in user and the associated author object.
@@ -141,7 +141,7 @@ def author_post(request):
             imagePost.source = imagePost.origin
             imagePost.save()
 
-        if request.POST['post_content'] is not None:
+        if request.POST['post_content'] != '':
             #content = request.POST['post_content']
             #content = escape(content)
             newPost = Post(
