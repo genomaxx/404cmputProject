@@ -138,7 +138,7 @@ def getSinglePost(request, id):
 def getFriends(request, id):
 
     if (request.method == 'POST'):
-        return checkManyFriends(reuest, id)
+        return checkManyFriends(request, id)
 
     try:
         author = Author.objects.get(UID=id)
@@ -306,7 +306,7 @@ def checkFriends2(request, id1, id2):
 def checkManyFriends(request, id):
     # id = /api/author/<author__id>/friends
 
-    the_json = json.loads(request)
+    the_json = json.loads(request.body)
 
     response = OrderedDict([
         ('author', the_json["author"]),
@@ -324,8 +324,6 @@ def checkManyFriends(request, id):
             friend = Author.objects.get(apiID=frndId)
         except:
             # if they are not an author on our system, get that author from the Node
-            follower_url = frndId
-            node.get_author(follower_url)
             continue
 
         if friend.isFollowing(author):

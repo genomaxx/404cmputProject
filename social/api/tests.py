@@ -2,6 +2,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
 # Django REST
 from rest_framework.test import APIClient, APITestCase
 # App
@@ -14,6 +15,7 @@ from api.posts import *
 #from bson import json_util
 import json
 import uuid
+APP_URL = settings.APP_URL
 
 # Create your tests here.
 class PostApiTestCase(TestCase):
@@ -45,11 +47,13 @@ class PostApiTestCase(TestCase):
                                          content="Test post 1",
                                          privacyLevel=0,
                                          origin="http://polar-savannah-14727/")
+        self.post1.setApiID()
         self.post1.save()
 
         self.post2 = Post.objects.create(author=self.authorObj,
                                          content="Test post2",
                                          privacyLevel=1)
+        self.post2.setApiID()
         self.post2.save()
 
     def tearDown(self):
@@ -84,31 +88,25 @@ class PostApiTestCase(TestCase):
     # Test ADD COMMENT request to end-point: api/posts/<uuid>/comments
     def test_addCommentToPost(self):
         response = self.client.login(username=self.userObj.username, password="test")
-        user = User.objects.create(username="stupid")
-        author = Author.objects.create(id=user, displayName="auth")
-        author.setApiID()
-        author.id.username = author.apiID
-        post = Post.objects.get(author=self.authorObj, content=self.post1.content)
-        post.setApiID()
-        comment =  Comment.objects.create(post=post, author=self.authorObj, content='test comment')
+        comment =  Comment.objects.create(post=self.post1, author=self.authorObj, content='test comment')
         comment.setApiID()
+
         msg = {'query': 'addComment',
-                   'post': 'whatever/test',
+                   'post': self.post1.apiID,
                    'comment': {
                        'author': {
-                           'id': '0d5ea6edace642178ac5a29d43e14bfe',
-                           'host': 'local host',
-                           'displayName': str(author.displayName),
-                           'url': author.url,
-                           'github': author.github,
+                           'id': self.authorObj.apiID,
+                           'host': APP_URL,
+                           'displayName': self.authorObj.displayName,
+                           'url': self.authorObj.url,
+                           'github': self.authorObj.github,
                             },
                        'comment': comment.content,
                        'contentType': comment.contentType,
                        'published': comment.publishDate,
-                       'guid': '0d5ea6edace642178ac5a29d43e14fff',
+                       'id': comment.apiID,
                        },
                    }
-        print('/api/posts/' + post.apiID + '/comments/')
-        response = self.client.post('/api/posts/' + post.apiID + '/comments/', msg, format='json')
+        response = self.client.post('/api/posts/' + self.post1.apiID + '/comments/', msg, format='json')
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         self.client.logout()
