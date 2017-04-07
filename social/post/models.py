@@ -20,6 +20,8 @@ class Post(models.Model):
     CONTENT_TYPE = [
         ('plain', 'text/plain'),
         ('commonmark', 'text/markdown'),
+        ('image/png', 'image/png'),
+        ('image/jpeg', 'image/jpeg'),
     ]
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
