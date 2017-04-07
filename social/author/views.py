@@ -6,7 +6,7 @@ from post.models import Post
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.template.loader import render_to_string
 from CommonMark import commonmark
 
@@ -34,12 +34,13 @@ def index(request):
         posts = Post.objects.all().order_by('-publishDate')
         for post in posts:
             if author.canViewFeed(post):
+                post.content = get_content(post) # You should do this instead of doing double iteration
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
-
-    for p in posts:
-        p.content = get_content(p)
+    # Redundant iterations
+    #for p in posts:
+    #    p.content = get_content(p)
 
     try:
         if (len(posts) > 0):
@@ -63,12 +64,14 @@ def ajaxposts(request):
         posts = Post.objects.all().order_by('-publishDate')
         for post in posts:
             if author.canViewFeed(post):
+                post.content = get_content(post) # So you don't need to iterate over the same list twice
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
-        
-    for p in posts:
-        p.content = get_content(p)
+    
+    # Redundant iteration here    
+    #for p in posts:
+    #    p.content = get_content(p)
 
     try:
         if (len(posts) > 0):
@@ -111,30 +114,51 @@ def author_post(request):
 
         authorContext = Author.objects.get(id=request.user)
 
+        content = request.POST['post_content']
+        content = escape(content) # Should always be escaping HTML tags
+        if request.POST['contentType'] == 'markdown':
+            content = commonmark(content)
+            ctype = 'commonmark'
+        else:
+            ctype = 'plain'
+
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
             # encode image into base64 here and make nice image url too
             imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
-            newPost = Post(author=authorContext,
-                           content=request.POST['post_content'],
-                           privacyLevel=request.POST['privacy_level'], image = base64.b64encode(request.FILES['image'].read()),\
+            base64Image = base64.b64encode(request.FILES['image'].read())
+            imagePost = Post(author=authorContext,
+                           content=base64Image,
+                           contentType=request.FILES['image'].content_type,
+                           privacyLevel=request.POST['privacy_level'], 
+                           image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
                            image_type = request.FILES['image'].content_type)
+            setVisibility(request, imagePost)
+            imagePost.setApiID()
+            imagePost.save()
+            imagePost.setOrigin()
+            imagePost.source = imagePost.origin
+            imagePost.save()
 
-        else:
-            content = request.POST['post_content']
-            content = escape(content)
-            content = commonmark(content)
+        if request.POST['post_content'] is not None:
+            #content = request.POST['post_content']
+            #content = escape(content)
             newPost = Post(
                 author=authorContext,
                 content=content,
-                privacyLevel=request.POST['privacy_level']
+                privacyLevel=request.POST['privacy_level'],
+                contentType=ctype
             )
-        priv = newPost.privacyLevel
-
-        if 'serverOnly' in request.POST:
-            newPost.serverOnly = True
-
+            setVisibility(request, newPost)
+            newPost.setApiID()
+            newPost.save()
+            # need django to autogenerate the ID before using it to set the origin url
+            newPost.setOrigin()
+            newPost.source = newPost.origin
+            newPost.save()
+        #priv = newPost.privacyLevel
+            ''' Factored out
         if priv == '0':
             newPost.visibility = 'PUBLIC'
         elif priv == '1':
@@ -148,14 +172,9 @@ def author_post(request):
         elif priv == '5':
             newPost.visibility = 'UNLISTED'
             newPost.unlisted = True
+        '''
 
-        newPost.setApiID()
-        newPost.save()
-        # need django to autogenerate the ID before using it to set the origin url
-        newPost.setOrigin()
-        newPost.source = newPost.origin
-        newPost.save()
-        if newPost.privacyLevel == '5':
+        if request.POST['privacy_level'] == '5':
             redirect = '/post/' + str(newPost.id)
             return HttpResponseRedirect(redirect)
 
@@ -163,6 +182,23 @@ def author_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
+
+def setVisibility(request, post):
+    if post.privacyLevel == '0':
+            post.visibility = 'PUBLIC'
+    elif post.privacyLevel == '1':
+            post.visibility = 'FRIENDS'
+    elif post.privacyLevel == '2':
+            post.visibility = 'FOAF'
+    elif post.privacyLevel == '3':
+            post.visibility = 'PRIVATE'
+    elif post.privacyLevel == '4':
+            post.visibility = 'PRIVATE'
+    elif post.privacyLevel == '5':
+            post.visibility = 'UNLISTED'
+            post.unlisted = True
+    if 'serverOnly' in request.POST:
+            post.serverOnly = True
 
 # http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
 @login_required()
