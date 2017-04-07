@@ -91,6 +91,7 @@ def getProfile(request, id):
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
 def getComments(request, id):
+    # id = api/posts/<post_id>/comment
 
     # Add a comment
     if (request.method == 'POST'):
@@ -137,7 +138,7 @@ def getSinglePost(request, id):
 def getFriends(request, id):
 
     if (request.method == 'POST'):
-        return checkManyFriends(reuest, id)
+        return checkManyFriends(request, id)
 
     try:
         author = Author.objects.get(UID=id)
@@ -156,7 +157,6 @@ def getFriends(request, id):
         response['authors'].append(str(auth.URL))
 
     return Response(response, status=status.HTTP_200_OK)
-
 
 def addComment(request, postId):
     try:
@@ -248,6 +248,7 @@ def getPosts(request):
 
     return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
 @authentication_classes((SessionAuthentication, BasicAuthentication))
@@ -303,8 +304,9 @@ def checkFriends2(request, id1, id2):
     return Response(response, status=status.HTTP_200_OK)
 
 def checkManyFriends(request, id):
+    # id = /api/author/<author__id>/friends
 
-    the_json = json.loads(request)
+    the_json = json.loads(request.body)
 
     response = OrderedDict([
         ('author', the_json["author"]),
@@ -321,6 +323,7 @@ def checkManyFriends(request, id):
         try:
             friend = Author.objects.get(apiID=frndId)
         except:
+            # if they are not an author on our system, get that author from the Node
             continue
 
         if friend.isFollowing(author):

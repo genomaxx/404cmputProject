@@ -165,7 +165,7 @@ def build_author_maybe(author_json):
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
-    author.setApiID()
+    author.apiID = author_json["id"]
     # author.gitURL = author_json["github"]
     # sys.stderr.write(author.apiID)
     author.save()
