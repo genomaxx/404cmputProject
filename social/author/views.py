@@ -127,7 +127,7 @@ def author_post(request):
             base64Image = base64.b64encode(request.FILES['image'].read())
             imagePost = Post(author=authorContext,
                            content=base64Image,
-                           contentType=request.FILES['image'].content_type,
+                           contentType=request.FILES['image'].content_type + ":base64",
                            privacyLevel=request.POST['privacy_level'], 
                            #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
