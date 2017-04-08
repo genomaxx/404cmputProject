@@ -112,7 +112,7 @@ def get_friends_of_friends(author):
 def get_friends(author):
     return [a.follower for a in author.followers() if author.isFriend(a.follower)]
 
-def get_all_following(author):
+def get_all_following(self):
     return [a.followee for a in author.following()]
 
 def get_followers(author):
