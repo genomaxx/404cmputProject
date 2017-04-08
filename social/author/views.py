@@ -118,7 +118,7 @@ def author_post(request):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
-        if request.POST['contentType'] == 'text/markdown':
+        if request.POST['contentType'] == 'markdown':
             ctype = 'text/markdown'
         else:
             ctype = 'text/plain'
