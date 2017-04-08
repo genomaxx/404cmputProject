@@ -77,6 +77,9 @@ class Author(models.Model):
     def getfollowing(self):
         return get_all_following(self)
 
+    def following(self):
+        return get_following(self)
+
     def getFriends(self):
         return get_friends(self)
 
