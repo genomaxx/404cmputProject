@@ -118,10 +118,6 @@ def author_post(request):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
-        if request.POST['contentType'] == 'markdown':
-            ctype = 'text/markdown'
-        else:
-            ctype = 'text/plain'
 
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
@@ -150,7 +146,7 @@ def author_post(request):
                 author=authorContext,
                 content=content,
                 privacyLevel=request.POST['privacy_level'],
-                contentType=ctype
+                contentType=request.POST['content_type']
             )
             setVisibility(request, newPost)
             newPost.setApiID()
