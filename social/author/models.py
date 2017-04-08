@@ -60,8 +60,8 @@ class Author(models.Model):
         ).exists()
 
     def isFriend(self, author):
-        if not author.url.startswith(settings.APP_URL):
-            return self.remote_is_friend(author)
+        if not self.url.startswith(settings.APP_URL):
+            return author.remote_is_friend(self)
         return Follow.objects.filter(
             Q(followee=self) & Q(follower=author) |
             Q(followee=author) & Q(follower=self)
