@@ -50,7 +50,7 @@ class Post(models.Model):
     # (when private to other authors is implemented) 
 
     def __str__(self):
-        return str(self.content)
+        return str(self.apiID)
 
     def setOrigin(self):
         self.origin = APP_URL + 'post/' + str(self.id)
