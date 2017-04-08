@@ -34,7 +34,7 @@ class AuthorSerializer(serializers.ModelSerializer):
                   'friends']
 
     def add_friends(self, postObj):
-        query = postObj.getFriends()
+        query = postObj.following()
         response = FriendSerializer(query, many=True)
         return response.data
 
@@ -49,7 +49,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id',
                   'author',
                   'comment',
-                  'contentType', 
+                  'contentType',
                   'published']
 
 class PostSerializer(serializers.ModelSerializer):
@@ -80,7 +80,7 @@ class PostSerializer(serializers.ModelSerializer):
                   'count',
                   'comments',
                   'visibility']
-    
+
     def add_comments(self, postObj):
         paginator = PageNumberPagination()
         paginator.page_size = 5
@@ -88,10 +88,10 @@ class PostSerializer(serializers.ModelSerializer):
         paginated = paginator.paginate_queryset(query, self.context)
         response = CommentSerializer(paginated, many=True)
         return response.data
-    
+
     def add_categories(self, postObj):
         return []
-     
+
     def count_comments(self, postObj):
         query = Comment.objects.filter(post=postObj)
         return (len(query))
@@ -100,5 +100,3 @@ class PostSerializer(serializers.ModelSerializer):
         if ('size' not in self.context.GET):
             return 20;
         return self.context.GET['size']
-        
-   

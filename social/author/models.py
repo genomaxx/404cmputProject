@@ -74,6 +74,9 @@ class Author(models.Model):
     def followers(self):
         return get_followers(self)
 
+    def following(self):
+        return get_following(self)
+
     def getFriends(self):
         return get_friends(self)
 
@@ -112,6 +115,9 @@ def get_friends(author):
 
 def get_followers(author):
     return Follow.objects.filter(followee=author)
+
+def get_following(author):
+    return Follow.objects.filter(follower=author)
 
 
 def get_friend_requests(author):
