@@ -1,0 +1,82 @@
+{% extends "base_cp.html" %}
+{% load static %}
+{% block title %}Edit Post in{% endblock %}
+
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Edit Post
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Edit Post ID: {{post.id}}</h3>
+            </div>
+            <div class="box-body">
+               {% if post.image %}
+                   <img src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive">
+               {% endif %}
+                <form id="editpost" action="/post/{{post.id}}/editpost/" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group" {% if post.image %}style="display:none"{%endif%}>
+                        <label>Post Text</label>
+                        <textarea class="form-control" rows="3" name="post_content">{% if post.content %}{{post.content}}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Post Privacy</label>
+		                    <select class="form-control" name="privacy_level">
+		                      <option value=0 {% if post.privacyLevel == 0 %}selected{% endif %}>Public</option>
+		                      <option value=1 {% if post.privacyLevel == 1 %}selected{% endif %}>Friends</option>
+		                      <option value=2 {% if post.privacyLevel == 2 %}selected{% endif %}>Friends of Friends</option>
+		                      <option value=4> {% if post.privacyLevel == 4 %}selected{% endif %}Me Only</option>
+                          <option value=5 {% if post.privacyLevel == 5 %}selected{% endif %}>Unlisted (URL only)</option>
+		                    </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                            <select type="form-control" name="contentType">
+                                <option value="plain" {% if post.contentType == 'plain' %}selected{% endif %}>Plain Text</option>
+                                <option value="markdown" {% if post.contentType == 'commonmark' %}selected{% endif %}>Common Mark</option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                        <input type="checkbox" name="serverOnly" {% if post.serverOnly %}checked{% endif %}>
+                        Server Only
+                        </label>
+                    </div>
+                   {% if post.image %}
+                    <div class="form-group">
+                      <label>Change the Image</label>
+                      <input type="file" name="image" accept=".png,.jpeg">
+                    </div>
+                   {% endif %}
+			    </form>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <div class="form-group">
+                    <button form="editpost" onclick="!this.form&&$('#'+$(this).attr('form')).submit()" type="submit" class="btn btn-block btn-primary">Edit Post</button>
+                </div>
+            </div>
+            <!-- /.box-footer-->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+

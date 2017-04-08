@@ -117,7 +117,6 @@ def author_post(request):
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
         if request.POST['contentType'] == 'markdown':
-            content = commonmark(content)
             ctype = 'commonmark'
         else:
             ctype = 'plain'
@@ -142,7 +141,7 @@ def author_post(request):
             imagePost.save()
 
 
-        if request.POST['post_content'] != '':
+        elif request.POST['post_content'] != '':
             #content = request.POST['post_content']
             #content = escape(content)
             newPost = Post(
@@ -174,6 +173,8 @@ def author_post(request):
             newPost.visibility = 'UNLISTED'
             newPost.unlisted = True
         '''
+        else:
+            return HttpResponseRedirect('/author/')
 
         if request.POST['privacy_level'] == '5':
             redirect = '/post/' + str(newPost.id)
