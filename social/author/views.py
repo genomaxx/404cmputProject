@@ -128,9 +128,10 @@ def author_post(request):
                            content=base64Image,
                            contentType=request.FILES['image'].content_type,
                            privacyLevel=request.POST['privacy_level'], 
-                           image = base64Image,\
+                           #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
-                           image_type = request.FILES['image'].content_type)
+                           #image_type = request.FILES['image'].content_type)
+                           )
             setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
@@ -146,7 +147,7 @@ def author_post(request):
                 author=authorContext,
                 content=content,
                 privacyLevel=request.POST['privacy_level'],
-                contentType=request.POST['content_type']
+                contentType=request.POST['contentType']
             )
             setVisibility(request, newPost)
             newPost.setApiID()
@@ -202,7 +203,7 @@ def setVisibility(request, post):
 @login_required()
 def author_image(request,pk,pk1):
     post = get_object_or_404(Post, id=pk, image_url= pk1)
-    response = HttpResponse(content=base64.b64decode(post.image), content_type=post.image_type)
+    response = HttpResponse(content=base64.b64decode(post.content), content_type=post.contentType)
     response['Content-Disposition'] = "filename="+post.image_url
     return response
 

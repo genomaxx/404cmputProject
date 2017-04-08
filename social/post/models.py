@@ -28,8 +28,8 @@ class Post(models.Model):
     content = models.TextField()
     privacyLevel = models.IntegerField(choices=VISIBILITY_CHOICES, default=0)
     image_url = models.TextField(blank=True)
-    image = models.TextField(blank=True)
-    image_type = models.TextField(blank=True)
+    #image = models.TextField(blank=True)
+    #image_type = models.TextField(blank=True)
 
     # NEW API FIELDS (You might want to integrate these with the UI so they set properly)
     title = models.CharField(max_length=128, blank=True)
