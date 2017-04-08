@@ -74,8 +74,8 @@ class Author(models.Model):
     def followers(self):
         return get_followers(self)
 
-    def following(self):
-        return get_following(self)
+    def getfollowing(self):
+        return get_all_following(self)
 
     def getFriends(self):
         return get_friends(self)
@@ -112,7 +112,7 @@ def get_friends_of_friends(author):
 def get_friends(author):
     return [a.follower for a in author.followers() if author.isFriend(a.follower)]
 
-def get_all_following(self):
+def get_all_following(author):
     return [a.followee for a in author.following()]
 
 def get_followers(author):
