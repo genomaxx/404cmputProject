@@ -142,6 +142,7 @@ def author_post(request):
             imagePost.source = imagePost.origin
             imagePost.save()
 
+
         if request.POST['post_content'] != '':
             #content = request.POST['post_content']
             #content = escape(content)
