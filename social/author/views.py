@@ -9,6 +9,7 @@ from django.views import View
 from django.utils.html import escape, format_html
 from django.template.loader import render_to_string
 from CommonMark import commonmark
+from django.conf import settings
 
 from . import forms
 from .utils import get_friend_status
@@ -85,7 +86,13 @@ def ajaxposts(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
+<<<<<<< HEAD
         return "<img alt=\"other server image\" class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+=======
+        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+    if post.contentType == 'text/markdown':
+        return commonmark(post.content)
+>>>>>>> origin/master
     return post.content
 
 
@@ -116,10 +123,13 @@ def author_post(request):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
+<<<<<<< HEAD
         if request.POST['contentType'] == 'markdown':
             ctype = 'commonmark'
         else:
             ctype = 'plain'
+=======
+>>>>>>> origin/master
 
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
@@ -130,9 +140,10 @@ def author_post(request):
                            content=base64Image,
                            contentType=request.FILES['image'].content_type,
                            privacyLevel=request.POST['privacy_level'], 
-                           image = base64Image,\
+                           #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
-                           image_type = request.FILES['image'].content_type)
+                           #image_type = request.FILES['image'].content_type)
+                           )
             setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
@@ -148,7 +159,7 @@ def author_post(request):
                 author=authorContext,
                 content=content,
                 privacyLevel=request.POST['privacy_level'],
-                contentType=ctype
+                contentType=request.POST['contentType']
             )
             setVisibility(request, newPost)
             newPost.setApiID()
@@ -206,7 +217,7 @@ def setVisibility(request, post):
 @login_required()
 def author_image(request,pk,pk1):
     post = get_object_or_404(Post, id=pk, image_url= pk1)
-    response = HttpResponse(content=base64.b64decode(post.image), content_type=post.image_type)
+    response = HttpResponse(content=base64.b64decode(post.content), content_type=post.contentType)
     response['Content-Disposition'] = "filename="+post.image_url
     return response
 
@@ -357,7 +368,7 @@ def follow(request, id):
 
     Follow(follower=follower, followee=followee).save()
 
-    if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
+    if (followee.host != settings.APP_URL):
         # do some things!! like posting a friend request to the remote server!
         host = "http://" + followee.host.strip("http://").strip("/") + "/"
         Node.objects.get(url=host).friend_request(follower, followee)

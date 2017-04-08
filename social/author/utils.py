@@ -76,3 +76,7 @@ def get_friend_status(author, visitor):
         return "you follow them"
     else:
         return "you two aren't friends"
+
+
+def remote_friend(author, remote):
+    return True

@@ -18,8 +18,8 @@ class Post(models.Model):
     ]
 
     CONTENT_TYPE = [
-        ('plain', 'text/plain'),
-        ('commonmark', 'text/markdown'),
+        ('text/plain', 'text/plain'),
+        ('text/markdown', 'text/markdown'),
         ('image/png', 'image/png'),
         ('image/jpeg', 'image/jpeg'),
     ]
@@ -28,8 +28,8 @@ class Post(models.Model):
     content = models.TextField()
     privacyLevel = models.IntegerField(choices=VISIBILITY_CHOICES, default=0)
     image_url = models.TextField(blank=True)
-    image = models.TextField(blank=True)
-    image_type = models.TextField(blank=True)
+    #image = models.TextField(blank=True)
+    #image_type = models.TextField(blank=True)
 
     # NEW API FIELDS (You might want to integrate these with the UI so they set properly)
     title = models.CharField(max_length=128, blank=True)
@@ -50,7 +50,7 @@ class Post(models.Model):
     # (when private to other authors is implemented) 
 
     def __str__(self):
-        return str(self.content)
+        return str(self.apiID)
 
     def setOrigin(self):
         self.origin = APP_URL + 'post/' + str(self.id)
