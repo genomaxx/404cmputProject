@@ -56,10 +56,12 @@ class PostSerializer(serializers.ModelSerializer):
     author = FriendSerializer(read_only=True)
     query = 'post'
     comments = serializers.SerializerMethodField('add_comments')
+    categories = serializers.SerializerMethodField('add_categories')
     count = serializers.SerializerMethodField('count_comments')
     size = serializers.SerializerMethodField('add_page_size')
     id = serializers.CharField(source='apiID')
     published = serializers.CharField(source='publishDate')
+
 
     class Meta:
         model = Post
@@ -86,6 +88,9 @@ class PostSerializer(serializers.ModelSerializer):
         paginated = paginator.paginate_queryset(query, self.context)
         response = CommentSerializer(paginated, many=True)
         return response.data
+    
+    def add_categories(self, postObj):
+        return []
      
     def count_comments(self, postObj):
         query = Comment.objects.filter(post=postObj)

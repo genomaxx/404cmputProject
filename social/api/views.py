@@ -57,7 +57,7 @@ def getAllPosts(request):
     paginator = CustomPagination()
     query = Post.objects.filter(
         Q(privacyLevel=0) &
-        Q(serverOnly=False)).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+        Q(serverOnly=False)).filter(origin__startswith='http://calm-wave-83737').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
@@ -236,7 +236,7 @@ def getPosts(request):
     # I'm keeping this here as a reminder while we build out the API
     ############
     paginator = CustomPagination()
-    query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://calm-wave-83737').order_by('-publishDate')
 
     if (len(query) > 0):
         try:
@@ -263,7 +263,7 @@ def getAuthorPosts(request, id):
     except:
          return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
-    query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+    query = Post.objects.filter(author=author).exclude(privacyLevel=5).exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://calm-wave-83737').order_by('-publishDate')
 
     if (len(query) > 0):
         try:

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+from CommonMark import commonmark
 
 import sys
 
@@ -113,6 +114,8 @@ class PostView(DetailView):
     def get_content(self):
         if self.object.is_image():
             return self.build_image()
+        elif self.object.contentType == "text/markdown":
+            return commonmark(self.object.content)
         return self.object.content
 
     def build_image(self):
