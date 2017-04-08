@@ -9,6 +9,7 @@ from django.views import View
 from django.utils.html import escape, format_html
 from django.template.loader import render_to_string
 from CommonMark import commonmark
+from django.conf import settings
 
 from . import forms
 from .utils import get_friend_status
@@ -356,7 +357,7 @@ def follow(request, id):
 
     Follow(follower=follower, followee=followee).save()
 
-    if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
+    if (followee.host != settings.APP_URL):
         # do some things!! like posting a friend request to the remote server!
         host = "http://" + followee.host.strip("http://").strip("/") + "/"
         Node.objects.get(url=host).friend_request(follower, followee)
