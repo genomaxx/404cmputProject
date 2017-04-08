@@ -85,7 +85,7 @@ def ajaxposts(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
-        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+        return "<img alt=\"other server image\" class=\"img-responsive\" src=\"{}\"/>".format(post.content)
     return post.content
 
 
