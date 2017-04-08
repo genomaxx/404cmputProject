@@ -36,10 +36,10 @@ n2 = Node(
 )
 
 n3 = Node(
-    url="",
+    url="http://blockbuster.canadacentral.cloudapp.azure.com/",
     user=u3,
-    username="",
-    password="",
+    username="team8",
+    password="team8",
     trusted=True
 )
 
