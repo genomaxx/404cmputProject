@@ -118,10 +118,10 @@ def author_post(request):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
-        if request.POST['contentType'] == 'markdown':
-            ctype = 'commonmark'
+        if request.POST['contentType'] == 'text/markdown':
+            ctype = 'text/markdown'
         else:
-            ctype = 'plain'
+            ctype = 'text/plain'
 
         if ('image' in request.FILES.keys()):
             # Create and save a new post.

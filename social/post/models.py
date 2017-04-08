@@ -18,8 +18,8 @@ class Post(models.Model):
     ]
 
     CONTENT_TYPE = [
-        ('plain', 'text/plain'),
-        ('commonmark', 'text/markdown'),
+        ('text/plain', 'text/plain'),
+        ('text/markdown', 'text/markdown'),
         ('image/png', 'image/png'),
         ('image/jpeg', 'image/jpeg'),
     ]
