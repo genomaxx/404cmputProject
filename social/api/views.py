@@ -154,7 +154,7 @@ def getFriends(request, id):
         ])
 
     for auth in query:
-        response['authors'].append(str(auth.URL))
+        response['authors'].append(str(auth.url))
 
     return Response(response, status=status.HTTP_200_OK)
 
