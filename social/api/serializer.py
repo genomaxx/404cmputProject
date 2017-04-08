@@ -34,7 +34,7 @@ class AuthorSerializer(serializers.ModelSerializer):
                   'friends']
 
     def add_friends(self, postObj):
-        query = postObj.following()
+        query = postObj.get_all_following()
         response = FriendSerializer(query, many=True)
         return response.data
 

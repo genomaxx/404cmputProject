@@ -145,7 +145,7 @@ def getFriends(request, id):
     except:
         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
-    query = author.following()
+    query = author.get_all_following()
     if (len(query) == 0):
         return Response('No friends found for author ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
