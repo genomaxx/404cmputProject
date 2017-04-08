@@ -86,6 +86,8 @@ def ajaxposts(request):
 def get_content(post):
     if post.contentType.startswith("image"):
         return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+    if post.contentType == 'text/markdown':
+        return commonmark(post.content)
     return post.content
 
 
@@ -117,7 +119,6 @@ def author_post(request):
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
         if request.POST['contentType'] == 'markdown':
-            content = commonmark(content)
             ctype = 'commonmark'
         else:
             ctype = 'plain'
