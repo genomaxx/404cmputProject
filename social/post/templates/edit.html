@@ -39,7 +39,7 @@
                           <option value=5 {% if post.privacyLevel == 5 %}selected{% endif %}>Unlisted (URL only)</option>
 		                    </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" {% if post.image %}style="display:none"{%endif%}>
                         <label>Content Type</label>
                             <select type="form-control" name="contentType">
                                 <option value="plain" {% if post.contentType == 'plain' %}selected{% endif %}>Plain Text</option>
