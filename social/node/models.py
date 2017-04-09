@@ -162,6 +162,10 @@ def build_author_maybe(author_json):
     sys.stderr.write("\n")
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
+    # In the case of a foreign author associate that author with its node.
+    if not author_json["host"].startswith(settings.APP_URL):
+        author.node = Node.objects.get(url = author_json["host"])
+        
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]

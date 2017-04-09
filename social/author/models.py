@@ -12,7 +12,6 @@ from .utils import can_view_post, can_view_feed, remote_friend
 APP_URL = settings.APP_URL
 
 class Author(models.Model):
-
     genderChoices = (
         ('M', 'male'),
         ('F', 'female'),
@@ -26,6 +25,7 @@ class Author(models.Model):
         max_length=32,
         on_delete=models.CASCADE
     )
+    node = models.ForeignKey("node.Node", blank=True, null=True, on_delete=models.CASCADE)
     firstname = models.CharField(max_length=64,blank=True)
     lastname = models.CharField(max_length=64,blank=True)
     phone = models.CharField(max_length=50,blank=True)
