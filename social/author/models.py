@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
-from node.models import Node
 import uuid
 import json
 import sys
@@ -42,8 +41,6 @@ class Author(models.Model):
     host = models.CharField(max_length=200, default=APP_URL)
     displayName = models.CharField(max_length=64, blank=True)
     url = models.URLField(blank=True)
-    connectedNode = models.ForeignKey(Node, null=True, blank=True, on_delete=models.CASCADE)
-
     def __str__(self):
         return str(self.id)
 
