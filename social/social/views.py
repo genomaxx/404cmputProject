@@ -68,7 +68,7 @@ def login(request):
     try:
         logInUser = User.objects.get(email=email)
         author = Author.objects.get(id=logInUser)
-    except User.DoesNotExist:
+    except:
         return render(request, 'login/index.html',{'errors':'Invalid e-mail or password. Please try again.'})
         
     if not author.approved:
