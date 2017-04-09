@@ -66,7 +66,7 @@
             </li>
             <!-- /.timeline-label -->
             {% for post in posts %}
-            {% if post.contentType == 'image/png' or post.contentType == 'image/jpeg' %}
+            {% if post.contentType == 'image/png;base64' or post.contentType == 'image/jpeg;base64' %}
             <li>
               <i class="fa fa-camera bg-purple"></i>
 
@@ -76,17 +76,17 @@
                 </h3>
 
                 <div class="timeline-body">
-                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive">
+                    {{ post.content|safe }}
                 </div>
                 <div class="timeline-footer">
                  {% if request.user.id != post.author.id.id %}
-                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>
+                 <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>
                  {% endif %}
                   {% if request.user.id == post.author.id.id %}
                   <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
                     {% csrf_token %}
-                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">More Details</a>&nbsp;&nbsp;
-                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>&nbsp;&nbsp;<a href="{% url 'post:editpost' post.id %}" class="btn btn-warning btn-xs">Edit Post</a>
                   </form>
                   {% endif %}
                 </div>
@@ -114,8 +114,8 @@
                   {% if request.user.id == post.author.id.id %}
                   <form action="{% url 'author:author_delete_post' post.id %}" method="POST">
                     {% csrf_token %}
-                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>&nbsp;&nbsp;
-                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                    <a href="{% url 'post:post' post.id %}" class="btn btn-primary btn-xs">Read More</a>&nbsp;
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>&nbsp;&nbsp;<a href="{% url 'post:editpost' post.id %}" class="btn btn-warning btn-xs">Edit Post</a>
                   </form>
                   {% endif %}
                 </div>

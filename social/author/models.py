@@ -11,8 +11,8 @@ from .utils import can_view_post, can_view_feed, remote_friend
 
 APP_URL = settings.APP_URL
 
-class Author(models.Model):
 
+class Author(models.Model):
     genderChoices = (
         ('M', 'male'),
         ('F', 'female'),
@@ -26,6 +26,7 @@ class Author(models.Model):
         max_length=32,
         on_delete=models.CASCADE
     )
+    node = models.ForeignKey("node.Node", blank=True, null=True, on_delete=models.CASCADE)
     firstname = models.CharField(max_length=64,blank=True)
     lastname = models.CharField(max_length=64,blank=True)
     phone = models.CharField(max_length=50,blank=True)
@@ -70,9 +71,15 @@ class Author(models.Model):
 
     def remoteIsFollowing(self, author):
         from node.models import Node
-
-        node = Node.objects.get(url=author.host)
-        author_json = json.loads(node.make_request(author.url))
+        try:
+            node = Node.objects.get(url=author.host)
+        except:
+            # user is from a node that we cannot connect to, return False
+            return False
+        try:
+            author_json = json.loads(node.make_request(author.url))
+        except:
+            return False
         sys.stderr.write("checking friends")
         sys.stderr.write(json.dumps(author_json))
         sys.stderr.write("\n")

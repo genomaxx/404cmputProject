@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'post',
     'comment',
     'node',
+    'settings',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',

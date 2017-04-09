@@ -5,6 +5,8 @@ from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
 import requests
 import sys
+from urllib.parse import urlparse
+from django.utils import timezone
 
 from post.models import Post
 from author.models import Author
@@ -18,7 +20,7 @@ class Node(models.Model):
     url = models.CharField(max_length=128)
     username = models.CharField(max_length=128)
     password = models.CharField(max_length=128)
-    trusted = models.BooleanField()
+    trusted = models.BooleanField(verbose_name="Get content from this node")
 
     user = models.OneToOneField(
         User,
@@ -66,7 +68,6 @@ class Node(models.Model):
         post, _ = Post.objects.get_or_create(UID=uid, author=author)
 
         post.apiID = post_json["id"]
-        sys.stderr.write(post.apiID)
         post.UID = uid
         post.content = post_json["content"]
         post.title = post_json["title"]
@@ -140,34 +141,39 @@ class Node(models.Model):
         return self.url
 
 
-def build_author(author_json):
-    author, _ = build_author_maybe(author_json)
+def build_author(author_json, post = None):
+    author, _ = build_author_maybe(author_json, post)
     return author
 
 
-def build_author_maybe(author_json):
+def build_author_maybe(author_json, post = None):
     id = build_id(author_json["id"])
     uid = uuid.UUID(id)
 
     user = None
+    author = None
     if not author_json["host"].startswith(settings.APP_URL):
         user, created = User.objects.get_or_create(username=str(uid))
+        author, _ = Author.objects.get_or_create(id=user, UID=uid)
     else:
         created = False
         user = User.objects.get(username=author_json["displayName"])
+        author, _ = Author.objects.get_or_create(id=user)
 
-    sys.stderr.write(str(id))
-    sys.stderr.write("\n")
-    sys.stderr.write(str(uid))
-    sys.stderr.write("\n")
-    author, _ = Author.objects.get_or_create(id=user, UID=uid)
+    # In the case of a foreign author associate that author with its node.
+    if not author_json["host"].startswith(settings.APP_URL):
+        try:
+            author.node = Node.objects.get(url = author_json["host"])
+        except:
+        # since we can't locate the node of the author, we will default to the host post node
+            parsed_post_url = urlparse(post.origin)
+            host = "http://"+parsed_post_url.netloc + "/"
+            author.node = Node.objects.get(url = host)
 
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
     author.apiID = author_json["id"]
-    # author.gitURL = author_json["github"]
-    # sys.stderr.write(author.apiID)
     author.save()
 
     return author, created
@@ -181,9 +187,13 @@ def build_comment(comment_json, postObj):
     # commented out for T5 atm
     # uid = uuid.UUID(comment_json['guid'])
 
-    uid = uuid.UUID(comment_json['id'])
+    uid = None
+    if "id" in comment_json:
+        uid = uuid.UUID(comment_json['id'])
+    else:
+        uid = uuid.uuid4()
 
-    authorObj = build_author(comment_json['author'])
+    authorObj = build_author(comment_json['author'], postObj)
 
     comment, _ = Comment.objects.get_or_create(
         UID=uid,
@@ -193,6 +203,10 @@ def build_comment(comment_json, postObj):
 
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
-    comment.publishDate = comment_json['published']
-    comment.apiID = comment_json['id']
+    if "published" in comment_json:
+        comment.publishDate = comment_json['published']
+    else:
+        comment.publishDate = timezone.now()
+    comment.apiID = str(uid)
+
     comment.save()

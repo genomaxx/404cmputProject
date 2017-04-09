@@ -86,12 +86,12 @@ def ajaxposts(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
-        #base64image = post.content.split(',')
-        #if (len(base64image) > 1):
         base64image = post.content
-        return "<img class=\"img-responsive\" src=\"{}\"/>".format(base64image)
+        return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(post.title,base64image)
+
     if post.contentType == 'text/markdown':
         return commonmark(post.content)
+
     return post.content
 
 
@@ -177,6 +177,8 @@ def author_post(request):
             newPost.visibility = 'UNLISTED'
             newPost.unlisted = True
         '''
+        else:
+            return HttpResponseRedirect('/author/')
 
         if request.POST['privacy_level'] == '5':
             redirect = '/post/' + str(newPost.id)
@@ -362,7 +364,11 @@ def follow(request, id):
     if (followee.host != settings.APP_URL):
         # do some things!! like posting a friend request to the remote server!
         host = "http://" + followee.host.strip("http://").strip("/") + "/"
-        Node.objects.get(url=host).friend_request(follower, followee)
+        try:
+            Node.objects.get(url=host).friend_request(follower, followee)
+        except:
+            # can't locate the node, whatever
+            pass
 
     return HttpResponseRedirect("/author/" + id)
 
