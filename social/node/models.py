@@ -66,7 +66,6 @@ class Node(models.Model):
         post, _ = Post.objects.get_or_create(UID=uid, author=author)
 
         post.apiID = post_json["id"]
-        sys.stderr.write(post.apiID)
         post.UID = uid
         post.content = post_json["content"]
         post.title = post_json["title"]
@@ -156,10 +155,6 @@ def build_author_maybe(author_json):
         created = False
         user = User.objects.get(username=author_json["displayName"])
 
-    sys.stderr.write(str(id))
-    sys.stderr.write("\n")
-    sys.stderr.write(str(uid))
-    sys.stderr.write("\n")
     author, _ = Author.objects.get_or_create(id=user, UID=uid)
 
     author.displayName = author_json["displayName"]
