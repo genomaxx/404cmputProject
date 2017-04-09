@@ -46,6 +46,17 @@ class PostApiTestCase(TestCase):
         self.authorObj2.approved = True
         self.authorObj2.save()
 
+        self.userObj3 = User.objects.create(username="TestCase__Will__", email="tim@email.com", password="test")
+        self.userObj3.set_password(self.userObj2.password)
+        self.userObj3.is_active = True
+        self.userObj3.save()
+        newUser = User.objects.get(email=self.userObj2.email)
+        self.authorObj3 = Author(id=newUser)
+        self.authorObj3.setDisplayName()
+        self.authorObj3.setApiID()
+        self.authorObj3.approved = True
+        self.authorObj3.save()
+
         self.follow1 = Follow(follower=self.authorObj,
                               followee=self.authorObj2)
         self.follow1.save()
@@ -74,8 +85,9 @@ class PostApiTestCase(TestCase):
         self.post1.save()
 
         self.post2 = Post.objects.create(author=self.authorObj,
-                                         content="Test post2",
-                                         privacyLevel=1)
+                                         content="Test post 2",
+                                         privacyLevel=1,
+                                         origin="http://polar-savannah-14727/")
         self.post2.setApiID()
         self.post2.save()
 
@@ -134,7 +146,7 @@ class PostApiTestCase(TestCase):
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         self.client.logout()
         
-        # Test GET requeest for an author's profile
+    # Test GET requeest for an author's profile
     def test_getProfile(self):
         response = self.client.login(username=self.userObj.username, password="test")
         uri = '/api/author/' + str(self.authorObj.UID) + '/'
@@ -144,7 +156,7 @@ class PostApiTestCase(TestCase):
         self.assertEqual(displayName, 'TestCase__Bill__', "Wrong user")
         self.client.logout()
         
-        # Test GET single post
+    # Test GET single post
     def test_getSinglePost(self):
         response = self.client.login(username=self.userObj.username, password="test")
         uri = '/api/posts/' + str(self.post1.UID) + '/'
@@ -154,12 +166,32 @@ class PostApiTestCase(TestCase):
         self.assertEqual(content, "Test post 1", "Wrong content")
         self.client.logout()
 
-    def test_getFriends(self):
+    # Test GET check if authors are friends
+    def test_authorsAreFriends(self):
         response = self.client.login(username=self.userObj.username, password="test")
-        uri = '/api/author/' + str(self.authorObj.UID) + '/friends/' + str(self.authorObj2.UID)
+        uri = '/api/author/' + str(self.authorObj.UID) + '/friends/' + str(self.authorObj2.UID) + '/'
         response = self.client.get(uri)
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         friends = response.data['friends']
-        print(friends)
         self.assertTrue(friends, "Should be friends")
         self.client.logout()
+
+    # Test GET all posts by a single author
+    def test_getAnAuthorsPosts(self):
+        response = self.client.login(username=self.userObj.username, password="test")
+        uri = '/api/author/' + str(self.authorObj.UID) + '/posts/'
+        response = self.client.get(uri)
+        self.assertEqual(response.status_code, 200, "Status code is not 200")
+        orddict = response.data['posts'][0]
+        self.assertEqual(orddict['content'], 'Test post 2', "Wrong post")
+        orddict = response.data['posts'][1]
+        self.assertEqual(orddict['content'], 'Test post 1', "Wrong post")
+
+    # Test POST friend request
+    def test_getFriendRequest(self):
+        response = self.client.login(username=self.userObj.username, password="test")
+        
+
+
+
+        
