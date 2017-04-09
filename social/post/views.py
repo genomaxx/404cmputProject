@@ -170,16 +170,12 @@ class PostView(DetailView):
             comment_ids = comments.values_list('UID',flat = True)
             comment_ids = [str(x) for x in comment_ids]
             
-            host = "http://"+parsed_post_url.netloc + "/"
+            host = author_post.author.host
             
-            try:        
+            try:
                 n = Node.objects.get(url=host)
             except:
                 pass
-            try:
-                n = Node.objects.get(url=host+'api/')
-            except:
-                return comments
             
             r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
             
@@ -264,7 +260,7 @@ class AddComment(View):
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
                 host = "http://"+parsed_comment_url.netloc + "/"
-                try:        
+                try:
                     n = Node.objects.get(url=host)
                 except:
                     pass
@@ -281,8 +277,6 @@ class AddComment(View):
                         "content-type": "application/json"
                     })
 
-                sys.stderr.write(r.text)
-
                 if r.status_code == requests.codes.ok:
                     return HttpResponseRedirect("/post/" + pk)
                 elif r.status_code == requests.codes.forbidden:
@@ -290,6 +284,7 @@ class AddComment(View):
                     return HttpResponseForbidden()
                 else:
                     Comment.objects.filter(UID=comment.UID).delete()
-                    return HttpResponse(str(r.status_code) + ':' + r.content.decode("utf-8"))
+                    # return HttpResponse(str(r.status_code) + ':' + r.content.decode("utf-8"))
+                    return HttpResponseRedirect("/post/" + pk)
 
         return HttpResponseRedirect("/post/" + pk)

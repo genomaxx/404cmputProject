@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import requests
 import sys
 from urllib.parse import urlparse
+from django.utils import timezone
 
 from post.models import Post
 from author.models import Author
@@ -150,16 +151,14 @@ def build_author_maybe(author_json, post = None):
     uid = uuid.UUID(id)
 
     user = None
+    author = None
     if not author_json["host"].startswith(settings.APP_URL):
         user, created = User.objects.get_or_create(username=str(uid))
+        author, _ = Author.objects.get_or_create(id=user, UID=uid)
     else:
         created = False
         user = User.objects.get(username=author_json["displayName"])
-
-    try:
-        author = Author.objects.get(id=user, UID=uid)
-    except:
-        author = Author(id=user, UID=uid)
+        author, _ = Author.objects.get_or_create(id=user)
 
     # In the case of a foreign author associate that author with its node.
     if not author_json["host"].startswith(settings.APP_URL):
@@ -170,7 +169,7 @@ def build_author_maybe(author_json, post = None):
             parsed_post_url = urlparse(post.origin)
             host = "http://"+parsed_post_url.netloc + "/"
             author.node = Node.objects.get(url = host)
-        
+
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
@@ -188,7 +187,11 @@ def build_comment(comment_json, postObj):
     # commented out for T5 atm
     # uid = uuid.UUID(comment_json['guid'])
 
-    uid = uuid.UUID(comment_json['id'])
+    uid = None
+    if "id" in comment_json:
+        uid = uuid.UUID(comment_json['id'])
+    else:
+        uid = uuid.uuid4()
 
     authorObj = build_author(comment_json['author'], postObj)
 
@@ -200,6 +203,10 @@ def build_comment(comment_json, postObj):
 
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
-    comment.publishDate = comment_json['published']
-    comment.apiID = comment_json['id']
+    if "published" in comment_json:
+        comment.publishDate = comment_json['published']
+    else:
+        comment.publishDate = timezone.now()
+    comment.apiID = str(uid)
+
     comment.save()
