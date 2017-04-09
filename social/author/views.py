@@ -56,7 +56,7 @@ def index(request):
 def ajaxposts(request):
     author = Author.objects.get(id=request.user)
     context = dict()
-    html = dict()    
+    html = dict()
     viewablePosts = []
     get_remote_posts()
     # Get all post objects that are public and private
@@ -69,8 +69,8 @@ def ajaxposts(request):
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
-    
-    # Redundant iteration here    
+
+    # Redundant iteration here
     #for p in posts:
     #    p.content = get_content(p)
 
@@ -131,7 +131,7 @@ def author_post(request):
             imagePost = Post(author=authorContext,
                            #content=base64Image,
                            contentType=request.FILES['image'].content_type + ";base64",
-                           privacyLevel=request.POST['privacy_level'], 
+                           privacyLevel=request.POST['privacy_level'],
                            #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
                            #image_type = request.FILES['image'].content_type)
