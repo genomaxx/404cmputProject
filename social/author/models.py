@@ -11,6 +11,7 @@ from .utils import can_view_post, can_view_feed, remote_friend
 
 APP_URL = settings.APP_URL
 
+
 class Author(models.Model):
     genderChoices = (
         ('M', 'male'),
