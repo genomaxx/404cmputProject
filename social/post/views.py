@@ -4,12 +4,11 @@ from django.views import View
 from django.db.models import Q
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
-from CommonMark import commonmark
+from django.utils.html import escape
 
 import sys
-
 
 from post.models import Post
 from post.forms import CommentForm
@@ -20,8 +19,100 @@ from node.models import Node, build_comment
 from urllib.parse import urlparse
 import simplejson as json
 import requests
+import re
+import base64
+import uuid
+from CommonMark import commonmark
 
 APP_URL = settings.APP_URL
+
+@login_required
+def EditView(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    if post.contentType.startswith("image"):
+        base64image = post.content
+        post.content = "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(post.title,base64image)
+    authorContext = Author.objects.get(id=request.user)
+    if authorContext != post.author:
+        return HttpResponseRedirect('/post/{}/'.format(pk))
+    return render(request, 'edit.html', {'post':post})
+    
+@login_required
+def EditPostView(request, pk):
+    # Only process the author's post if it is a POST request
+    if (request.method != 'POST'):
+        return HttpResponseRedirect('/post/{}/edit/'.format(pk))
+
+    if (request.POST['post_content'] == '' and 'image' not in request.FILES.keys()):
+        return HttpResponseRedirect('/post/{}/edit/'.format(pk))
+
+    try:
+        # Get the logged in user and the associated author object.
+        # userContext = User.objects.get(username=request.user.username)
+        # post_body = request.POST['post_content']
+
+        authorContext = Author.objects.get(id=request.user)
+        post = get_object_or_404(Post, id=pk)
+        
+        if authorContext != post.author:
+            return HttpResponseRedirect('/post/{}/'.format(pk))
+
+        content = request.POST['post_content']
+        content = escape(content) # Should always be escaping HTML tags
+
+        if post.contentType.startswith("image"):
+            # Create and save a new post.
+            # encode image into base64 here and make nice image url too
+            if ('image' in request.FILES.keys()):
+                imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
+                base64Image = base64.b64encode(request.FILES['image'].read())
+                post.content='data:' + str(post.contentType) + ',' + str(base64Image.decode('utf-8'))
+                post.contentType=request.FILES['image'].content_type + ";base64"
+                post.image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname)
+            post.privacyLevel=request.POST['privacy_level']
+            setVisibility(request, post)
+            post.save()
+
+
+        elif request.POST['post_content'] != '':
+            #content = request.POST['post_content']
+            #content = escape(content)
+            post.content=content
+            post.privacyLevel=request.POST['privacy_level']
+            post.contentType=request.POST['contentType']
+            setVisibility(request, post)
+            post.save()
+            
+        else:
+            return HttpResponseRedirect('/post/{}/edit/'.format(pk))
+
+        if request.POST['privacy_level'] == '5':
+            return HttpResponseRedirect('/post/{}/'.format(pk))
+
+    except:
+        return HttpResponse(sys.exc_info[0])
+
+    return HttpResponseRedirect('/post/{}/'.format(pk))
+
+def setVisibility(request, post):
+    if post.privacyLevel == '0':
+        post.visibility = 'PUBLIC'
+    elif post.privacyLevel == '1':
+        post.visibility = 'FRIENDS'
+    elif post.privacyLevel == '2':
+        post.visibility = 'FOAF'
+    elif post.privacyLevel == '3':
+        post.visibility = 'PRIVATE'
+    elif post.privacyLevel == '4':
+        post.visibility = 'PRIVATE'
+    elif post.privacyLevel == '5':
+        post.visibility = 'UNLISTED'
+        post.unlisted = True
+    if 'serverOnly' in request.POST:
+        post.serverOnly = True
+    else:
+        post.serverOnly = False
+        
 
 @login_required
 def AjaxComments(request, pk):
@@ -112,16 +203,14 @@ class PostView(DetailView):
             return HttpResponseRedirect("/author/")
 
     def get_content(self):
-        if self.object.is_image():
-            return self.build_image()
-        elif self.object.contentType == "text/markdown":
+        if self.object.contentType.startswith("image"):
+            base64image = self.object.content
+            return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(self.object.title,base64image)
+
+        elif self.object.contentType == 'text/markdown':
             return commonmark(self.object.content)
+
         return self.object.content
-
-    def build_image(self):
-        content = self.object.content
-        return "<img class=\"img-responsive\" src=\"{}\"/>".format(content)
-
 
 class AddComment(View):
 
