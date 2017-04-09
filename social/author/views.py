@@ -86,13 +86,12 @@ def ajaxposts(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
-<<<<<<< HEAD
-        return "<img alt=\"other server image\" class=\"img-responsive\" src=\"{}\"/>".format(post.content)
-=======
-        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
+        base64image = post.content
+        return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(post.title,base64image)
+
     if post.contentType == 'text/markdown':
         return commonmark(post.content)
->>>>>>> origin/master
+
     return post.content
 
 
@@ -123,13 +122,6 @@ def author_post(request):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
-<<<<<<< HEAD
-        if request.POST['contentType'] == 'markdown':
-            ctype = 'commonmark'
-        else:
-            ctype = 'plain'
-=======
->>>>>>> origin/master
 
         if ('image' in request.FILES.keys()):
             # Create and save a new post.
@@ -137,13 +129,14 @@ def author_post(request):
             imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
             base64Image = base64.b64encode(request.FILES['image'].read())
             imagePost = Post(author=authorContext,
-                           content=base64Image,
-                           contentType=request.FILES['image'].content_type,
+                           #content=base64Image,
+                           contentType=request.FILES['image'].content_type + ";base64",
                            privacyLevel=request.POST['privacy_level'], 
                            #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
                            #image_type = request.FILES['image'].content_type)
                            )
+            imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
             setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()

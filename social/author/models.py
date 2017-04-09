@@ -55,24 +55,28 @@ class Author(models.Model):
         self.apiID = APP_URL + "author/" + str(self.UID) + "/"
 
     def isFollowing(self, author):
+        if not self.url.startswith(settings.APP_URL):
+            return author.remoteIsFollowing(self)
         return Follow.objects.filter(
             Q(followee=author) & Q(follower=self)
         ).exists()
 
     def isFriend(self, author):
         if not self.url.startswith(settings.APP_URL):
-            return author.remote_is_friend(self)
+            return author.remoteIsFollowing(self) and self.isFollowing(author)
         return Follow.objects.filter(
             Q(followee=self) & Q(follower=author) |
             Q(followee=author) & Q(follower=self)
         ).count() == 2
 
-    def remote_is_friend(self, author):
+    def remoteIsFollowing(self, author):
         from node.models import Node
 
         node = Node.objects.get(url=author.host)
         author_json = json.loads(node.make_request(author.url))
         sys.stderr.write("checking friends")
+        sys.stderr.write(json.dumps(author_json))
+        sys.stderr.write("\n")
         if "friends" not in author_json:
             return False
         ids = [f["id"] for f in author_json["friends"]]

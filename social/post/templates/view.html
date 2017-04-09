@@ -20,12 +20,7 @@
               <h3 class="box-title">{{ post.author.displayName }} posted...</h3>
             </div>
             <div class="box-body">
-               {% if post.image %}
-               <img alt="{{ post.author.displayName }} image" src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive">
-               {% endif %}
-               {% if not post.image %}
                {{ content|safe }}
-               {% endif %}
             </div>
             <!-- /.box-body -->
             <div class="box-footer">

@@ -6,7 +6,7 @@
             </li>
             <!-- /.timeline-label -->
             {% for post in posts %}
-            {% if post.contentType == 'image/png' or post.contentType == 'image/jpeg' %}
+            {% if post.contentType == 'image/png;base64' or post.contentType == 'image/jpeg;base64' %}
             <li>
               <i class="fa fa-camera bg-purple"></i>
 
@@ -16,7 +16,7 @@
                 </h3>
 
                 <div class="timeline-body">
-                  <img src="/images/{{post.id}}/{{ post.image_url }}" class="img-responsive" alt="{{ post.author.displayName }} image">
+                  {{ post.content|safe }}
                 </div>
                 <div class="timeline-footer">
                  {% if request.user.id != post.author.id.id %}
