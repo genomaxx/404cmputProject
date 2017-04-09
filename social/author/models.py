@@ -69,7 +69,7 @@ class Author(models.Model):
         ).count() == 2
 
     def remoteIsFollowing(self, author):
-        #from node.models import Node
+        from node.models import Node
 
         node = Node.objects.get(url=author.host)
         author_json = json.loads(node.make_request(author.url))
