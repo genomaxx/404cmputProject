@@ -137,7 +137,7 @@ def author_post(request):
                            #image_type = request.FILES['image'].content_type)
                            )
             imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
-            newPost = setVisibility(request, imagePost)
+            imagePost = setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
             imagePost.setOrigin()
@@ -161,22 +161,7 @@ def author_post(request):
             newPost.setOrigin()
             newPost.source = newPost.origin
             newPost.save()
-        #priv = newPost.privacyLevel
-            ''' Factored out
-        if priv == '0':
-            newPost.visibility = 'PUBLIC'
-        elif priv == '1':
-            newPost.visibility = 'FRIENDS'
-        elif priv == '2':
-            newPost.visibility = 'FOAF'
-        elif priv == '3':
-            newPost.visibility = 'PRIVATE'
-        elif priv == '4':
-            newPost.visibility = 'PRIVATE'
-        elif priv == '5':
-            newPost.visibility = 'UNLISTED'
-            newPost.unlisted = True
-        '''
+
         else:
             return HttpResponseRedirect('/author/')
 
