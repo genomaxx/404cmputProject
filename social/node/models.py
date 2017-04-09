@@ -5,6 +5,7 @@ from django.utils.dateparse import parse_datetime
 from django.contrib.auth.models import User
 import requests
 import sys
+from urllib.parse import urlparse
 
 from post.models import Post
 from author.models import Author
@@ -139,12 +140,12 @@ class Node(models.Model):
         return self.url
 
 
-def build_author(author_json):
-    author, _ = build_author_maybe(author_json)
+def build_author(author_json, post = None):
+    author, _ = build_author_maybe(author_json, post)
     return author
 
 
-def build_author_maybe(author_json):
+def build_author_maybe(author_json, post = None):
     id = build_id(author_json["id"])
     uid = uuid.UUID(id)
 
@@ -162,7 +163,13 @@ def build_author_maybe(author_json):
 
     # In the case of a foreign author associate that author with its node.
     if not author_json["host"].startswith(settings.APP_URL):
-        author.node = Node.objects.get(url = author_json["host"])
+        try:
+            author.node = Node.objects.get(url = author_json["host"])
+        except:
+        # since we can't locate the node of the author, we will default to the host post node
+            parsed_post_url = urlparse(post.origin)
+            host = "http://"+parsed_post_url.netloc + "/"
+            author.node = Node.objects.get(url = host)
         
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
@@ -183,7 +190,7 @@ def build_comment(comment_json, postObj):
 
     uid = uuid.UUID(comment_json['id'])
 
-    authorObj = build_author(comment_json['author'])
+    authorObj = build_author(comment_json['author'], postObj)
 
     comment, _ = Comment.objects.get_or_create(
         UID=uid,

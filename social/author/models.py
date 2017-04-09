@@ -71,8 +71,11 @@ class Author(models.Model):
 
     def remoteIsFollowing(self, author):
         from node.models import Node
-
-        node = Node.objects.get(url=author.host)
+        try:
+            node = Node.objects.get(url=author.host)
+        except:
+            # user is from a node that we cannot connect to, return False
+            return False
         author_json = json.loads(node.make_request(author.url))
         sys.stderr.write("checking friends")
         sys.stderr.write(json.dumps(author_json))
