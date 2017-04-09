@@ -77,6 +77,7 @@ class Author(models.Model):
         sys.stderr.write("checking friends")
         sys.stderr.write(json.dumps(author_json))
         sys.stderr.write("\n")
+
         if "friends" not in author_json:
             return False
         ids = [f["id"] for f in author_json["friends"]]
