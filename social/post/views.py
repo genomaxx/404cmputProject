@@ -23,12 +23,16 @@ import requests
 import re
 import base64
 import uuid
+from CommonMark import commonmark
 
 APP_URL = settings.APP_URL
 
 @login_required
 def EditView(request, pk):
     post = get_object_or_404(Post, id=pk)
+    if post.contentType.startswith("image"):
+        base64image = post.content
+        post.content = "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(post.title,base64image)
     authorContext = Author.objects.get(id=request.user)
     if authorContext != post.author:
         return HttpResponseRedirect('/post/{}/'.format(pk))
@@ -56,23 +60,17 @@ def EditPostView(request, pk):
 
         content = request.POST['post_content']
         content = escape(content) # Should always be escaping HTML tags
-        if request.POST['contentType'] == 'markdown':
-            ctype = 'commonmark'
-        else:
-            ctype = 'plain'
 
-        if ('image' in request.FILES.keys()):
+        if post.contentType.startswith("image"):
             # Create and save a new post.
             # encode image into base64 here and make nice image url too
-            imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
-            base64Image = base64.b64encode(request.FILES['image'].read())
-            post.author=authorContext
-            post.content=base64Image
-            post.contentType=request.FILES['image'].content_type
+            if ('image' in request.FILES.keys()):
+                imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
+                base64Image = base64.b64encode(request.FILES['image'].read())
+                post.content='data:' + str(post.contentType) + ',' + str(base64Image.decode('utf-8'))
+                post.contentType=request.FILES['image'].content_type + ";base64"
+                post.image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname)
             post.privacyLevel=request.POST['privacy_level']
-            post.image = base64Image
-            post.image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname)
-            post.image_type = request.FILES['image'].content_type
             setVisibility(request, post)
             post.save()
 
@@ -80,10 +78,9 @@ def EditPostView(request, pk):
         elif request.POST['post_content'] != '':
             #content = request.POST['post_content']
             #content = escape(content)
-            post.author=authorContext
             post.content=content
             post.privacyLevel=request.POST['privacy_level']
-            post.contentType=ctype
+            post.contentType=request.POST['contentType']
             setVisibility(request, post)
             post.save()
             
@@ -100,20 +97,23 @@ def EditPostView(request, pk):
 
 def setVisibility(request, post):
     if post.privacyLevel == '0':
-            post.visibility = 'PUBLIC'
+        post.visibility = 'PUBLIC'
     elif post.privacyLevel == '1':
-            post.visibility = 'FRIENDS'
+        post.visibility = 'FRIENDS'
     elif post.privacyLevel == '2':
-            post.visibility = 'FOAF'
+        post.visibility = 'FOAF'
     elif post.privacyLevel == '3':
-            post.visibility = 'PRIVATE'
+        post.visibility = 'PRIVATE'
     elif post.privacyLevel == '4':
-            post.visibility = 'PRIVATE'
+        post.visibility = 'PRIVATE'
     elif post.privacyLevel == '5':
-            post.visibility = 'UNLISTED'
-            post.unlisted = True
+        post.visibility = 'UNLISTED'
+        post.unlisted = True
     if 'serverOnly' in request.POST:
-            post.serverOnly = True
+        post.serverOnly = True
+    else:
+        post.serverOnly = False
+        
 
 @login_required
 def AjaxComments(request, pk):
@@ -204,14 +204,14 @@ class PostView(DetailView):
             return HttpResponseRedirect("/author/")
 
     def get_content(self):
-        if self.object.is_image():
-            return self.build_image()
+        if self.object.contentType.startswith("image"):
+            base64image = self.object.content
+            return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(self.object.title,base64image)
+
+        if self.object.contentType == 'text/markdown':
+            return commonmark(self.object.content)
+
         return self.object.content
-
-    def build_image(self):
-        content = self.object.content
-        return "<img alt=\"other server image\" class=\"img-responsive\" src=\"{}\"/>".format(content)
-
 
 class AddComment(View):
 
