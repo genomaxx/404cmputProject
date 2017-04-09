@@ -6,7 +6,7 @@ class PostAdmin(admin.ModelAdmin):
     fields = ('author', 'content', 'privacyLevel', 'publishDate',
               'image_url', 'title', 'apiID', 'serverOnly',
               'source', 'origin', 'contentType', 'description',
-              'categories', 'unlisted')
+              'categories', 'unlisted', 'visibility')
 
 # Register your models here.
 admin.site.register(Post, PostAdmin)

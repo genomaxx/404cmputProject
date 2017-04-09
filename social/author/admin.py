@@ -8,7 +8,7 @@ class AuthorAdmin(admin.ModelAdmin):
     fields = ('id', 'approved', 'firstname',
               'lastname','phone', 'dob', 'github', 
               'gender', 'host', 'displayName',
-              'url', 'apiID', 'node', 'visibility')
+              'url', 'apiID', 'node')
 
 
 class FollowAdmin(admin.ModelAdmin):
