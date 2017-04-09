@@ -137,7 +137,7 @@ def author_post(request):
                            #image_type = request.FILES['image'].content_type)
                            )
             imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
-            newPost = setVisibility(request, imagePost)
+            imagePost = setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
             imagePost.setOrigin()
