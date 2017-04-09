@@ -97,7 +97,6 @@ class PostApiTestCase(TestCase):
         # self.assertEqual(self.post1.author, postcheck.author, "Post is not made by the same author")
 
         response = self.client.get('/api/posts/')
-        print(response.data)
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         self.client.logout()
 
@@ -157,11 +156,10 @@ class PostApiTestCase(TestCase):
 
     def test_getFriends(self):
         response = self.client.login(username=self.userObj.username, password="test")
-        uri = '/api/author/' + str(self.authorObj.UID) + '/friends/'
+        uri = '/api/author/' + str(self.authorObj.UID) + '/friends/' + str(self.authorObj2.UID)
         response = self.client.get(uri)
         self.assertEqual(response.status_code, 200, "Status code is not 200")
-        friendID = response.data['authors']
-        print(friendID)
-        print(self.authorObj2.apiID)
-        self.assertEqual(str(friendID), str(self.authorObj2.UID), "Wrong ID")
+        friends = response.data['friends']
+        print(friends)
+        self.assertTrue(friends, "Should be friends")
         self.client.logout()
