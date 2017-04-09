@@ -155,7 +155,10 @@ def build_author_maybe(author_json):
         created = False
         user = User.objects.get(username=author_json["displayName"])
 
-    author, _ = Author.objects.get_or_create(id=user, UID=uid)
+    author = Author.objects.get(id=user, UID=uid)
+    
+    if not author:
+        author = Author(id=user, UID=uid)
 
     # In the case of a foreign author associate that author with its node.
     if not author_json["host"].startswith(settings.APP_URL):
@@ -165,8 +168,6 @@ def build_author_maybe(author_json):
     author.host = author_json["host"]
     author.url = author_json["url"]
     author.apiID = author_json["id"]
-    # author.gitURL = author_json["github"]
-    # sys.stderr.write(author.apiID)
     author.save()
 
     return author, created
