@@ -18,7 +18,7 @@ class Node(models.Model):
     url = models.CharField(max_length=128)
     username = models.CharField(max_length=128)
     password = models.CharField(max_length=128)
-    trusted = models.BooleanField()
+    trusted = models.BooleanField(verbose_name="Get content from this node")
 
     user = models.OneToOneField(
         User,
