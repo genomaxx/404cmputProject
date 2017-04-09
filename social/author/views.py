@@ -137,7 +137,7 @@ def author_post(request):
                            #image_type = request.FILES['image'].content_type)
                            )
             imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
-            setVisibility(request, imagePost)
+            newPost = setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
             imagePost.setOrigin()
@@ -154,7 +154,7 @@ def author_post(request):
                 privacyLevel=request.POST['privacy_level'],
                 contentType=request.POST['contentType']
             )
-            setVisibility(request, newPost)
+            newPost = setVisibility(request, newPost)
             newPost.setApiID()
             newPost.save()
             # need django to autogenerate the ID before using it to set the origin url
@@ -205,6 +205,7 @@ def setVisibility(request, post):
             post.unlisted = True
     if 'serverOnly' in request.POST:
             post.serverOnly = True
+    return post
 
 # http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
 @login_required()

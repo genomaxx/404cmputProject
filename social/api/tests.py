@@ -7,9 +7,10 @@ from django.conf import settings
 from rest_framework.test import APIClient, APITestCase
 # App
 from comment.models import Comment
-from author.models import Author
+from author.models import Author, Follow
 from post.models import Post
 from node.models import Node
+from settings.models import Settings
 from api.posts import *
 # Python
 #from bson import json_util
@@ -34,6 +35,24 @@ class PostApiTestCase(TestCase):
         self.authorObj.approved = True
         self.authorObj.save()
 
+        self.userObj2 = User.objects.create(username="TestCase__Tim__", email="tim@email.com", password="test")
+        self.userObj2.set_password(self.userObj2.password)
+        self.userObj2.is_active = True
+        self.userObj2.save()
+        newUser = User.objects.get(email=self.userObj2.email)
+        self.authorObj2 = Author(id=newUser)
+        self.authorObj2.setDisplayName()
+        self.authorObj2.setApiID()
+        self.authorObj2.approved = True
+        self.authorObj2.save()
+
+        self.follow1 = Follow(follower=self.authorObj,
+                              followee=self.authorObj2)
+        self.follow1.save()
+        self.follow2 = Follow(follower=self.authorObj2,
+                              followee=self.authorObj)
+        self.follow2.save()
+
         self.n1 = Node(
             url="http://coolbear.herokuapp.com/",
             user=self.userObj,
@@ -42,6 +61,10 @@ class PostApiTestCase(TestCase):
             trusted=True
         )
         self.n1.save()
+
+        self.setting = Settings(
+            auth_required = False)
+        self.setting.save()
 
         self.post1 = Post.objects.create(author=self.authorObj,
                                          content="Test post 1",
@@ -74,6 +97,7 @@ class PostApiTestCase(TestCase):
         # self.assertEqual(self.post1.author, postcheck.author, "Post is not made by the same author")
 
         response = self.client.get('/api/posts/')
+        print(response.data)
         self.assertEqual(response.status_code, 200, "Status code is not 200")
         self.client.logout()
 
@@ -109,4 +133,35 @@ class PostApiTestCase(TestCase):
                    }
         response = self.client.post('/api/posts/' + self.post1.apiID + '/comments/', msg, format='json')
         self.assertEqual(response.status_code, 200, "Status code is not 200")
+        self.client.logout()
+        
+        # Test GET requeest for an author's profile
+    def test_getProfile(self):
+        response = self.client.login(username=self.userObj.username, password="test")
+        uri = '/api/author/' + str(self.authorObj.UID) + '/'
+        response = self.client.get(uri)
+        self.assertEqual(response.status_code, 200, "Status code is not 200")
+        displayName = response.data['displayName']
+        self.assertEqual(displayName, 'TestCase__Bill__', "Wrong user")
+        self.client.logout()
+        
+        # Test GET single post
+    def test_getSinglePost(self):
+        response = self.client.login(username=self.userObj.username, password="test")
+        uri = '/api/posts/' + str(self.post1.UID) + '/'
+        response = self.client.get(uri)
+        self.assertEqual(response.status_code, 200, "Status code is not 200")
+        content = response.data['content']
+        self.assertEqual(content, "Test post 1", "Wrong content")
+        self.client.logout()
+
+    def test_getFriends(self):
+        response = self.client.login(username=self.userObj.username, password="test")
+        uri = '/api/author/' + str(self.authorObj.UID) + '/friends/'
+        response = self.client.get(uri)
+        self.assertEqual(response.status_code, 200, "Status code is not 200")
+        friendID = response.data['authors']
+        print(friendID)
+        print(self.authorObj2.apiID)
+        self.assertEqual(str(friendID), str(self.authorObj2.UID), "Wrong ID")
         self.client.logout()
