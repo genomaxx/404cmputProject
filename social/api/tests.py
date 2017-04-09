@@ -186,12 +186,3 @@ class PostApiTestCase(TestCase):
         self.assertEqual(orddict['content'], 'Test post 2', "Wrong post")
         orddict = response.data['posts'][1]
         self.assertEqual(orddict['content'], 'Test post 1', "Wrong post")
-
-    # Test POST friend request
-    def test_getFriendRequest(self):
-        response = self.client.login(username=self.userObj.username, password="test")
-        
-
-
-
-        
