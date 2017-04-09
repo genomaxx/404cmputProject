@@ -260,7 +260,7 @@ class AddComment(View):
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
                 host = "http://"+parsed_comment_url.netloc + "/"
-                try:        
+                try:
                     n = Node.objects.get(url=host)
                 except:
                     pass
@@ -277,8 +277,6 @@ class AddComment(View):
                         "content-type": "application/json"
                     })
 
-                sys.stderr.write(r.text)
-
                 if r.status_code == requests.codes.ok:
                     return HttpResponseRedirect("/post/" + pk)
                 elif r.status_code == requests.codes.forbidden:
@@ -286,6 +284,7 @@ class AddComment(View):
                     return HttpResponseForbidden()
                 else:
                     Comment.objects.filter(UID=comment.UID).delete()
-                    return HttpResponse(str(r.status_code) + ':' + r.content.decode("utf-8"))
+                    # return HttpResponse(str(r.status_code) + ':' + r.content.decode("utf-8"))
+                    return HttpResponseRedirect("/post/" + pk)
 
         return HttpResponseRedirect("/post/" + pk)
