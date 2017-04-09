@@ -9,6 +9,7 @@ from django.views import View
 from django.utils.html import escape, format_html
 from django.template.loader import render_to_string
 from CommonMark import commonmark
+from django.conf import settings
 
 from . import forms
 from .utils import get_friend_status
@@ -55,7 +56,7 @@ def index(request):
 def ajaxposts(request):
     author = Author.objects.get(id=request.user)
     context = dict()
-    html = dict()    
+    html = dict()
     viewablePosts = []
     get_remote_posts()
     # Get all post objects that are public and private
@@ -68,8 +69,8 @@ def ajaxposts(request):
                 viewablePosts.append(post)
     except:
         return HttpResponse(sys.exc_info[0])
-    
-    # Redundant iteration here    
+
+    # Redundant iteration here
     #for p in posts:
     #    p.content = get_content(p)
 
@@ -85,8 +86,11 @@ def ajaxposts(request):
 
 def get_content(post):
     if post.contentType.startswith("image"):
-        return "<img class=\"img-responsive\" src=\"{}\"/>".format(post.content)
-    elif post.contentType.startswith("text/m"):
+        #base64image = post.content.split(',')
+        #if (len(base64image) > 1):
+        base64image = post.content
+        return "<img class=\"img-responsive\" src=\"{}\"/>".format(base64image)
+    if post.contentType == 'text/markdown':
         return commonmark(post.content)
     return post.content
 
@@ -125,12 +129,14 @@ def author_post(request):
             imgname = re.sub('[^._0-9a-zA-Z]+','',request.FILES['image'].name)
             base64Image = base64.b64encode(request.FILES['image'].read())
             imagePost = Post(author=authorContext,
-                           content=base64Image,
-                           contentType=request.FILES['image'].content_type,
-                           privacyLevel=request.POST['privacy_level'], 
-                           image = base64Image,\
+                           #content=base64Image,
+                           contentType=request.FILES['image'].content_type + ";base64",
+                           privacyLevel=request.POST['privacy_level'],
+                           #image = base64Image,\
                            image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname),\
-                           image_type = request.FILES['image'].content_type)
+                           #image_type = request.FILES['image'].content_type)
+                           )
+            imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
             setVisibility(request, imagePost)
             imagePost.setApiID()
             imagePost.save()
@@ -202,7 +208,7 @@ def setVisibility(request, post):
 @login_required()
 def author_image(request,pk,pk1):
     post = get_object_or_404(Post, id=pk, image_url= pk1)
-    response = HttpResponse(content=base64.b64decode(post.image), content_type=post.image_type)
+    response = HttpResponse(content=base64.b64decode(post.content), content_type=post.contentType)
     response['Content-Disposition'] = "filename="+post.image_url
     return response
 
@@ -353,7 +359,7 @@ def follow(request, id):
 
     Follow(follower=follower, followee=followee).save()
 
-    if (followee.host != "http://polar-savannah-14727.herokuapp.com"):
+    if (followee.host != settings.APP_URL):
         # do some things!! like posting a friend request to the remote server!
         host = "http://" + followee.host.strip("http://").strip("/") + "/"
         Node.objects.get(url=host).friend_request(follower, followee)

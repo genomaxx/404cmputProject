@@ -3,7 +3,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
 import uuid
-from .utils import can_view_post, can_view_feed
+import json
+import sys
+
+from .utils import can_view_post, can_view_feed, remote_friend
 # Create your models here.
 
 APP_URL = settings.APP_URL
@@ -48,19 +51,38 @@ class Author(models.Model):
     def setAuthorURL(self):
         self.url = APP_URL + "author/" + str(self.UID) + "/"
 
-    def setApiID (self):
+    def setApiID(self):
         self.apiID = APP_URL + "author/" + str(self.UID) + "/"
 
     def isFollowing(self, author):
+        if not self.url.startswith(settings.APP_URL):
+            return author.remoteIsFollowing(self)
         return Follow.objects.filter(
             Q(followee=author) & Q(follower=self)
         ).exists()
 
     def isFriend(self, author):
+        if not self.url.startswith(settings.APP_URL):
+            return author.remoteIsFollowing(self) and self.isFollowing(author)
         return Follow.objects.filter(
             Q(followee=self) & Q(follower=author) |
             Q(followee=author) & Q(follower=self)
         ).count() == 2
+
+    def remoteIsFollowing(self, author):
+        from node.models import Node
+
+        node = Node.objects.get(url=author.host)
+        author_json = json.loads(node.make_request(author.url))
+        sys.stderr.write("checking friends")
+        sys.stderr.write(json.dumps(author_json))
+        sys.stderr.write("\n")
+        if "friends" not in author_json:
+            return False
+        ids = [f["id"] for f in author_json["friends"]]
+        return self.apiID in ids
+
+        return remote_friend(self, author)
 
     def isFriendOfFriend(self, author):
         return author in get_friends_of_friends(self)
