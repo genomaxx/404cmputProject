@@ -67,7 +67,7 @@ def getAllPosts(request):
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
+    return Response('No posts found')
 
 @api_view(['GET'])
 @permission_classes((APIAuthentication,))
@@ -145,7 +145,7 @@ def getFriends(request, id):
     except:
         return Response('No author found with id ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
-    query = author.getFriends()
+    query = author.getfollowing()
     if (len(query) == 0):
         return Response('No friends found for author ' + str(id), status=status.HTTP_404_NOT_FOUND)
 
@@ -154,7 +154,7 @@ def getFriends(request, id):
         ])
 
     for auth in query:
-        response['authors'].append(str(auth.URL))
+        response['authors'].append(str(auth.url))
 
     return Response(response, status=status.HTTP_200_OK)
 
@@ -246,7 +246,7 @@ def getPosts(request):
         except:
             return Response('Request failure', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response('No posts found', status=status.HTTP_404_NOT_FOUND)
+    return Response('No posts found')
 
 
 @api_view(['GET'])

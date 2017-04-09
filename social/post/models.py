@@ -35,7 +35,7 @@ class Post(models.Model):
     title = models.CharField(max_length=128, blank=True)
     source = models.URLField(blank=True)
     origin = models.URLField(blank=True)
-    contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/html')
+    contentType = models.CharField(max_length=128, choices=CONTENT_TYPE, default='text/plain')
     description = models.CharField(max_length=64, blank=True)
     categories = models.CharField(max_length=128, blank=True)
     unlisted = models.BooleanField(default=False)
@@ -45,9 +45,9 @@ class Post(models.Model):
     publishDate = models.DateTimeField('date published', default=timezone.now)
     visibility = models.CharField(max_length=128, blank=True)
     serverOnly = models.BooleanField(default=False)
-    
-    # visibleTo needs to be a list of author profile URI's a post is private to. 
-    # (when private to other authors is implemented) 
+
+    # visibleTo needs to be a list of author profile URI's a post is private to.
+    # (when private to other authors is implemented)
 
     def __str__(self):
         return str(self.apiID)
@@ -58,10 +58,10 @@ class Post(models.Model):
     def checkIfPostShouldBeUnlisted(self):
         if (self.privacyLevel == 5):
             self.unlisted = True
-    
+
     def setApiID (self):
         self.apiID = str(self.UID).replace("-", "")
-    
+
     def setVisibility (self):
         self.visibility = self.get_privacyLevel_display()
 

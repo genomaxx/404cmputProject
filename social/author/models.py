@@ -41,7 +41,6 @@ class Author(models.Model):
     host = models.CharField(max_length=200, default=APP_URL)
     displayName = models.CharField(max_length=64, blank=True)
     url = models.URLField(blank=True)
-
     def __str__(self):
         return str(self.id)
 
@@ -96,6 +95,12 @@ class Author(models.Model):
     def followers(self):
         return get_followers(self)
 
+    def getfollowing(self):
+        return get_all_following(self)
+
+    def following(self):
+        return get_following(self)
+
     def getFriends(self):
         return get_friends(self)
 
@@ -131,9 +136,14 @@ def get_friends_of_friends(author):
 def get_friends(author):
     return [a.follower for a in author.followers() if author.isFriend(a.follower)]
 
+def get_all_following(author):
+    return [a.followee for a in author.following()]
 
 def get_followers(author):
     return Follow.objects.filter(followee=author)
+
+def get_following(author):
+    return Follow.objects.filter(follower=author)
 
 
 def get_friend_requests(author):

@@ -10,7 +10,6 @@ from django.utils.html import escape
 
 import sys
 
-
 from post.models import Post
 from post.forms import CommentForm
 from comment.models import Comment
@@ -208,7 +207,7 @@ class PostView(DetailView):
             base64image = self.object.content
             return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(self.object.title,base64image)
 
-        if self.object.contentType == 'text/markdown':
+        elif self.object.contentType == 'text/markdown':
             return commonmark(self.object.content)
 
         return self.object.content
