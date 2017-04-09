@@ -27,6 +27,7 @@ import uuid
 import json
 import sys
 from .auth import APIAuthentication
+from settings.models import Settings
 '''
 Follow the tutorial online if you get lost:
 http://www.django-rest-framework.org/
@@ -235,8 +236,14 @@ def getPosts(request):
     # NOTE: The decorator automatically checks for you. Error reponse is 405
     # I'm keeping this here as a reminder while we build out the API
     ############
+    settings = Settings.objects.first()
     paginator = CustomPagination()
     query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
+
+    if not settings.send_images:
+        query = query.filter(contentType__startswith="text")
+    if not settings.send_posts:
+        query = query.filter(contentType__startswith="image")
 
     if (len(query) > 0):
         try:

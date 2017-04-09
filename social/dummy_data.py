@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
 from author.models import Author
 from node.models import Node
+from settings.models import Settings
 
+
+Settings().save()
 
 u1 = User.objects.create_user("usera", "usera@usera.com", "usera")
 u1.save()

@@ -1,13 +1,14 @@
 from rest_framework import permissions
 
-from social.settings import API_AUTH_REQUIRED
+from settings.models import Settings
 from node.models import Node
 
 
 class APIAuthentication(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if not API_AUTH_REQUIRED:
+        settings = Settings.objects.first()
+        if not settings.auth_required:
             return True
 
         user = request.user
