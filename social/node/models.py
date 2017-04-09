@@ -155,9 +155,9 @@ def build_author_maybe(author_json):
         created = False
         user = User.objects.get(username=author_json["displayName"])
 
-    author = Author.objects.get(id=user, UID=uid)
-    
-    if not author:
+    try:
+        author = Author.objects.get(id=user, UID=uid)
+    except:
         author = Author(id=user, UID=uid)
 
     # In the case of a foreign author associate that author with its node.
