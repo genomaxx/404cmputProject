@@ -76,7 +76,10 @@ class Author(models.Model):
         except:
             # user is from a node that we cannot connect to, return False
             return False
-        author_json = json.loads(node.make_request(author.url))
+        try:
+            author_json = json.loads(node.make_request(author.url))
+        except:
+            return False
         sys.stderr.write("checking friends")
         sys.stderr.write(json.dumps(author_json))
         sys.stderr.write("\n")
