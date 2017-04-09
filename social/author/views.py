@@ -137,7 +137,23 @@ def author_post(request):
                            #image_type = request.FILES['image'].content_type)
                            )
             imagePost.content = 'data:' + str(imagePost.contentType) + ',' + str(base64Image.decode('utf-8'))
-            setVisibility(request, imagePost)
+
+            priv = newPost.privacyLevel
+
+            if priv == '0':
+                newPost.visibility = 'PUBLIC'
+            elif priv == '1':
+                newPost.visibility = 'FRIENDS'
+            elif priv == '2':
+                newPost.visibility = 'FOAF'
+            elif priv == '3':
+                newPost.visibility = 'PRIVATE'
+            elif priv == '4':
+                newPost.visibility = 'PRIVATE'
+            elif priv == '5':
+                newPost.visibility = 'UNLISTED'
+                newPost.unlisted = True
+
             imagePost.setApiID()
             imagePost.save()
             imagePost.setOrigin()
@@ -154,29 +170,30 @@ def author_post(request):
                 privacyLevel=request.POST['privacy_level'],
                 contentType=request.POST['contentType']
             )
-            setVisibility(request, newPost)
+
+            priv = newPost.privacyLevel
+
+            if priv == '0':
+                newPost.visibility = 'PUBLIC'
+            elif priv == '1':
+                newPost.visibility = 'FRIENDS'
+            elif priv == '2':
+                newPost.visibility = 'FOAF'
+            elif priv == '3':
+                newPost.visibility = 'PRIVATE'
+            elif priv == '4':
+                newPost.visibility = 'PRIVATE'
+            elif priv == '5':
+                newPost.visibility = 'UNLISTED'
+                newPost.unlisted = True
+
             newPost.setApiID()
             newPost.save()
             # need django to autogenerate the ID before using it to set the origin url
             newPost.setOrigin()
             newPost.source = newPost.origin
             newPost.save()
-        #priv = newPost.privacyLevel
-            ''' Factored out
-        if priv == '0':
-            newPost.visibility = 'PUBLIC'
-        elif priv == '1':
-            newPost.visibility = 'FRIENDS'
-        elif priv == '2':
-            newPost.visibility = 'FOAF'
-        elif priv == '3':
-            newPost.visibility = 'PRIVATE'
-        elif priv == '4':
-            newPost.visibility = 'PRIVATE'
-        elif priv == '5':
-            newPost.visibility = 'UNLISTED'
-            newPost.unlisted = True
-        '''
+
         else:
             return HttpResponseRedirect('/author/')
 
@@ -188,23 +205,6 @@ def author_post(request):
         return HttpResponse(sys.exc_info[0])
 
     return HttpResponseRedirect('/author/')
-
-def setVisibility(request, post):
-    if post.privacyLevel == '0':
-            post.visibility = 'PUBLIC'
-    elif post.privacyLevel == '1':
-            post.visibility = 'FRIENDS'
-    elif post.privacyLevel == '2':
-            post.visibility = 'FOAF'
-    elif post.privacyLevel == '3':
-            post.visibility = 'PRIVATE'
-    elif post.privacyLevel == '4':
-            post.visibility = 'PRIVATE'
-    elif post.privacyLevel == '5':
-            post.visibility = 'UNLISTED'
-            post.unlisted = True
-    if 'serverOnly' in request.POST:
-            post.serverOnly = True
 
 # http://stackoverflow.com/questions/3539187/serve-static-files-through-a-view-in-django
 @login_required()

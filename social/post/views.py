@@ -36,7 +36,7 @@ def EditView(request, pk):
     if authorContext != post.author:
         return HttpResponseRedirect('/post/{}/'.format(pk))
     return render(request, 'edit.html', {'post':post})
-    
+
 @login_required
 def EditPostView(request, pk):
     # Only process the author's post if it is a POST request
@@ -53,7 +53,7 @@ def EditPostView(request, pk):
 
         authorContext = Author.objects.get(id=request.user)
         post = get_object_or_404(Post, id=pk)
-        
+
         if authorContext != post.author:
             return HttpResponseRedirect('/post/{}/'.format(pk))
 
@@ -82,7 +82,7 @@ def EditPostView(request, pk):
             post.contentType=request.POST['contentType']
             setVisibility(request, post)
             post.save()
-            
+
         else:
             return HttpResponseRedirect('/post/{}/edit/'.format(pk))
 
@@ -112,45 +112,45 @@ def setVisibility(request, post):
         post.serverOnly = True
     else:
         post.serverOnly = False
-        
+
 
 @login_required
 def AjaxComments(request, pk):
     author_post = get_object_or_404(Post, id=pk)
     comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
-    
+
     parsed_post_url = urlparse(author_post.origin)
     parsed_app_url = urlparse(APP_URL)
-    
+
     if parsed_post_url.netloc != parsed_app_url.netloc:
         comment_ids = comments.values_list('UID',flat = True)
         comment_ids = [str(x) for x in comment_ids]
-        
+
         host = "http://"+parsed_post_url.netloc + "/"
-                
+
         n = Node.objects.get(url=host)
-        
+
         r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
-        
+
         if r.status_code == requests.codes.ok:
             post_objects = json.loads(r.text)
             for o in post_objects['comments']:
                 if o['id'] not in comment_ids:
                     build_comment(o, author_post)
-            
+
             # get the new comments
             comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
 
     context = dict()
-    html = dict()    
+    html = dict()
     context['comment_list'] = comments
-    html['comments'] = render_to_string('ajaxcomments.html', context, request=request)       
+    html['comments'] = render_to_string('ajaxcomments.html', context, request=request)
     return JsonResponse(html)
 
 # Create your views here.
 class PostView(DetailView):
     model = Post
-    template_name = 'view.html'      
+    template_name = 'view.html'
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
@@ -162,33 +162,33 @@ class PostView(DetailView):
     def get_comment_list(self):
         author_post = self.get_object()
         comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
-        
+
         parsed_post_url = urlparse(author_post.origin)
         parsed_app_url = urlparse(APP_URL)
-        
+
         if parsed_post_url.netloc != parsed_app_url.netloc:
             comment_ids = comments.values_list('UID',flat = True)
             comment_ids = [str(x) for x in comment_ids]
-            
+
             host = author_post.author.host
-            
+
             try:
                 n = Node.objects.get(url=host)
             except:
                 pass
-            
+
             r = requests.get(author_post.origin + "comments" +"/", auth = requests.auth.HTTPBasicAuth(n.username,n.password))
-            
+
             if r.status_code == requests.codes.ok:
                 post_objects = json.loads(r.text)
                 for o in post_objects['comments']:
                     if o['id'] not in comment_ids:
                         build_comment(o, author_post)
-                
+
                 # get the new comments
                 comments = Comment.objects.filter(Q(post=author_post.id)).order_by('-publishDate')
                 return comments
-                
+
             elif r.status_code == requests.codes.forbidden:
                 # can't retrieve posts, just return servers post
                 return comments
@@ -209,7 +209,6 @@ class PostView(DetailView):
         if self.object.contentType.startswith("image"):
             base64image = self.object.content
             return "<img alt=\"{}\" class=\"img-responsive\" src=\"{}\"/>".format(self.object.title,base64image)
-
         elif self.object.contentType == 'text/markdown':
             return commonmark(self.object.content)
 
@@ -222,7 +221,7 @@ class AddComment(View):
         if form.is_valid():
             comment_author = Author.objects.get(id=request.user)
             comment_post = Post.objects.get(id=pk)
-            
+
             comment = Comment(
             content=form.cleaned_data['content'],
             author=comment_author,
@@ -237,7 +236,7 @@ class AddComment(View):
                 # post is on server, proceed as normal
                 comment.save()
                 return HttpResponseRedirect("/post/" + pk)
-            
+
             else:
                 # we gotta send a request and see if it's successful
                 body = dict()
