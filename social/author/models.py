@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
+from node.models import Node
 import uuid
 import json
 import sys
@@ -26,6 +27,7 @@ class Author(models.Model):
         max_length=32,
         on_delete=models.CASCADE
     )
+    node = models.ForeignKey(Node, blank=True, null=True, on_delete=models.CASCADE)
     firstname = models.CharField(max_length=64,blank=True)
     lastname = models.CharField(max_length=64,blank=True)
     phone = models.CharField(max_length=50,blank=True)
