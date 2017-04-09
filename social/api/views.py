@@ -16,7 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 # App
 from post.models import Post
-from node.models import Node
+# from node.models import Node, build_comment
 from comment.models import Comment
 from author.models import Author, Follow
 from node.models import *

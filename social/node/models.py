@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import requests
 import sys
 from urllib.parse import urlparse
+from django.utils import timezone
 
 from post.models import Post
 from author.models import Author
@@ -186,7 +187,11 @@ def build_comment(comment_json, postObj):
     # commented out for T5 atm
     # uid = uuid.UUID(comment_json['guid'])
 
-    uid = uuid.UUID(comment_json['id'])
+    uid = None
+    if "id" in comment_json:
+        uid = uuid.UUID(comment_json['id'])
+    else:
+        uid = uuid.uuid4()
 
     authorObj = build_author(comment_json['author'], postObj)
 
@@ -198,6 +203,10 @@ def build_comment(comment_json, postObj):
 
     comment.content = comment_json['comment']
     comment.contentType = comment_json['contentType']
-    comment.publishDate = comment_json['published']
-    comment.apiID = comment_json['id']
+    if "published" in comment_json:
+        comment.publishDate = comment_json['published']
+    else:
+        comment.publishDate = timezone.now()
+    comment.apiID = str(uid)
+
     comment.save()
