@@ -150,16 +150,14 @@ def build_author_maybe(author_json, post = None):
     uid = uuid.UUID(id)
 
     user = None
+    author = None
     if not author_json["host"].startswith(settings.APP_URL):
         user, created = User.objects.get_or_create(username=str(uid))
+        author, _ = Author.objects.get_or_create(id=user, UID=uid)
     else:
         created = False
         user = User.objects.get(username=author_json["displayName"])
-
-    try:
-        author = Author.objects.get(id=user, UID=uid)
-    except:
-        author = Author(id=user, UID=uid)
+        author, _ = Author.objects.get_or_create(id=user)
 
     # In the case of a foreign author associate that author with its node.
     if not author_json["host"].startswith(settings.APP_URL):
@@ -170,7 +168,7 @@ def build_author_maybe(author_json, post = None):
             parsed_post_url = urlparse(post.origin)
             host = "http://"+parsed_post_url.netloc + "/"
             author.node = Node.objects.get(url = host)
-        
+
     author.displayName = author_json["displayName"]
     author.host = author_json["host"]
     author.url = author_json["url"]
