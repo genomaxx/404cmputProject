@@ -258,15 +258,8 @@ class AddComment(View):
                 obj_comment['id'] = str(comment.UID)
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
-                host = "http://"+parsed_comment_url.netloc + "/"
-                try:
-                    n = Node.objects.get(url=host)
-                except:
-                    pass
-                try:
-                    n = Node.objects.get(url=host+'api/')
-                except:
-                    return HttpResponseRedirect("/post/" + pk)
+                host = comment_post.author.host
+                n = Node.objects.get(url=host)
 
                 r = requests.post(
                     comment_post.origin + "comments" +"/",
@@ -275,6 +268,7 @@ class AddComment(View):
                     headers={
                         "content-type": "application/json"
                     })
+
 
                 if r.status_code == requests.codes.ok:
                     return HttpResponseRedirect("/post/" + pk)
