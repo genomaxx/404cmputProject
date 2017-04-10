@@ -22,6 +22,16 @@ class Node(models.Model):
     password = models.CharField(max_length=128)
     trusted = models.BooleanField(verbose_name="Get content from this node")
 
+    send_images = models.BooleanField(
+        default=True,
+        verbose_name="Send images to this node"
+    )
+
+    send_posts = models.BooleanField(
+        default=True,
+        verbose_name="Send posts to this node"
+    )
+
     user = models.OneToOneField(
         User,
         max_length=32,
