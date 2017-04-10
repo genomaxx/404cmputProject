@@ -240,10 +240,15 @@ def getPosts(request):
     paginator = CustomPagination()
     query = Post.objects.exclude(privacyLevel=4).exclude(serverOnly=True).filter(origin__startswith='http://polar-savannah-14727').order_by('-publishDate')
 
-    if not settings.send_images:
-        query = query.filter(contentType__startswith="text")
-    if not settings.send_posts:
-        query = query.filter(contentType__startswith="image")
+    try:
+        user = request.user
+        node = Node.objects.get(user=user)
+        if not node.send_images:
+            query = query.filter(contentType__startswith="text")
+        if not node.send_posts:
+            query = query.filter(contentType__startswith="image")
+    except:
+        pass
 
     if (len(query) > 0):
         try:
