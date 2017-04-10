@@ -259,7 +259,10 @@ class AddComment(View):
                 body['comment'] = obj_comment
                 msg = json.dumps(body)
                 host = comment_post.author.host
-                n = Node.objects.get(url=host)
+                try:
+                    n = Node.objects.get(url=host)
+                except:
+                    pass
 
                 r = requests.post(
                     comment_post.origin + "comments" +"/",
