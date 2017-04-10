@@ -201,7 +201,7 @@ def getFriendRequests(request):
     the_json = json.loads(request.body)
     followee_id = the_json["friend"]["id"]
     follower_host = the_json["author"]["host"]
-    follower_url = the_json["author"]["url"]
+    follower_url = the_json["author"]["id"]
     node = Node.objects.get(url=follower_host)
     friend = node.get_author(follower_url)
 
