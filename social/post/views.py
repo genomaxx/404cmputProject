@@ -70,7 +70,7 @@ def EditPostView(request, pk):
                 post.contentType=request.FILES['image'].content_type + ";base64"
                 post.image_url = '{0}_{1}_{2}'.format(request.user, str(uuid.uuid4())[:8], imgname)
             post.privacyLevel=request.POST['privacy_level']
-            setVisibility(request, post)
+            post = setVisibility(request, post)
             post.save()
 
 
@@ -80,7 +80,7 @@ def EditPostView(request, pk):
             post.content=content
             post.privacyLevel=request.POST['privacy_level']
             post.contentType=request.POST['contentType']
-            setVisibility(request, post)
+            post = setVisibility(request, post)
             post.save()
 
         else:
@@ -112,7 +112,7 @@ def setVisibility(request, post):
         post.serverOnly = True
     else:
         post.serverOnly = False
-
+    return post
 
 @login_required
 def AjaxComments(request, pk):

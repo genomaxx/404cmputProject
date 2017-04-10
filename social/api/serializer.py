@@ -62,7 +62,6 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='apiID')
     published = serializers.CharField(source='publishDate')
 
-
     class Meta:
         model = Post
         fields = ['id',

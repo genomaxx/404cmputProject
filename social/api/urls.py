@@ -11,6 +11,6 @@ urlpatterns = [
     url(r'^posts/(?P<id>[0-9a-f-]+)/$', views.getSinglePost),
     url(r'^author/(?P<id>[0-9a-f-]+)/friends/$', views.getFriends),
     url(r'^friendrequest/$', views.getFriendRequests),
-    url(r'^author/(?P<id1>[0-9a-f-]+)/friends/(?P<id2>[0-9a-f]+)/$', views.checkFriends2),
+    url(r'^author/(?P<id1>[0-9a-f-]+)/friends/(?P<id2>[0-9a-f-]+)/$', views.checkFriends2),
     url(r'^author/(?P<id>[0-9a-f-]+)/posts/$', views.getAuthorPosts),
     ]
