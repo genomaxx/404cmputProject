@@ -28,6 +28,7 @@ def index(request):
     author = Author.objects.get(id=request.user)
     context = {'author': author}
     viewablePosts = []
+    Post.objects.exclude(origin__startswith=settings.APP_URL).delete()
     get_remote_posts()
     # Get all post objects that are public and private
     # TODO: Add to the query to expand the feed.
